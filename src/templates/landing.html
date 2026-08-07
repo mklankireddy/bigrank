@@ -66,7 +66,7 @@
 </style>
 </head>
 <body>
-<nav class="nav"><div class="brand"><a href="index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">AI <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="ai/coding/index.html">Coding agents</a><a class="item" href="ai/general/index.html">General-purpose agents</a><a class="item disabled" title="Coming soon">Models</a></div></div></div></nav>
+{{NAV}}
 
 <div class="wrap">
   <h1>Big<span style="color:var(--accent)">Rank</span> <span class="live">● LIVE</span></h1>
@@ -74,15 +74,15 @@
   <p class="meta">Signals are collected once per day from public APIs (GitHub, Hacker News, Reddit, marketplace installs) and snapshotted into the repository, so every number is auditable and every rank is reproducible.</p>
 
   <div class="cards">
-    <div class="card"><h2>AI</h2><a class="card-item" href="ai/coding/index.html">Coding agents</a><a class="card-item" href="ai/general/index.html">General-purpose agents</a><div class="card-item disabled">Models <span class="soon">soon</span></div></div>
+    {{CARDS}}
   </div>
 
-  <footer class="site-footer">BigRank v1.1.0<span id="footerCommit"></span></footer>
+  <footer class="site-footer">BigRank v{{VERSION}}<span id="footerCommit"></span></footer>
 </div>
 
 <script>
 (function () {
-  const c = "c8ffec0";
+  const c = "{{COMMIT}}";
   const el = document.getElementById("footerCommit");
   if (c) el.innerHTML = ' · commit <span class="sha">' + c + "</span>";
   else el.remove();

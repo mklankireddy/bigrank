@@ -1,7 +1,7 @@
-# AI Coding Tool Usage Rankings (Live)
+# AI Coding Agent Usage Rankings (Live)
 
-An always-on ranking of AI coding tools — Cursor, Claude Code, GitHub Copilot, Windsurf,
-Codex, Devin, Aider, Cline, Continue, Gemini CLI, Replit, OpenHands, Grok Build — scored by **public
+An always-on ranking of AI coding agents — Cursor, Claude Code, GitHub Copilot, Windsurf,
+Codex, Devin, Aider, Cline, Continue, Gemini CLI, Replit, OpenHands, Grok Build, Roo Code, Plandex — scored by **public
 usage signals**, not benchmarks or surveys.
 
 The collector runs **daily** via GitHub Actions, snapshots every source into
@@ -37,20 +37,44 @@ sources carry (a coverage penalty). Rows with incomplete data show an `n/m sourc
 Weights are in `config/tools.json` and can also be tweaked live on the page (client-side
 recompute).
 
+## Pricing tags
+
+Each tool/agent also carries a hand-maintained `pricing` tag in `config/tools.json` /
+`config/agents.json`: `free`, `freemium`, or `paid`. It is an **approximation, not a metric** —
+it never affects scoring. Classification rule (based on the official pricing page):
+
+- **free** — no payment required for the core product (may still need your own LLM/API key).
+- **freemium** — a usable free tier exists, but the full value is tied to a paid plan.
+- **paid** — a subscription/paid plan is required to use it at all.
+
+Rough rule of thumb: open-source core with no official paid offering → `free`; open-source core
+plus a paid cloud/hosted version → `freemium`; closed product with a paywall → `paid`. Update the
+tag by editing the config; it appears next to the tool name on both ranking pages, with a legend
+above each table.
+
 ## Project layout
 
 ```
 config/tools.json          # tracked tools + repo/ext/plugin ids + search phrases + weights
+config/agents.json         # tracked open-source agents + activity/adoption weights + setup notes
 src/
   collect.py               # runs all collectors -> data/snapshots/<date>.jsonl, then prunes old days
-  build_site.py            # renders site/index.html + site/data.js from history
+  collect_agents.py        # agent collectors -> data/agent_snapshots/<date>.jsonl
+  nav.py                   # single source of truth for the top nav groups + landing cards
+  build_landing.py         # renders site/index.html (landing page)
+  build_site.py            # renders site/ai/coding/ (AI coding agents ranking)
+  build_agents.py          # renders site/ai/general/ (general-purpose agents ranking)
   score.py                 # normalization + composites + time series
   common.py                # config load, HTTP, snapshot I/O, retention/archive
-  sources/                 # github.py, hn.py, reddit.py, vscode.py, openvsx.py, jetbrains.py
-  templates/index.html     # the ranking page
-data/snapshots/<date>.jsonl  # daily snapshots, trailing 30 days
-data/archive.jsonl           # consolidated history older than 30 days
-site/                      # generated static site
+  sources/                 # github.py, github_agent.py, hn.py, reddit.py, vscode.py, openvsx.py, jetbrains.py
+  templates/index.html     # the AI coding agents ranking page
+  templates/agents.html    # the general-purpose agents ranking page
+  templates/landing.html   # the landing page
+data/snapshots/<date>.jsonl  # daily tool snapshots, trailing 30 days
+data/agent_snapshots/<date>.jsonl  # daily agent snapshots, trailing 30 days
+data/archive.jsonl           # consolidated tool history older than 30 days
+data/agents_archive.jsonl    # consolidated agent history older than 30 days
+site/                      # generated static site (index.html, ai/coding/, ai/general/)
 .github/workflows/collect.yml
 ```
 
@@ -73,7 +97,9 @@ The repo URL for those links is set automatically from `GITHUB_REPOSITORY` in CI
 pip install -r requirements.txt
 GITHUB_TOKEN=ghp_xxx python src/collect.py --dry-run   # collect for today, no files written
 python src/collect.py --date 2026-08-07                # write today's snapshot
-python src/build_site.py                               # build site/
+python src/build_landing.py                            # build landing page
+python src/build_site.py                               # build site/ai/coding/
+python src/build_agents.py                             # build site/ai/general/
 python -m http.server -d site 8000                     # preview
 ```
 

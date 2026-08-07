@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "description": "Open-source general-purpose AI agents tracked by the BigRank agents page.",
+    "repo": "mklankireddy/bigrank",
+    "weights_activity": {
+      "commits_30d": 40,
+      "issues_opened_30d": 30,
+      "issues_closed_30d": 30
+    },
+    "weights_adoption": {
+      "stars": 25,
+      "forks_30d": 20,
+      "subscribers": 10,
+      "hn_30d": 25,
+      "reddit_30d": 20
+    }
+  },
+  "agents": [
+    {
+      "id": "openclaw",
+      "name": "OpenClaw",
+      "vendor": "OpenClaw (formerly Clawdbot/Moltbot)",
+      "category": "Personal assistant",
+      "homepage": "https://openclaw.ai",
+      "github": { "repo": "openclaw/openclaw" },
+      "hn_query": "\"openclaw\"",
+      "reddit_query": "\"openclaw\"",
+      "setup": "curl installer or Docker; Docker recommended for full agent stack",
+      "effort": "medium",
+      "pricing": "free"
+    },
+    {
+      "id": "hermes-agent",
+      "name": "Hermes Agent",
+      "vendor": "Nous Research",
+      "category": "Personal assistant",
+      "homepage": "https://hermes-agent.nousresearch.com",
+      "github": { "repo": "NousResearch/hermes-agent" },
+      "hn_query": "\"hermes agent\"",
+      "reddit_query": "\"hermes agent\"",
+      "setup": "pip install or pipx; bring your own model key",
+      "effort": "low",
+      "pricing": "free"
+    },
+    {
+      "id": "autogpt",
+      "name": "AutoGPT",
+      "vendor": "Significant Gravitas",
+      "category": "Autonomous agent",
+      "homepage": "https://agpt.co",
+      "github": { "repo": "Significant-Gravitas/AutoGPT" },
+      "hn_query": "\"autogpt\"",
+      "reddit_query": "\"autogpt\"",
+      "setup": "Docker Compose with bundled frontend/backend",
+      "effort": "medium",
+      "pricing": "free"
+    },
+    {
+      "id": "agent-zero",
+      "name": "Agent Zero",
+      "vendor": "Agent0",
+      "category": "Autonomous agent",
+      "homepage": "https://agent0.ai",
+      "github": { "repo": "agent0ai/agent-zero" },
+      "hn_query": "\"agent zero\"",
+      "reddit_query": "\"agent zero\"",
+      "setup": "Docker or local install; needs an LLM provider key",
+      "effort": "medium",
+      "pricing": "free"
+    },
+    {
+      "id": "open-interpreter",
+      "name": "Open Interpreter",
+      "vendor": "Open Interpreter",
+      "category": "Autonomous agent",
+      "homepage": "https://openinterpreter.com",
+      "github": { "repo": "openinterpreter/openinterpreter" },
+      "hn_query": "\"open interpreter\"",
+      "reddit_query": "\"open interpreter\"",
+      "setup": "pip install open-interpreter; local or cloud models",
+      "effort": "low",
+      "pricing": "free"
+    },
+    {
+      "id": "gpt-researcher",
+      "name": "GPT Researcher",
+      "vendor": "Assaf Elovic",
+      "category": "Research agent",
+      "homepage": "https://github.com/assafelovic/gpt-researcher",
+      "github": { "repo": "assafelovic/gpt-researcher" },
+      "hn_query": "\"gpt-researcher\"",
+      "reddit_query": "\"gpt-researcher\"",
+      "setup": "pip install + API keys (LLM + Tavily or other search)",
+      "effort": "medium",
+      "pricing": "free"
+    },
+    {
+      "id": "storm",
+      "name": "Stanford STORM",
+      "vendor": "Stanford",
+      "category": "Research agent",
+      "homepage": "https://github.com/stanford-oval/storm",
+      "github": { "repo": "stanford-oval/storm" },
+      "hn_query": "\"stanford storm\"",
+      "reddit_query": "\"stanford storm\"",
+      "setup": "pip install + API keys for LLM and search",
+      "effort": "medium",
+      "pricing": "free"
+    },
+    {
+      "id": "open-deep-research",
+      "name": "Open Deep Research",
+      "vendor": "LangChain",
+      "category": "Research agent",
+      "homepage": "https://github.com/langchain-ai/open_deep_research",
+      "github": { "repo": "langchain-ai/open_deep_research" },
+      "hn_query": "\"open deep research\"",
+      "reddit_query": "\"open deep research\"",
+      "setup": "pip install + API key; LangGraph Studio optional",
+      "effort": "low",
+      "pricing": "free"
+    },
+    {
+      "id": "local-deep-research",
+      "name": "Local Deep Research",
+      "vendor": "LearningCircuit",
+      "category": "Research agent",
+      "homepage": "https://github.com/LearningCircuit/local-deep-research",
+      "github": { "repo": "LearningCircuit/local-deep-research" },
+      "hn_query": "\"local deep research\"",
+      "reddit_query": "\"local deep research\"",
+      "setup": "pip install + local model (Ollama); fully offline",
+      "effort": "medium",
+      "pricing": "free"
+    }
+  ]
+}

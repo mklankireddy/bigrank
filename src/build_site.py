@@ -1,30 +1,17 @@
-"""Render site/index.html + site/data.js from the snapshot history."""
+"""Render site/ai/coding/data.js + site/ai/coding/index.html from the snapshot history."""
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import ROOT, SITE_DIR, load_config, load_snapshots  # noqa: E402
+from common import ROOT, SITE_DIR, VERSION, load_config, load_snapshots, short_commit  # noqa: E402
+from nav import render_nav  # noqa: E402
 import score  # noqa: E402
 
 TEMPLATE = os.path.join(ROOT, "src", "templates", "index.html")
-
-VERSION = "1.0.0"
-
-
-def short_commit():
-    sha = os.environ.get("GITHUB_SHA", "")
-    if not sha:
-        try:
-            import subprocess
-            sha = subprocess.check_output(
-                ["git", "rev-parse", "--short", "HEAD"],
-                cwd=ROOT, stderr=subprocess.DEVNULL,
-            ).decode().strip()
-        except Exception:
-            sha = ""
-    return sha[:8] or None
+PAGE_DIR = os.path.join(SITE_DIR, "ai", "coding")
+PAGE_PATH = "ai/coding/index.html"
 
 
 def main():
@@ -54,6 +41,7 @@ def main():
             "name": t["name"],
             "vendor": t.get("vendor"),
             "category": t.get("category"),
+            "pricing": t.get("pricing"),
             "homepage": t.get("homepage"),
             "values": raw[tid],
             "scores": {m: scores[m].get(tid) for m in scores},
@@ -77,12 +65,13 @@ def main():
         "dates": dates,
     }
 
-    os.makedirs(SITE_DIR, exist_ok=True)
-    with open(os.path.join(SITE_DIR, "data.js"), "w") as f:
+    os.makedirs(PAGE_DIR, exist_ok=True)
+    with open(os.path.join(PAGE_DIR, "data.js"), "w") as f:
         f.write("window.RANKING_DATA = " + json.dumps(data) + ";\n")
     with open(TEMPLATE) as f:
         html = f.read()
-    with open(os.path.join(SITE_DIR, "index.html"), "w") as f:
+    html = html.replace("{{NAV}}", render_nav("coding", PAGE_PATH))
+    with open(os.path.join(PAGE_DIR, "index.html"), "w") as f:
         f.write(html)
     print(f"built site for {latest} ({len(dates)} days, {len(tools_data)} tools)")
 

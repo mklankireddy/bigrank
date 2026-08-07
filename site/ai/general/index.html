@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI General-Purpose Agent Rankings (Live)</title>
+<meta name="description" content="Live ranking of open-source general-purpose AI agents by project health — commit velocity, issue throughput, adoption, and maintenance. Updated daily.">
+<style>
+  :root {
+    --bg: #0b0e14; --panel: #12161f; --panel2: #181d29; --border: #232a3a;
+    --text: #d7dce6; --muted: #8b93a7; --accent: #6ea8fe; --green: #4ade80;
+    --red: #f87171; --amber: #fbbf24; --blue: #6ea8fe; --purple: #b4a5ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { padding: 0 24px 60px; }
+  header { padding: 28px 0 8px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h1 .live { color: var(--green); font-size: 13px; vertical-align: 4px; letter-spacing: .5px; }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 46px; padding: 0 20px;
+    border-bottom: 1px solid var(--border); background: var(--panel);
+  }
+  .brand a { font-weight: 800; font-size: 15px; letter-spacing: .3px; color: var(--text); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  .groups { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .group { position: relative; }
+  .gbtn {
+    appearance: none; background: transparent; border: 1px solid transparent;
+    color: var(--muted); font: 600 13px/1 inherit; padding: 8px 12px; border-radius: 8px; cursor: pointer;
+  }
+  .gbtn .caret { font-size: 10px; margin-left: 3px; }
+  .group:hover .gbtn, .group:focus-within .gbtn { color: var(--text); background: var(--panel2); border-color: var(--border); }
+  .menu {
+    display: none; position: absolute; top: 100%; right: 0; min-width: 215px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30;
+  }
+  .group:hover .menu, .group:focus-within .menu { display: block; }
+  .menu a.item {
+    display: block; padding: 8px 12px; border-radius: 7px; color: var(--muted);
+    text-decoration: none; font-size: 13.5px; font-weight: 600;
+  }
+  .menu a.item:hover { color: var(--text); background: var(--panel2); }
+  .menu a.item.on { color: var(--text); background: var(--panel2); border: 1px solid var(--border); }
+  .menu a.item.disabled { opacity: .45; cursor: not-allowed; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 1150px; }
+  th, td { padding: 9px 12px; text-align: center; white-space: nowrap; }
+  th {
+    color: var(--muted); font-weight: 600; font-size: 12px; letter-spacing: .3px;
+    border-bottom: 1px solid var(--border); background: var(--panel2);
+  }
+  td { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: rgba(110,168,254,.05); }
+  .agent { text-align: left; }
+  .agent .nm { font-weight: 700; }
+  .agent .vn { color: var(--muted); font-size: 12px; }
+  .agent a { color: var(--text); text-decoration: none; }
+  .agent a:hover { color: var(--accent); }
+  .rank { width: 56px; text-align: center; color: var(--muted); font-weight: 700; }
+  .rank .medal { font-size: 15px; line-height: 1; }
+  tr.top3 td { background: rgba(251,191,36,.045); }
+  .score-cell { min-width: 120px; }
+  .scorebar { display: flex; align-items: center; gap: 8px; justify-content: center; }
+  .bar { width: 90px; height: 7px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius: 4px; }
+  .bar.ad i { background: linear-gradient(90deg, var(--amber), var(--red)); }
+  .num { font-variant-numeric: tabular-nums; }
+  .dash { color: var(--muted); }
+  .effort { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 7px; margin-left: 5px; }
+  .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; margin-left: 6px; }
+  .tag.p-free { color: var(--green); border-color: rgba(74,222,128,.45); }
+  .tag.p-freemium { color: var(--amber); border-color: rgba(251,191,36,.45); }
+  .tag.p-paid { color: var(--red); border-color: rgba(248,113,113,.45); }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+  .badge.active { color: var(--green); background: rgba(74,222,128,.12); }
+  .badge.steady { color: var(--blue); background: rgba(110,168,254,.12); }
+  .badge.slowing { color: var(--amber); background: rgba(251,191,36,.12); }
+  .badge.stale { color: var(--red); background: rgba(248,113,113,.12); }
+  .badge.archived { color: var(--muted); background: var(--panel2); }
+  .foot { color: var(--muted); font-size: 13px; margin-top: 16px; }
+  .site-footer { color: var(--muted); font-size: 12px; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .site-footer .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-top: 22px; }
+  summary { cursor: pointer; font-weight: 700; color: var(--text); }
+  details p, details li { font-size: 13.5px; color: var(--muted); }
+  details.how h4 { margin: 14px 0 6px; font-size: 12.5px; color: var(--text); }
+  details.how ul { margin: 4px 0 0; padding-left: 18px; }
+  details.how ul li { margin-bottom: 4px; }
+  .pill { display: inline-block; background: var(--panel2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; font-size: 11.5px; color: var(--muted); margin-right: 6px; }
+</style>
+</head>
+<body>
+<nav class="nav"><div class="brand"><a href="../../index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">AI <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../coding/index.html">Coding agents</a><a class="item on" href="index.html">General-purpose agents</a><a class="item disabled" title="Coming soon">Models</a></div></div></div></nav>
+
+<div class="wrap">
+  <header>
+    <h1>Open-Source AI General-Purpose Agent Rankings <span class="live">● LIVE</span></h1>
+    <div class="meta">
+      <span>Last updated: <b id="lastUpdated">–</b> (UTC)</span>
+      <span>History: <b id="daysTracked">–</b> days</span>
+      <span>Snapshot: <b id="dataStart">–</b></span>
+      <span class="tag p-free" title="No payment required (may need your own LLM/API key)">Free</span>
+      <span class="tag p-freemium" title="Free tier, but full value is tied to a paid plan">Freemium</span>
+      <span class="tag p-paid" title="Subscription required">Paid</span>
+    </div>
+  </header>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="rank">#</th>
+          <th class="agent">Agent</th>
+          <th>Category</th>
+          <th>Activity</th>
+          <th>Adoption</th>
+          <th>Freshness</th>
+          <th>Commits 30d</th>
+          <th>Issues closed / open</th>
+          <th>Stars</th>
+          <th>Last release</th>
+          <th>Ease of running</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+  <p class="foot" id="footNote"></p>
+
+  <details class="how">
+    <summary>How this ranking works</summary>
+    <p>
+      This page scores <b>open-source general-purpose AI agents</b> by project health and momentum — not hype.
+      Every signal is collected once per day from public GitHub/HN/Reddit APIs and snapshotted into
+      <code>data/agent_snapshots/</code>, so history is auditable. The point: many agent projects look alive
+      until you try them — commit and issue velocity reveal which ones are actually being maintained.
+    </p>
+    <h4>Signals</h4>
+    <div class="how">
+      <span class="pill">Activity</span> commits and issues opened/closed in the trailing 30 days.
+      <span class="pill">Adoption</span> stars, forks created in the last 30 days, watchers, and HN/Reddit mentions (30d).
+      <span class="pill">Freshness</span> time since the last commit, plus the repo's archived flag.
+    </div>
+    <h4>Scoring</h4>
+    <ul>
+      <li><b>Activity</b> — min-max normalized blend: commits (40), issues opened (30), issues closed (30).</li>
+      <li><b>Adoption</b> — min-max normalized blend: stars (25), forks 30d (20), watchers (10), HN 30d (25), Reddit 30d (20).</li>
+      <li><b>Overall rank</b> — Activity 50% + Adoption 50%.</li>
+      <li>Missing sources count as zero (coverage penalty), so sparse data drags a score down.</li>
+    </ul>
+    <h4>Freshness badge</h4>
+    <ul>
+      <li><b>Archived</b> — the repository is archived (no further development).</li>
+      <li><b>Active</b> — committed within 7 days. <b>Steady</b> — within 30. <b>Slowing</b> — within 60. <b>Stale</b> — 60+ days.</li>
+    </ul>
+    <h4>Pricing tags</h4>
+    <p>The <b>Free / Freemium / Paid</b> tag next to each agent is hand-maintained from the project's official pricing page — an approximation, not a metric, and it does not affect the score. <b>Free</b> = no payment required (may need your own LLM/API key). <b>Freemium</b> = a usable free tier, but limits/features push you toward a paid plan. <b>Paid</b> = subscription required to use it at all.</p>
+    <h4>Caveats</h4>
+    <ul>
+      <li>These are <i>project-health signals, not product quality</i>.</li>
+      <li>A big open-issue backlog (e.g. 20k+) can mean high interest, not a broken project.</li>
+      <li>The "ease of running" note is hand-maintained and rough, not a metric.</li>
+      <li>GitHub dependents and Discord member counts are not yet included (no stable public API).</li>
+    </ul>
+  </details>
+
+  <footer class="site-footer">BigRank v<span id="footerVersion">–</span><span id="footerCommit"></span></footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = window.AGENTS_DATA;
+
+const MEDALS = ["🥇", "🥈", "🥉"];
+const rankCell = (i) => i < 3
+  ? `<span class="medal" title="Rank ${i + 1}">${MEDALS[i]}</span>`
+  : i + 1;
+
+const PRICE = {
+  free: ["Free", "no payment required (may need your own LLM/API key)"],
+  freemium: ["Freemium", "free tier, but full value is tied to a paid plan"],
+  paid: ["Paid", "subscription required"],
+};
+const ptag = (p) => PRICE[p]
+  ? `<span class="tag p-${p}" title="${PRICE[p][1]}">${PRICE[p][0]}</span>`
+  : "";
+
+const BADGES = {
+  archived: "Archived", active: "Active", steady: "Steady", slowing: "Slowing", stale: "Stale",
+};
+
+const num = (v) => {
+  if (v == null || !isFinite(v)) return "<span class='dash'>–</span>";
+  const a = Math.abs(v);
+  if (a >= 1e6) return (v / 1e6).toFixed(1) + "M";
+  if (a >= 1e3) return (v / 1e3).toFixed(1) + "k";
+  return Math.round(v).toLocaleString();
+};
+const dshort = (v) => v ? v.slice(0, 10) : "–";
+const scoreCell = (sc, cls) =>
+  `<div class="scorebar"><span class="num">${num(sc)}</span><span class="bar ${cls}"><i style="width:${Math.min(100, sc)}%"></i></span></div>`;
+
+const rows = [...D.agents]
+  .sort((a, b) => b.scores.overall - a.scores.overall)
+  .map((a, i) => {
+    const v = a.values;
+    return `<tr class="${i < 3 ? "top3" : ""}">
+      <td class="rank">${rankCell(i)}</td>
+      <td class="agent"><a href="${a.homepage || "#"}" target="_blank" rel="noopener"><span class="nm">${a.name}</span>${ptag(a.pricing)} <span class="vn">${a.vendor || ""}</span></a></td>
+      <td><span class="pill">${a.category || "–"}</span></td>
+      <td class="score-cell">${scoreCell(a.scores.activity, "")}</td>
+      <td class="score-cell">${scoreCell(a.scores.adoption, "ad")}</td>
+      <td><span class="badge ${a.freshness}">${BADGES[a.freshness] || a.freshness}</span></td>
+      <td class="num">${num(v.commits_30d)}</td>
+      <td class="num">${num(v.issues_closed_30d)} / ${num(v.open_issues)}</td>
+      <td class="num">${num(v.stars)}</td>
+      <td class="num">${dshort(a.latest_release)}</td>
+      <td style="text-align:left;white-space:normal">${a.setup || "–"}<span class="effort">${a.effort || ""}</span></td>
+    </tr>`;
+  }).join("");
+
+document.getElementById("tableBody").innerHTML = rows;
+document.getElementById("lastUpdated").textContent = D.meta.updated;
+document.getElementById("daysTracked").textContent = D.meta.days;
+document.getElementById("dataStart").textContent = D.meta.start;
+document.getElementById("footerVersion").textContent = D.meta.version || "–";
+const fc = document.getElementById("footerCommit");
+if (D.meta.build_commit) fc.innerHTML = ` · commit <span class="sha">${D.meta.build_commit}</span>`;
+else fc.remove();
+document.getElementById("footNote").textContent =
+  "Ranked by Overall (Activity 50% + Adoption 50%). Scores are min-max normalized across tracked agents; missing sources count as zero. Freshness reflects time since the last commit (or the archived flag).";
+</script>
+</body>
+</html>

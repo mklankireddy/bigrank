@@ -10,9 +10,28 @@ CONFIG_PATH = os.path.join(ROOT, "config", "tools.json")
 DATA_DIR = os.path.join(ROOT, "data", "snapshots")
 ARCHIVE_PATH = os.path.join(ROOT, "data", "archive.jsonl")
 SITE_DIR = os.path.join(ROOT, "site")
+AGENT_CONFIG_PATH = os.path.join(ROOT, "config", "agents.json")
+AGENT_DATA_DIR = os.path.join(ROOT, "data", "agent_snapshots")
+AGENT_ARCHIVE_PATH = os.path.join(ROOT, "data", "agents_archive.jsonl")
 
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30
+
+VERSION = "1.1.0"
+
+
+def short_commit():
+    sha = os.environ.get("GITHUB_SHA", "")
+    if not sha:
+        try:
+            import subprocess
+            sha = subprocess.check_output(
+                ["git", "rev-parse", "--short", "HEAD"],
+                cwd=ROOT, stderr=subprocess.DEVNULL,
+            ).decode().strip()
+        except Exception:
+            sha = ""
+    return sha[:8] or None
 
 
 def load_config():
@@ -57,18 +76,37 @@ def snapshot_path(d=None):
     return os.path.join(DATA_DIR, str(d) + ".jsonl")
 
 
-def _load_archive():
-    """Return {date_str: {tool_id: rec}} from the consolidated archive file."""
+def _load_archive(archive_path=ARCHIVE_PATH, item_key="tool"):
+    """Return {date_str: {item_id: rec}} from a consolidated archive file."""
     out = {}
-    if not os.path.exists(ARCHIVE_PATH):
+    if not os.path.exists(archive_path):
         return out
-    with open(ARCHIVE_PATH) as f:
+    with open(archive_path) as f:
         for line in f:
             line = line.strip()
             if not line:
                 continue
             rec = json.loads(line)
-            out.setdefault(rec["date"], {})[rec["tool"]] = rec
+            out.setdefault(rec["date"], {})[rec[item_key]] = rec
+    return out
+
+
+def _load_daily_files(data_dir, item_key, out):
+    """Merge daily snapshot files from `data_dir` into `out` (per-item override)."""
+    if not os.path.isdir(data_dir):
+        return out
+    for fn in sorted(os.listdir(data_dir)):
+        if not fn.endswith(".jsonl"):
+            continue
+        day = fn[:-6]  # strip ".jsonl"
+        out.setdefault(day, {})
+        with open(os.path.join(data_dir, fn)) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                rec = json.loads(line)
+                out[day][rec[item_key]] = rec
     return out
 
 
@@ -78,42 +116,41 @@ def load_snapshots():
     Merges the consolidated archive with the daily snapshot files; daily files
     win on overlap (in practice the windows never overlap).
     """
-    out = _load_archive()
-    if not os.path.isdir(DATA_DIR):
-        return out
-    for fn in sorted(os.listdir(DATA_DIR)):
-        if not fn.endswith(".jsonl"):
-            continue
-        day = fn[:-6]  # strip ".jsonl"
-        out.setdefault(day, {})
-        with open(os.path.join(DATA_DIR, fn)) as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                rec = json.loads(line)
-                out[day][rec["tool"]] = rec
-    return out
+    return _load_daily_files(DATA_DIR, "tool", _load_archive())
 
 
-def consolidate_snapshots(keep_days=30, today=None):
+def load_agent_config():
+    with open(AGENT_CONFIG_PATH, "r") as f:
+        return json.load(f)
+
+
+def agent_snapshot_path(d=None):
+    if d is None:
+        d = date.today().isoformat()
+    return os.path.join(AGENT_DATA_DIR, str(d) + ".jsonl")
+
+
+def load_agent_snapshots():
+    """Return {date_str: {agent_id: rec}} (archive + daily, daily wins)."""
+    return _load_daily_files(AGENT_DATA_DIR, "agent", _load_archive(AGENT_ARCHIVE_PATH, "agent"))
+
+
+def _consolidate(data_dir, archive_path, keep_days, today, item_key):
     """Move daily snapshot files older than the retention window into the archive.
 
     Daily files are kept for `keep_days` calendar dates (today inclusive); anything
-    older is appended to ARCHIVE_PATH and the daily file is deleted. Dates already
+    older is appended to the archive and the daily file is deleted. Dates already
     present in the archive are skipped, so re-runs cannot duplicate rows.
     Returns (moved, kept) counts.
     """
-    if today is None:
-        today = date.today()
     cutoff = today.toordinal() - (keep_days - 1)
-    if not os.path.isdir(DATA_DIR):
+    if not os.path.isdir(data_dir):
         return 0, 0
-    archived = _load_archive()
-    os.makedirs(os.path.dirname(ARCHIVE_PATH), exist_ok=True)
+    archived = _load_archive(archive_path, item_key)
+    os.makedirs(os.path.dirname(archive_path), exist_ok=True)
     moved = kept = 0
-    with open(ARCHIVE_PATH, "a") as arch:
-        for fn in sorted(os.listdir(DATA_DIR)):
+    with open(archive_path, "a") as arch:
+        for fn in sorted(os.listdir(data_dir)):
             if not fn.endswith(".jsonl"):
                 continue
             day = fn[:-6]
@@ -125,7 +162,7 @@ def consolidate_snapshots(keep_days=30, today=None):
             if d.toordinal() >= cutoff:
                 kept += 1
                 continue
-            path = os.path.join(DATA_DIR, fn)
+            path = os.path.join(data_dir, fn)
             if day in archived:
                 os.remove(path)
                 continue
@@ -137,3 +174,17 @@ def consolidate_snapshots(keep_days=30, today=None):
             os.remove(path)
             moved += 1
     return moved, kept
+
+
+def consolidate_snapshots(keep_days=30, today=None):
+    """Move tool snapshot files older than the retention window into the archive."""
+    if today is None:
+        today = date.today()
+    return _consolidate(DATA_DIR, ARCHIVE_PATH, keep_days, today, "tool")
+
+
+def consolidate_agents(keep_days=30, today=None):
+    """Move agent snapshot files older than the retention window into the archive."""
+    if today is None:
+        today = date.today()
+    return _consolidate(AGENT_DATA_DIR, AGENT_ARCHIVE_PATH, keep_days, today, "agent")
