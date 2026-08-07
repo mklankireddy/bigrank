@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Coding Tool Usage Rankings (Live)</title>
+<meta name="description" content="Live ranking of AI coding tools by actual usage signals — GitHub stars/commits, Hacker News, Reddit, VS Code/Open VSX/JetBrains installs. Updated daily.">
+<style>
+  :root {
+    --bg: #0b0e14; --panel: #12161f; --panel2: #181d29; --border: #232a3a;
+    --text: #d7dce6; --muted: #8b93a7; --accent: #6ea8fe; --green: #4ade80;
+    --red: #f87171; --amber: #fbbf24; --blue: #6ea8fe; --purple: #b4a5ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px 60px; }
+  header { padding: 28px 0 8px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h1 .live { color: var(--green); font-size: 13px; vertical-align: 4px; letter-spacing: .5px; }
+  .sub { color: var(--muted); margin: 0 0 14px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 16px; position: sticky; top: 46px; z-index: 5;
+  }
+  .seg { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .seg button {
+    background: transparent; color: var(--muted); border: 0; padding: 7px 14px;
+    font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  .seg button.on { background: var(--panel2); color: var(--text); }
+  .controls select {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; font-size: 13px;
+  }
+  .weights { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); }
+  .weights label { display: flex; align-items: center; gap: 5px; }
+  .weights input { width: 74px; accent-color: var(--accent); }
+  .reset { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 1150px; }
+  th, td { padding: 9px 12px; text-align: right; white-space: nowrap; }
+  th {
+    color: var(--muted); font-weight: 600; font-size: 12px; letter-spacing: .3px;
+    border-bottom: 1px solid var(--border); background: var(--panel2); cursor: pointer; user-select: none;
+  }
+  th:hover { color: var(--text); }
+  td { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: rgba(110,168,254,.05); }
+  .tool { text-align: left; }
+  .tool .nm { font-weight: 700; }
+  .tool .vn { color: var(--muted); font-size: 12px; }
+  .tool a { color: var(--text); text-decoration: none; }
+  .tool a:hover { color: var(--accent); }
+  .rank { width: 44px; text-align: center; color: var(--muted); font-weight: 700; }
+  .rank.t1 { color: var(--amber); }
+  .rank.t2 { color: var(--muted); }
+  .score-cell { min-width: 150px; }
+  .scorebar { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .bar { width: 90px; height: 7px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius: 4px; }
+  .bar.mo i { background: linear-gradient(90deg, var(--amber), var(--red)); }
+  .num { font-variant-numeric: tabular-nums; }
+  .dash { color: var(--muted); }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .sparkline { width: 110px; }
+  .spark { width: 110px; height: 30px; }
+  .spark path { fill: none; stroke: var(--blue); stroke-width: 1.6; }
+  .spark.mo path { stroke: var(--amber); }
+  .foot { color: var(--muted); font-size: 13px; margin-top: 16px; }
+
+  details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-top: 22px; }
+  summary { cursor: pointer; font-weight: 700; color: var(--text); }
+  details p, details li { font-size: 13.5px; color: var(--muted); }
+  details code { background: var(--panel2); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  .pill { display: inline-block; background: var(--panel2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; font-size: 11.5px; color: var(--muted); margin-right: 6px; }
+  .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; margin-left: 6px; }
+  .cov { color: var(--amber); font-size: 11px; margin-left: 4px; cursor: help; }
+  .btn {
+    display: inline-block; background: var(--accent); color: #0b0e14; font-weight: 700;
+    border-radius: 8px; padding: 8px 14px; text-decoration: none; font-size: 13px;
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .snap-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
+  .snap-list a {
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 999px;
+    padding: 3px 10px; font-size: 12px; color: var(--muted); text-decoration: none;
+  }
+  .snap-list a:hover { color: var(--text); border-color: var(--accent); }
+
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 46px; padding: 0 20px;
+    border-bottom: 1px solid var(--border); background: var(--panel);
+  }
+  .brand { font-weight: 800; font-size: 15px; letter-spacing: .3px; color: var(--text); }
+  .brand span { color: var(--accent); }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tab {
+    color: var(--muted); text-decoration: none; font-size: 12.5px; font-weight: 600;
+    padding: 5px 11px; border-radius: 8px; border: 1px solid transparent;
+  }
+  .tab:hover:not(.disabled) { color: var(--text); background: var(--panel2); }
+  .tab.on { color: var(--text); background: var(--panel2); border-color: var(--border); }
+  .tab.disabled { opacity: .45; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="brand">Big<span>Rank</span></div>
+  <div class="tabs">
+    <a class="tab on" href="#">AI Coding Tool</a>
+    <a class="tab disabled" href="#" title="Coming soon">Model rankings</a>
+    <a class="tab disabled" href="#" title="Coming soon">AI Agent rankings</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header>
+    <h1>AI Coding Tool Usage Rankings <span class="live">● LIVE</span></h1>
+    <p class="sub">Cursor · Claude Code · GitHub Copilot · Windsurf · Codex · Devin · Aider · Cline · Continue · Gemini CLI · Replit · OpenHands</p>
+    <div class="meta">
+      <span>Last updated: <b id="lastUpdated">–</b> (UTC)</span>
+      <span>History: <b id="daysTracked">–</b> days</span>
+      <span>Snapshot: <b id="dataStart">–</b></span>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="seg" id="viewSeg">
+      <button data-view="install" class="on">Install base</button>
+      <button data-view="momentum">Momentum (30d)</button>
+    </div>
+    <select id="sortSel" title="Sort by a single metric"></select>
+    <button class="reset" id="resetW">Reset weights</button>
+    <div class="weights" id="weights"></div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="rankTable">
+      <thead>
+        <tr>
+          <th class="rank">#</th>
+          <th class="tool">Tool</th>
+          <th id="compHead">Score</th>
+          <th id="sparkHead">30d trend</th>
+          <th data-sort="stars">Stars</th>
+          <th data-sort="stars_delta_30d">Stars Δ30d</th>
+          <th data-sort="commits_30d">Commits 30d</th>
+          <th data-sort="vscode_installs">VSCode installs</th>
+          <th data-sort="vscode_installs_delta_30d">Installs Δ30d</th>
+          <th data-sort="openvsx_downloads">OpenVSX</th>
+          <th data-sort="jetbrains_downloads">JetBrains</th>
+          <th data-sort="hn_30d">HN 30d</th>
+          <th data-sort="reddit_30d">Reddit 30d</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+  <p class="foot" id="footNote"></p>
+
+  <details>
+    <summary>How this ranking works</summary>
+    <p>
+      This page scores AI coding tools by <b>public usage signals</b>, not benchmarks or surveys. Every signal is
+      collected once per day from public APIs and snapshotted into the repository's <code>data/snapshots/</code>
+      directory, so the entire history is auditable.
+    </p>
+    <p>
+      <span class="pill">GitHub</span>stars, forks, commits pushed to the tool's own repo in the trailing 30 days,
+      and commit-message mentions across GitHub.
+      <span class="pill">Hacker News</span>comment-mention counts for the trailing 7 and 30 days (Algolia API).
+      <span class="pill">Reddit</span>mentions in the trailing 7 and 30 days (OAuth search, newest-first, capped at 1000).
+      <span class="pill">VS Code Marketplace</span>extension installs, downloads, and weekly trending.
+      <span class="pill">Open VSX</span>open-source marketplace download count.
+      <span class="pill">JetBrains</span>official plugin downloads.
+    </p>
+    <p>
+      Each metric is min-max normalized across the tracked tools to 0–100. <b>Install base</b> blends cumulative
+      reach (stars, installs, downloads, 30d mention volume). <b>Momentum</b> blends 30-day deltas and recent
+      activity (stars gained, installs gained, commits, 7d mention volume). Drag the weight sliders to re-weight —
+      the ranking recomputes instantly in your browser.
+    </p>
+    <p>
+      <b>Coverage penalty.</b> Missing sources count as <b>zero</b> in the composite — a tool that only has data
+      for some sources is capped by the weight those sources carry (the denominator is the full weight sum). Rows
+      with incomplete data show a <span class="cov">n/m sources</span> badge; hover it for details. This prevents
+      tools with a single loud signal (e.g. only Hacker News mentions) from topping the ranking.
+    </p>
+    <p>
+      <b>Caveats.</b> These are <i>relative signals, not absolute usage</i>. Ambiguous names (cursor, windsurf,
+      cline, devin, aider, continue) are disambiguated with query phrases and still carry noise. GitHub commit
+      search is noisy (AI-generated commits) and is not part of the composite score. Tools without an official
+      plugin/extension show <span class="dash">–</span> for that source. Counts are server-reported
+      install/download totals, not active users.
+    </p>
+  </details>
+
+  <details>
+    <summary>Raw data & tool requests</summary>
+    <p>
+      Every day the collector records each tool's metrics from the public APIs above and stores them as an
+      auditable snapshot — one JSON file per day, one line per tool. Anyone can inspect or download the raw
+      numbers behind this ranking.
+    </p>
+    <p><b>Snapshot archive</b> <span id="snapAllLink"></span></p>
+    <div id="snapList" class="snap-list"></div>
+    <p>
+      <b>Request a tool.</b> Not ranked? Open a request and we'll evaluate adding it. The tracked list and
+      scoring live in the repository and can only be changed by its maintainers — this page is read-only.
+    </p>
+    <p><a id="requestLink" class="btn" href="#" target="_blank" rel="noopener">Request a new tool</a></p>
+  </details>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = window.RANKING_DATA;
+const META = {
+  stars: { label: "GitHub stars", src: "github", fmt: "compact" },
+  forks: { label: "Forks", src: "github", fmt: "compact" },
+  commits_30d: { label: "Commits 30d", src: "github", fmt: "compact" },
+  commit_mentions: { label: "Commit mentions", src: "github", fmt: "compact" },
+  stars_delta_30d: { label: "Stars Δ30d", src: "github", fmt: "signed" },
+  vscode_installs: { label: "VSCode installs", src: "vscode", fmt: "compact" },
+  vscode_installs_delta_30d: { label: "Installs Δ30d", src: "vscode", fmt: "signed" },
+  vscode_downloads: { label: "VSCode downloads", src: "vscode", fmt: "compact" },
+  vscode_trending_weekly: { label: "VSCode trending/wk", src: "vscode", fmt: "dec" },
+  openvsx_downloads: { label: "OpenVSX downloads", src: "openvsx", fmt: "compact" },
+  jetbrains_downloads: { label: "JetBrains downloads", src: "jetbrains", fmt: "compact" },
+  hn_7d: { label: "HN mentions 7d", src: "hn", fmt: "compact" },
+  hn_30d: { label: "HN mentions 30d", src: "hn", fmt: "compact" },
+  reddit_7d: { label: "Reddit mentions 7d", src: "reddit", fmt: "compact" },
+  reddit_30d: { label: "Reddit mentions 30d", src: "reddit", fmt: "compact" },
+};
+const TABLE_COLS = [
+  "stars", "stars_delta_30d", "commits_30d", "vscode_installs",
+  "vscode_installs_delta_30d", "openvsx_downloads", "jetbrains_downloads",
+  "hn_30d", "reddit_30d",
+];
+
+let view = "install";
+let sortKey = null; // null = composite
+let weights = { install: {...D.meta.weights_install}, momentum: {...D.meta.weights_momentum} };
+
+const fmt = (v, f) => {
+  if (v == null || !isFinite(v)) return "<span class='dash'>–</span>";
+  if (f === "signed") {
+    const s = v > 0 ? "+" : "";
+    return `<span class='${v >= 0 ? "up" : "down"}'>${s}${num(v)}</span>`;
+  }
+  if (f === "dec") return v.toFixed(1);
+  return num(v);
+};
+const num = (v) => {
+  const a = Math.abs(v);
+  if (a >= 1e9) return (v / 1e9).toFixed(1) + "B";
+  if (a >= 1e6) return (v / 1e6).toFixed(1) + "M";
+  if (a >= 1e3) return (v / 1e3).toFixed(1) + "k";
+  return Math.round(v).toLocaleString();
+};
+
+function sparkline(values, cls) {
+  const w = 110, h = 30;
+  const vs = values.map(v => (v == null || !isFinite(v)) ? null : v);
+  const present = vs.filter(v => v != null);
+  if (present.length < 2) return "<div class='sparkline dash'>–</div>";
+  const mn = Math.min(...present), mx = Math.max(...present);
+  const range = (mx - mn) || 1;
+  const n = vs.length;
+  let d = "";
+  vs.forEach((v, i) => {
+    if (v == null) return;
+    const x = (n === 1 ? 0 : i / (n - 1)) * (w - 4) + 2;
+    const y = h - 3 - ((v - mn) / range) * (h - 8);
+    d += (d ? " L " : "M ") + x.toFixed(1) + " " + y.toFixed(1);
+  });
+  return `<div class="sparkline"><svg class="spark ${cls}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${d}"/></svg></div>`;
+}
+
+function compositeScore(tool) {
+  const w = weights[view];
+  let num = 0, total = 0;
+  for (const m in w) {
+    total += w[m];
+    const s = tool.scores[m];
+    if (s != null && isFinite(s)) num += s * w[m];
+  }
+  return total ? num / total : null;
+}
+
+function coverageInfo(tool) {
+  const w = weights[view];
+  const srcs = new Set();
+  let have = 0, total = 0;
+  for (const m in w) {
+    total += w[m];
+    if (tool.scores[m] != null && isFinite(tool.scores[m])) {
+      have += w[m];
+      if (META[m]) srcs.add(META[m].src);
+    }
+  }
+  return { pct: total ? Math.round((have / total) * 100) : 0, n: srcs.size };
+}
+
+function renderWeights() {
+  const el = document.getElementById("weights");
+  const w = weights[view];
+  el.innerHTML = Object.entries(w).map(([m, val]) => {
+    const lbl = META[m] ? META[m].label : m;
+    return `<label>${lbl} <input type="range" data-metric="${m}" min="0" max="100" value="${val}"> <b class="num" data-metric="${m}">${val}</b></label>`;
+  }).join("");
+}
+
+function renderSources() {
+  const repo = D.meta.repo;
+  const gh = (path) => (repo ? `https://github.com/${repo}/${path}` : "#");
+
+  const snapLinks = D.dates.slice().reverse().map(d => {
+    const file = `data/snapshots/${d}.jsonl`;
+    return repo
+      ? `<a href="${gh("blob/main/" + file)}" title="View ${file}">${d}</a>`
+      : `<a href="${file}" title="Local snapshot ${file}">${d}</a>`;
+  }).join("");
+  document.getElementById("snapList").innerHTML =
+    snapLinks || `<span class="dash">no snapshots yet</span>`;
+  document.getElementById("snapAllLink").innerHTML = repo
+    ? `— <a href="${gh("tree/main/data/snapshots")}" target="_blank" rel="noopener">view all in the repository</a>`
+    : "";
+
+  const req = document.getElementById("requestLink");
+  if (repo) {
+    const title = encodeURIComponent("[Tool request] <tool name>");
+    const body = encodeURIComponent(
+      "**Tool name:**\n**Vendor / company:**\n**Website:**\n" +
+      "**GitHub repository (if public):**\n" +
+      "**VS Code extension (publisher.extension, if any):**\n" +
+      "**Open VSX extension (if any):**\n" +
+      "**JetBrains plugin (if any):**\n" +
+      "**Notes / additional public usage signals:**\n"
+    );
+    req.href = `https://github.com/${repo}/issues/new?title=${title}&body=${body}`;
+    req.title = "Opens a pre-filled GitHub issue";
+  } else {
+    req.href = "#";
+    req.textContent = "Request a new tool (repo not configured)";
+    req.title = "Set the repo in config to enable requests";
+  }
+}
+
+function render() {
+  const tools = D.tools.slice();
+  const isMomentum = view === "momentum";
+  document.querySelectorAll("#viewSeg button").forEach(b =>
+    b.classList.toggle("on", b.dataset.view === view));
+
+  tools.forEach(t => t._composite = compositeScore(t));
+  tools.sort((a, b) => {
+    if (sortKey) {
+      const av = a.values[sortKey], bv = b.values[sortKey];
+      return ((bv == null ? -Infinity : bv) - (av == null ? -Infinity : av));
+    }
+    return ((b._composite == null ? -Infinity : b._composite) - (a._composite == null ? -Infinity : a._composite));
+  });
+
+  const seriesKey = isMomentum ? "momentum" : "install";
+  const rows = tools.map((t, i) => {
+    const comp = t._composite;
+    const w = comp == null ? 0 : comp;
+    const last7 = t.series[seriesKey].slice(-7).filter(v => v != null);
+    const up = last7.length >= 2 && last7[last7.length - 1] >= last7[0];
+    const arrow = (up ? "▲" : "▼");
+    const cov = coverageInfo(t);
+    const totSrc = new Set(Object.keys(weights[view]).map(m => META[m] && META[m].src)).size;
+    return `<tr>
+      <td class="rank ${i === 0 ? 't1' : i === 1 ? 't2' : ''}">${i + 1}</td>
+      <td class="tool">
+        <a href="${t.homepage || '#'}" target="_blank" rel="noopener">
+          <span class="nm">${t.name}</span><span class="tag">${t.category || ""}</span>
+        </a>
+        <div class="vn">${t.vendor || ""}${cov.pct < 100 ? ` <span class="cov" title="Score based on ${cov.n} of ${totSrc} sources — missing sources count as zero">${cov.n}/${totSrc} sources</span>` : ""}</div>
+      </td>
+      <td class="score-cell"><div class="scorebar">
+        <span class="num" style="font-weight:700">${comp == null ? "–" : comp.toFixed(0)}</span>
+        <div class="bar ${isMomentum ? 'mo' : ''}"><i style="width:${w}%"></i></div>
+        <span class="num ${up ? 'up' : 'down'}" title="vs. 7 days ago">${comp == null ? "" : arrow}</span>
+      </div></td>
+      <td>${sparkline(t.series[seriesKey], isMomentum ? "mo" : "")}</td>
+      ${TABLE_COLS.map(m => `<td class="num">${fmt(t.values[m], META[m].fmt)}</td>`).join("")}
+    </tr>`;
+  }).join("");
+
+  document.getElementById("tableBody").innerHTML = rows;
+  document.getElementById("lastUpdated").textContent = D.meta.updated;
+  document.getElementById("daysTracked").textContent = D.meta.days;
+  document.getElementById("dataStart").textContent = D.meta.start;
+  renderSources();
+  document.getElementById("footNote").textContent =
+    `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : (isMomentum ? "Momentum (30d)" : "Install base")}. ` +
+    "Scores are min-max normalized across tracked tools; missing sources count as zero (coverage penalty). A — means that source has no data for the tool.";
+}
+
+function buildSortOptions() {
+  const el = document.getElementById("sortSel");
+  el.innerHTML = `<option value="">Composite score</option>` +
+    Object.entries(META).map(([k, m]) => `<option value="${k}">${m.label}</option>`).join("");
+}
+
+document.getElementById("viewSeg").addEventListener("click", e => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  view = btn.dataset.view;
+  sortKey = null;
+  document.getElementById("sortSel").value = "";
+  renderWeights();
+  render();
+});
+
+document.getElementById("sortSel").addEventListener("change", e => {
+  sortKey = e.target.value || null;
+  render();
+});
+
+document.getElementById("resetW").addEventListener("click", () => {
+  weights = { install: {...D.meta.weights_install}, momentum: {...D.meta.weights_momentum} };
+  renderWeights(); render();
+});
+
+document.getElementById("weights").addEventListener("input", e => {
+  if (e.target.dataset.metric) {
+    weights[view][e.target.dataset.metric] = +e.target.value;
+    renderWeights(); render();
+  }
+});
+
+document.querySelectorAll("th[data-sort]").forEach(th =>
+  th.addEventListener("click", () => {
+    sortKey = th.dataset.sort;
+    document.getElementById("sortSel").value = sortKey;
+    render();
+  }));
+
+buildSortOptions();
+renderWeights();
+render();
+</script>
+</body>
+</html>

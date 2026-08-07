@@ -1,0 +1,192 @@
+{
+  "meta": {
+    "description": "Tools tracked by the AI Coding Tool Usage Ranking.",
+    "repo": "",
+    "weights_install": {
+      "stars": 22,
+      "vscode_installs": 32,
+      "openvsx_downloads": 12,
+      "jetbrains_downloads": 6,
+      "hn_30d": 18,
+      "reddit_30d": 10
+    },
+    "weights_momentum": {
+      "stars_delta_30d": 25,
+      "vscode_installs_delta_30d": 25,
+      "commits_30d": 20,
+      "hn_7d": 18,
+      "reddit_7d": 12
+    }
+  },
+  "tools": [
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "vendor": "Anthropic",
+      "category": "CLI agent",
+      "homepage": "https://www.anthropic.com/claude-code",
+      "github": { "repo": "anthropics/claude-code" },
+      "vscode": { "publisher": "anthropic", "extension": "claude-code" },
+      "openvsx": { "namespace": "Anthropic", "name": "claude-code" },
+      "jetbrains": null,
+      "hn_query": "\"claude code\"",
+      "reddit_query": "\"claude code\""
+    },
+    {
+      "id": "github-copilot",
+      "name": "GitHub Copilot",
+      "vendor": "GitHub / Microsoft",
+      "category": "IDE assistant",
+      "homepage": "https://github.com/features/copilot",
+      "github": { "repo": "github/copilot-docs" },
+      "vscode": { "publisher": "github", "extension": "copilot" },
+      "openvsx": null,
+      "jetbrains": { "plugin_id": 17718 },
+      "hn_query": "\"github copilot\"",
+      "reddit_query": "\"github copilot\""
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "vendor": "Anysphere",
+      "category": "AI editor",
+      "homepage": "https://cursor.com",
+      "github": { "repo": "cursor/cursor" },
+      "vscode": { "publisher": "anysphere", "extension": "cursor" },
+      "openvsx": null,
+      "jetbrains": null,
+      "hn_query": "\"cursor\"",
+      "reddit_query": "\"cursor\""
+    },
+    {
+      "id": "windsurf",
+      "name": "Windsurf",
+      "vendor": "Cognition",
+      "category": "AI editor",
+      "homepage": "https://windsurf.com",
+      "github": null,
+      "vscode": { "publisher": "codeium", "extension": "windsurf" },
+      "openvsx": null,
+      "jetbrains": { "plugin_id": 20540 },
+      "hn_query": "\"windsurf\"",
+      "reddit_query": "\"windsurf\""
+    },
+    {
+      "id": "openai-codex",
+      "name": "Codex",
+      "vendor": "OpenAI",
+      "category": "CLI agent",
+      "homepage": "https://openai.com/codex",
+      "github": { "repo": "openai/codex" },
+      "vscode": { "publisher": "openai", "extension": "chatgpt" },
+      "openvsx": null,
+      "jetbrains": null,
+      "hn_query": "\"openai codex\"",
+      "reddit_query": "\"openai codex\""
+    },
+    {
+      "id": "opencode",
+      "name": "opencode",
+      "vendor": "Anomaly (formerly SST)",
+      "category": "CLI agent",
+      "homepage": "https://opencode.ai",
+      "github": { "repo": "anomalyco/opencode" },
+      "vscode": { "publisher": "sst-dev", "extension": "opencode" },
+      "openvsx": { "namespace": "sst-dev", "name": "opencode" },
+      "jetbrains": null,
+      "hn_query": "\"opencode\"",
+      "reddit_query": "\"opencode\""
+    },
+    {
+      "id": "devin",
+      "name": "Devin",
+      "vendor": "Cognition",
+      "category": "Autonomous agent",
+      "homepage": "https://devin.ai",
+      "github": null,
+      "vscode": null,
+      "openvsx": null,
+      "jetbrains": null,
+      "hn_query": "\"devin\"",
+      "reddit_query": "\"devin\""
+    },
+    {
+      "id": "aider",
+      "name": "Aider",
+      "vendor": "Aider AI (Paul Gauthier)",
+      "category": "CLI agent",
+      "homepage": "https://aider.chat",
+      "github": { "repo": "Aider-AI/aider" },
+      "vscode": null,
+      "openvsx": null,
+      "jetbrains": null,
+      "hn_query": "\"aider\"",
+      "reddit_query": "\"aider\""
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "vendor": "Cline (Sahil Lavingia)",
+      "category": "IDE agent",
+      "homepage": "https://cline.bot",
+      "github": { "repo": "cline/cline" },
+      "vscode": { "publisher": "saoudrizwan", "extension": "claude-dev" },
+      "openvsx": { "namespace": "saoudrizwan", "name": "claude-dev" },
+      "jetbrains": null,
+      "hn_query": "\"cline\"",
+      "reddit_query": "\"cline\""
+    },
+    {
+      "id": "continue",
+      "name": "Continue",
+      "vendor": "Continue",
+      "category": "IDE assistant",
+      "homepage": "https://continue.dev",
+      "github": { "repo": "continuedev/continue" },
+      "vscode": { "publisher": "Continue", "extension": "continue" },
+      "openvsx": { "namespace": "Continue", "name": "continue" },
+      "jetbrains": null,
+      "hn_query": "\"continue.dev\"",
+      "reddit_query": "\"continue.dev\""
+    },
+    {
+      "id": "gemini-cli",
+      "name": "Gemini CLI",
+      "vendor": "Google",
+      "category": "CLI agent",
+      "homepage": "https://github.com/google-gemini/gemini-cli",
+      "github": { "repo": "google-gemini/gemini-cli" },
+      "vscode": null,
+      "openvsx": null,
+      "jetbrains": null,
+      "hn_query": "\"gemini cli\"",
+      "reddit_query": "\"gemini cli\""
+    },
+    {
+      "id": "replit",
+      "name": "Replit",
+      "vendor": "Replit",
+      "category": "Agent / cloud IDE",
+      "homepage": "https://replit.com",
+      "github": null,
+      "vscode": null,
+      "openvsx": null,
+      "jetbrains": null,
+      "hn_query": "replit",
+      "reddit_query": "replit"
+    },
+    {
+      "id": "openhands",
+      "name": "OpenHands",
+      "vendor": "OpenHands (formerly OpenDevin)",
+      "category": "Autonomous agent",
+      "homepage": "https://openhands.dev",
+      "github": { "repo": "All-Hands-AI/OpenHands" },
+      "vscode": null,
+      "openvsx": null,
+      "jetbrains": null,
+      "hn_query": "\"openhands\"",
+      "reddit_query": "\"openhands\""
+    }
+  ]
+}

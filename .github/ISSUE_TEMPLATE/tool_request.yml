@@ -1,0 +1,57 @@
+name: Tool ranking request
+description: Request a new AI coding tool to be added to the usage ranking
+title: "[Tool request] <tool name>"
+labels: ["tool-request"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Tool name
+      description: The name you want to see in the ranking.
+    validations:
+      required: true
+  - type: input
+    id: vendor
+    attributes:
+      label: Vendor / company
+      description: Who makes it (e.g. Anomaly, Anthropic).
+  - type: input
+    id: website
+    attributes:
+      label: Website
+      description: Homepage URL.
+  - type: input
+    id: github
+    attributes:
+      label: GitHub repository (if public)
+      description: e.g. owner/repo. Used for stars/forks/commits.
+      placeholder: owner/repo
+  - type: input
+    id: vscode
+    attributes:
+      label: VS Code extension
+      description: publisher.extension on the Marketplace, if one exists.
+      placeholder: publisher.extension
+  - type: input
+    id: openvsx
+    attributes:
+      label: Open VSX extension
+      description: namespace/name on open-vsx.org, if one exists.
+      placeholder: namespace/name
+  - type: input
+    id: jetbrains
+    attributes:
+      label: JetBrains plugin
+      description: Official plugin name or ID on the JetBrains Marketplace.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Any other public usage signals we could track (npm downloads, docs traffic, etc.).
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Submission checks
+      options:
+        - label: I understand the ranking tracks public usage signals, and the tracked list is changed only by maintainers after review.
+          required: true
