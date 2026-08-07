@@ -8,6 +8,7 @@ import requests
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(ROOT, "config", "tools.json")
 DATA_DIR = os.path.join(ROOT, "data", "snapshots")
+ARCHIVE_PATH = os.path.join(ROOT, "data", "archive.jsonl")
 SITE_DIR = os.path.join(ROOT, "site")
 
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
@@ -56,16 +57,35 @@ def snapshot_path(d=None):
     return os.path.join(DATA_DIR, str(d) + ".jsonl")
 
 
-def load_snapshots():
-    """Return {date_str: {tool_id: snapshot}} for every snapshot file present."""
+def _load_archive():
+    """Return {date_str: {tool_id: rec}} from the consolidated archive file."""
     out = {}
+    if not os.path.exists(ARCHIVE_PATH):
+        return out
+    with open(ARCHIVE_PATH) as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            rec = json.loads(line)
+            out.setdefault(rec["date"], {})[rec["tool"]] = rec
+    return out
+
+
+def load_snapshots():
+    """Return {date_str: {tool_id: snapshot}}.
+
+    Merges the consolidated archive with the daily snapshot files; daily files
+    win on overlap (in practice the windows never overlap).
+    """
+    out = _load_archive()
     if not os.path.isdir(DATA_DIR):
         return out
     for fn in sorted(os.listdir(DATA_DIR)):
         if not fn.endswith(".jsonl"):
             continue
         day = fn[:-6]  # strip ".jsonl"
-        out[day] = {}
+        out.setdefault(day, {})
         with open(os.path.join(DATA_DIR, fn)) as f:
             for line in f:
                 line = line.strip()
@@ -74,3 +94,46 @@ def load_snapshots():
                 rec = json.loads(line)
                 out[day][rec["tool"]] = rec
     return out
+
+
+def consolidate_snapshots(keep_days=30, today=None):
+    """Move daily snapshot files older than the retention window into the archive.
+
+    Daily files are kept for `keep_days` calendar dates (today inclusive); anything
+    older is appended to ARCHIVE_PATH and the daily file is deleted. Dates already
+    present in the archive are skipped, so re-runs cannot duplicate rows.
+    Returns (moved, kept) counts.
+    """
+    if today is None:
+        today = date.today()
+    cutoff = today.toordinal() - (keep_days - 1)
+    if not os.path.isdir(DATA_DIR):
+        return 0, 0
+    archived = _load_archive()
+    os.makedirs(os.path.dirname(ARCHIVE_PATH), exist_ok=True)
+    moved = kept = 0
+    with open(ARCHIVE_PATH, "a") as arch:
+        for fn in sorted(os.listdir(DATA_DIR)):
+            if not fn.endswith(".jsonl"):
+                continue
+            day = fn[:-6]
+            try:
+                d = date.fromisoformat(day)
+            except ValueError:
+                kept += 1
+                continue
+            if d.toordinal() >= cutoff:
+                kept += 1
+                continue
+            path = os.path.join(DATA_DIR, fn)
+            if day in archived:
+                os.remove(path)
+                continue
+            with open(path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line:
+                        arch.write(line + "\n")
+            os.remove(path)
+            moved += 1
+    return moved, kept

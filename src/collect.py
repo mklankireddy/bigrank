@@ -13,7 +13,7 @@ from datetime import date
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import http_session, load_config, snapshot_path  # noqa: E402
+from common import consolidate_snapshots, http_session, load_config, snapshot_path  # noqa: E402
 
 from sources import github, hn, jetbrains, openvsx, reddit, vscode  # noqa: E402
 
@@ -66,6 +66,8 @@ def main():
             for rec in existing.values():
                 f.write(json.dumps(rec, sort_keys=True) + "\n")
         print(f"wrote {len(existing)} tool records -> {path}")
+        moved, kept = consolidate_snapshots()
+        print(f"retention: moved {moved} day(s) to archive, kept {kept} daily file(s)")
     else:
         print("dry run - nothing written")
 

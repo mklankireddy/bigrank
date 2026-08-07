@@ -6,7 +6,9 @@ usage signals**, not benchmarks or surveys.
 
 The collector runs **daily** via GitHub Actions, snapshots every source into
 `data/snapshots/<date>.jsonl`, and deploys a static ranking page to GitHub Pages.
-The full history is committed to this repo, so every number is auditable.
+Daily snapshots are kept for the trailing **30 days**; older history is
+consolidated into `data/archive.jsonl` (one line per tool-day) so the full
+history is committed to this repo and every number is auditable.
 
 Live page: [bigrank](https://<your-username>.github.io/bigrank/) (enable Pages, see below).
 
@@ -40,13 +42,14 @@ recompute).
 ```
 config/tools.json          # tracked tools + repo/ext/plugin ids + search phrases + weights
 src/
-  collect.py               # runs all collectors -> data/snapshots/<date>.jsonl
+  collect.py               # runs all collectors -> data/snapshots/<date>.jsonl, then prunes old days
   build_site.py            # renders site/index.html + site/data.js from history
   score.py                 # normalization + composites + time series
-  common.py                # config load, HTTP, snapshot I/O
+  common.py                # config load, HTTP, snapshot I/O, retention/archive
   sources/                 # github.py, hn.py, reddit.py, vscode.py, openvsx.py, jetbrains.py
   templates/index.html     # the ranking page
-data/snapshots/<date>.jsonl
+data/snapshots/<date>.jsonl  # daily snapshots, trailing 30 days
+data/archive.jsonl           # consolidated history older than 30 days
 site/                      # generated static site
 .github/workflows/collect.yml
 ```
