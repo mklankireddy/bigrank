@@ -60,9 +60,11 @@
   .tool .vn { color: var(--muted); font-size: 12px; }
   .tool a { color: var(--text); text-decoration: none; }
   .tool a:hover { color: var(--accent); }
-  .rank { width: 44px; text-align: center; color: var(--muted); font-weight: 700; }
+  .rank { width: 56px; text-align: center; color: var(--muted); font-weight: 700; }
   .rank.t1 { color: var(--amber); }
   .rank.t2 { color: var(--muted); }
+  .rd { font-size: 10.5px; font-weight: 600; margin-left: 4px; font-variant-numeric: tabular-nums; }
+  .rd.same { color: var(--muted); }
   .score-cell { min-width: 150px; }
   .scorebar { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
   .bar { width: 90px; height: 7px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
@@ -359,6 +361,42 @@ function renderSources() {
   }
 }
 
+function rankDelta(tools, seriesKey) {
+  const today = {}, prev = {};
+  tools.forEach(t => {
+    const s = t.series[seriesKey];
+    today[t.id] = s.length ? s[s.length - 1] : null;
+    prev[t.id] = s.length > 1 ? s[s.length - 2] : null;
+  });
+  const ranks = (map) => {
+    const ids = tools.map(t => t.id);
+    ids.sort((a, b) => (map[b] == null ? -Infinity : map[b]) - (map[a] == null ? -Infinity : map[a]));
+    const out = {};
+    let lastVal = null, lastRank = 0;
+    ids.forEach((id, i) => {
+      const v = map[id];
+      if (v == null) { out[id] = null; return; }
+      if (v !== lastVal) { lastVal = v; lastRank = i + 1; }
+      out[id] = lastRank;
+    });
+    return out;
+  };
+  const r0 = ranks(prev), r1 = ranks(today);
+  const out = {};
+  tools.forEach(t => {
+    out[t.id] = (r0[t.id] == null || r1[t.id] == null) ? null : r0[t.id] - r1[t.id];
+  });
+  return out;
+}
+
+function rankChip(d) {
+  if (d == null) return "";
+  if (d === 0) return '<span class="rd same" title="steady vs yesterday">–</span>';
+  return d > 0
+    ? `<span class="rd up" title="up ${d} vs yesterday">▲${d}</span>`
+    : `<span class="rd down" title="down ${-d} vs yesterday">▼${-d}</span>`;
+}
+
 function render() {
   const tools = D.tools.slice();
   const isMomentum = view === "momentum";
@@ -375,6 +413,7 @@ function render() {
   });
 
   const seriesKey = isMomentum ? "momentum" : "install";
+  const deltas = rankDelta(tools, seriesKey);
   const rows = tools.map((t, i) => {
     const comp = t._composite;
     const w = comp == null ? 0 : comp;
@@ -384,7 +423,7 @@ function render() {
     const cov = coverageInfo(t);
     const totSrc = new Set(Object.keys(weights[view]).map(m => META[m] && META[m].src)).size;
     return `<tr>
-      <td class="rank ${i === 0 ? 't1' : i === 1 ? 't2' : ''}">${i + 1}</td>
+      <td class="rank ${i === 0 ? 't1' : i === 1 ? 't2' : ''}">${i + 1}${rankChip(deltas[t.id])}</td>
       <td class="tool">
         <a href="${t.homepage || '#'}" target="_blank" rel="noopener">
           <span class="nm">${t.name}</span><span class="tag">${t.category || ""}</span>
