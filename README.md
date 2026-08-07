@@ -80,13 +80,16 @@ site/                      # generated static site (index.html, ai/agents/coding
 
 ## Visitors: snapshots & tool requests
 
-The live page's **Raw data & tool requests** section lets visitors:
+The landing page's **Raw data & tool requests** section lets visitors:
 
-- **Browse/download snapshots** — each date is a link to that day's raw `.jsonl` in the repo
-  (read-only; history is auditable).
-- **Request a tool** — a button opens a pre-filled GitHub issue (see
-  `.github/ISSUE_TEMPLATE/tool_request.yml`). Visitors can *request* additions; only maintainers
-  can change `config/tools.json`, so the tracked list and scoring are never editable from the page.
+- **Browse the snapshot archive** — a link to the `data/snapshots/` and `data/agent_snapshots/`
+  folders in the repo (read-only; history is auditable).
+- **Request a tool** — a small form (title, what needs to be ranked and how, official link)
+  that opens a pre-filled GitHub issue. Visitors fill in the three fields; the only extra step
+  is clicking *Submit* on GitHub's page (login required), since a static site cannot create
+  issues via the API. The matching GitHub issue form lives at
+  `.github/ISSUE_TEMPLATE/tool_request.yml`. Only maintainers can change `config/tools.json`
+  and `config/agents.json`, so the tracked list and scoring are never editable from the page.
 
 The repo URL for those links is set automatically from `GITHUB_REPOSITORY` in CI, or via
 `meta.repo` in `config/tools.json` for local previews.

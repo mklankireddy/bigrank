@@ -28,6 +28,9 @@
     background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
     padding: 12px 14px; margin-bottom: 16px; position: sticky; top: 46px; z-index: 5;
   }
+  @media (max-width: 768px) {
+    .controls { position: static; }
+  }
   .seg { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .seg button {
     background: transparent; color: var(--muted); border: 0; padding: 7px 14px;
@@ -101,17 +104,6 @@
   .tag.p-freemium { color: var(--amber); border-color: rgba(251,191,36,.45); }
   .tag.p-paid { color: var(--red); border-color: rgba(248,113,113,.45); }
   .cov { color: var(--amber); font-size: 11px; margin-left: 4px; cursor: help; }
-  .btn {
-    display: inline-block; background: var(--accent); color: #0b0e14; font-weight: 700;
-    border-radius: 8px; padding: 8px 14px; text-decoration: none; font-size: 13px;
-  }
-  .btn:hover { filter: brightness(1.1); }
-  .snap-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
-  .snap-list a {
-    background: var(--panel2); border: 1px solid var(--border); border-radius: 999px;
-    padding: 3px 10px; font-size: 12px; color: var(--muted); text-decoration: none;
-  }
-  .snap-list a:hover { color: var(--text); border-color: var(--accent); }
 
   .nav {
     position: sticky; top: 0; z-index: 20;
@@ -234,22 +226,6 @@
     </ul>
   </details>
 
-  <details>
-    <summary>Raw data & tool requests</summary>
-    <p>
-      Every day the collector records each tool's metrics from the public APIs above and stores them as an
-      auditable snapshot — one JSON file per day, one line per tool. Anyone can inspect or download the raw
-      numbers behind this ranking.
-    </p>
-    <p><b>Snapshot archive</b> <span id="snapAllLink"></span></p>
-    <div id="snapList" class="snap-list"></div>
-    <p>
-      <b>Request a tool.</b> Not ranked? Open a request and we'll evaluate adding it. The tracked list and
-      scoring live in the repository and can only be changed by its maintainers — this page is read-only.
-    </p>
-    <p><a id="requestLink" class="btn" href="#" target="_blank" rel="noopener">Request a new tool</a></p>
-  </details>
-
   <footer class="site-footer">BigRank v<span id="footerVersion">–</span><span id="footerCommit"></span></footer>
 </div>
 
@@ -366,42 +342,6 @@ function renderWeights() {
   }).join("");
 }
 
-function renderSources() {
-  const repo = D.meta.repo;
-  const gh = (path) => (repo ? `https://github.com/${repo}/${path}` : "#");
-
-  const snapLinks = D.dates.slice().reverse().map(d => {
-    const file = `data/snapshots/${d}.jsonl`;
-    return repo
-      ? `<a href="${gh("blob/main/" + file)}" title="View ${file}">${d}</a>`
-      : `<a href="${file}" title="Local snapshot ${file}">${d}</a>`;
-  }).join("");
-  document.getElementById("snapList").innerHTML =
-    snapLinks || `<span class="dash">no snapshots yet</span>`;
-  document.getElementById("snapAllLink").innerHTML = repo
-    ? `— <a href="${gh("tree/main/data/snapshots")}" target="_blank" rel="noopener">view all in the repository</a>`
-    : "";
-
-  const req = document.getElementById("requestLink");
-  if (repo) {
-    const title = encodeURIComponent("[Tool request] <tool name>");
-    const body = encodeURIComponent(
-      "**Tool name:**\n**Vendor / company:**\n**Website:**\n" +
-      "**GitHub repository (if public):**\n" +
-      "**VS Code extension (publisher.extension, if any):**\n" +
-      "**Open VSX extension (if any):**\n" +
-      "**JetBrains plugin (if any):**\n" +
-      "**Notes / additional public usage signals:**\n"
-    );
-    req.href = `https://github.com/${repo}/issues/new?title=${title}&body=${body}`;
-    req.title = "Opens a pre-filled GitHub issue";
-  } else {
-    req.href = "#";
-    req.textContent = "Request a new tool (repo not configured)";
-    req.title = "Set the repo in config to enable requests";
-  }
-}
-
 function rankDelta(tools, seriesKey) {
   const today = {}, prev = {};
   tools.forEach(t => {
@@ -496,7 +436,6 @@ function render() {
   const fc = document.getElementById("footerCommit");
   if (D.meta.build_commit) fc.innerHTML = ` · commit <span class="sha">${D.meta.build_commit}</span>`;
   else fc.remove();
-  renderSources();
   document.getElementById("footNote").textContent =
     `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : (isMomentum ? "Momentum (30d)" : "Install base")}. ` +
     "Scores are min-max normalized across tracked tools; missing sources count as zero (coverage penalty). A — means that source has no data for the tool.";

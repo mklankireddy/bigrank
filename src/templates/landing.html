@@ -71,6 +71,23 @@
   .card-item .soon { font-size: 10.5px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; margin-left: auto; flex: none; }
   .site-footer { color: var(--muted); font-size: 12px; margin-top: 42px; padding-top: 12px; border-top: 1px solid var(--border); }
   .site-footer .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-top: 26px; }
+  details summary { cursor: pointer; font-weight: 700; color: var(--text); }
+  details p, details h4 { font-size: 13.5px; color: var(--muted); }
+  details h4 { margin: 14px 0 6px; font-size: 12.5px; color: var(--text); }
+  details a { color: var(--accent); }
+  .req-form { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+  .req-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+  .req-form input, .req-form textarea {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit;
+  }
+  .req-form input:focus, .req-form textarea:focus { outline: none; border-color: var(--accent); }
+  .btn { align-self: flex-start; display: inline-block; background: var(--accent); color: #0b0e14; font-weight: 700; border: 0; border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .req-note { font-size: 12px; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -86,6 +103,35 @@
     {{CARDS}}
   </div>
 
+  <details>
+    <summary>Raw data & tool requests</summary>
+    <p>
+      Every day the collector records each ranking's metrics from public APIs and stores them as auditable
+      snapshots — one JSON file per day, one line per entry. Anyone can inspect or download the raw numbers
+      behind these rankings.
+    </p>
+    <p><b>Snapshot archive</b> — <a href="{{ARCHIVE_LINK}}" target="_blank" rel="noopener">view all in the repository</a></p>
+
+    <h4>Request a new tool</h4>
+    <p>
+      Not ranked? Tell us what to add and how you'd like it ranked. Submissions open a pre-filled GitHub
+      issue; the tracked list is changed only by maintainers after review.
+    </p>
+    <form id="reqForm" class="req-form" novalidate>
+      <label>Title
+        <input type="text" id="reqTitle" placeholder="e.g. Cline" required>
+      </label>
+      <label>What needs to be ranked and how
+        <textarea id="reqDesc" rows="4" placeholder="e.g. A VS Code AI coding agent. Rank by usage signals like installs, GitHub activity, and mentions." required></textarea>
+      </label>
+      <label>Official link
+        <input type="url" id="reqLink" placeholder="https://…" required>
+      </label>
+      <button type="submit" class="btn">Submit request</button>
+      <span class="req-note" id="reqNote"></span>
+    </form>
+  </details>
+
   <footer class="site-footer">BigRank v{{VERSION}}<span id="footerCommit"></span></footer>
 </div>
 
@@ -95,6 +141,30 @@
   const el = document.getElementById("footerCommit");
   if (c) el.innerHTML = ' · commit <span class="sha">' + c + "</span>";
   else el.remove();
+})();
+(function () {
+  const repo = {{REPO}};
+  const form = document.getElementById("reqForm");
+  if (!repo) {
+    document.getElementById("reqNote").textContent =
+      "Repository not configured — set meta.repo in config to enable requests.";
+    form.querySelector("button").disabled = true;
+    return;
+  }
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = document.getElementById("reqTitle").value.trim();
+    const desc = document.getElementById("reqDesc").value.trim();
+    const link = document.getElementById("reqLink").value.trim();
+    const body =
+      "**What needs to be ranked and how:**\n" + desc + "\n\n" +
+      "**Official link:** " + link;
+    window.open(
+      "https://github.com/" + repo + "/issues/new?title=" +
+      encodeURIComponent("[Tool request] " + title) + "&body=" + encodeURIComponent(body),
+      "_blank", "noopener"
+    );
+  });
 })();
 </script>
 </body>
