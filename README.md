@@ -60,10 +60,10 @@ config/agents.json         # tracked open-source agents + activity/adoption weig
 src/
   collect.py               # runs all collectors -> data/snapshots/<date>.jsonl, then prunes old days
   collect_agents.py        # agent collectors -> data/agent_snapshots/<date>.jsonl
-  nav.py                   # single source of truth for the top nav groups + landing cards
+  nav.py                   # single source of truth for the top nav (group -> sections -> items) + landing cards
   build_landing.py         # renders site/index.html (landing page)
-  build_site.py            # renders site/ai/coding/ (AI coding agents ranking)
-  build_agents.py          # renders site/ai/general/ (general-purpose agents ranking)
+  build_site.py            # renders site/ai/agents/coding/ (AI coding agents ranking)
+  build_agents.py          # renders site/ai/agents/general/ (general-purpose agents ranking)
   score.py                 # normalization + composites + time series
   common.py                # config load, HTTP, snapshot I/O, retention/archive
   sources/                 # github.py, github_agent.py, hn.py, reddit.py, vscode.py, openvsx.py, jetbrains.py
@@ -74,7 +74,7 @@ data/snapshots/<date>.jsonl  # daily tool snapshots, trailing 30 days
 data/agent_snapshots/<date>.jsonl  # daily agent snapshots, trailing 30 days
 data/archive.jsonl           # consolidated tool history older than 30 days
 data/agents_archive.jsonl    # consolidated agent history older than 30 days
-site/                      # generated static site (index.html, ai/coding/, ai/general/)
+site/                      # generated static site (index.html, ai/agents/coding/, ai/agents/general/)
 .github/workflows/collect.yml
 ```
 
@@ -98,8 +98,8 @@ pip install -r requirements.txt
 GITHUB_TOKEN=ghp_xxx python src/collect.py --dry-run   # collect for today, no files written
 python src/collect.py --date 2026-08-07                # write today's snapshot
 python src/build_landing.py                            # build landing page
-python src/build_site.py                               # build site/ai/coding/
-python src/build_agents.py                             # build site/ai/general/
+python src/build_site.py                               # build site/ai/agents/coding/
+python src/build_agents.py                             # build site/ai/agents/general/
 python -m http.server -d site 8000                     # preview
 ```
 

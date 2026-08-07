@@ -33,56 +33,65 @@
   }
   .gbtn .caret { font-size: 10px; margin-left: 3px; }
   .group:hover .gbtn, .group:focus-within .gbtn { color: var(--text); background: var(--panel2); border-color: var(--border); }
-  .menu {
-    display: none; position: absolute; top: 100%; right: 0; min-width: 215px;
+  .menu.mega {
+    display: none; position: absolute; top: 100%; right: 0; min-width: 300px;
     background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-    padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30;
+    padding: 8px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30; flex-wrap: wrap;
   }
-  .group:hover .menu, .group:focus-within .menu { display: block; }
+  .group:hover .menu.mega, .group:focus-within .menu.mega { display: flex; }
+  .menu-col { min-width: 150px; flex: 1; }
+  .menu-head { font-size: 10.5px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); padding: 4px 10px 6px; }
   .menu a.item {
-    display: block; padding: 8px 12px; border-radius: 7px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; color: var(--muted);
     text-decoration: none; font-size: 13.5px; font-weight: 600;
   }
+  .menu a.item .i { font-size: 15px; width: 20px; text-align: center; flex: none; }
   .menu a.item:hover { color: var(--text); background: var(--panel2); }
   .menu a.item.on { color: var(--text); background: var(--panel2); border: 1px solid var(--border); }
   .menu a.item.disabled { opacity: .45; cursor: not-allowed; }
+  .menu .nsoon { font-size: 10px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; margin-left: auto; }
 
-  h1 { font-size: 34px; margin: 0 0 10px; }
+  .hero { padding: 26px 0 4px; }
+  h1 { font-size: 34px; margin: 0 0 8px; }
   h1 .live { color: var(--green); font-size: 13px; vertical-align: 5px; letter-spacing: .5px; }
-  p.lede { color: var(--muted); font-size: 16px; margin: 0 0 6px; }
-  p.meta { color: var(--muted); font-size: 13px; margin: 0 0 8px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 30px; }
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; }
-  .card h2 { margin: 0 0 10px; font-size: 15px; letter-spacing: .4px; text-transform: uppercase; color: var(--muted); }
-  .card a.card-item {
-    display: block; padding: 9px 12px; border-radius: 8px; color: var(--text);
-    text-decoration: none; font-weight: 600;
-  }
-  .card a.card-item:hover { background: var(--panel2); color: var(--accent); }
-  .card .card-item.disabled { padding: 9px 12px; color: var(--muted); opacity: .55; }
-  .card .soon { font-size: 10.5px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; margin-left: 6px; }
+  p.lede { color: var(--muted); font-size: 16px; margin: 0; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; margin-top: 34px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+  .card-head { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+  .card-head .che { font-size: 20px; }
+  .card-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border: 1px solid transparent; border-radius: 10px; color: var(--text); text-decoration: none; }
+  .card-item .iemoji { font-size: 20px; width: 26px; text-align: center; flex: none; }
+  .card-item .itext { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .card-item .iname { font-weight: 700; font-size: 14px; }
+  .card-item .idesc { color: var(--muted); font-size: 12.5px; }
+  .card-item .iarrow { color: var(--muted); flex: none; }
+  a.card-item:hover { background: var(--panel2); border-color: var(--border); }
+  a.card-item:hover .iarrow { color: var(--accent); }
+  .card-item.disabled { opacity: .5; cursor: not-allowed; }
+  .card-item .soon { font-size: 10.5px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; margin-left: auto; flex: none; }
   .site-footer { color: var(--muted); font-size: 12px; margin-top: 42px; padding-top: 12px; border-top: 1px solid var(--border); }
   .site-footer .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 </style>
 </head>
 <body>
-<nav class="nav"><div class="brand"><a href="index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">AI <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="ai/coding/index.html">Coding agents</a><a class="item" href="ai/general/index.html">General-purpose agents</a><a class="item disabled" title="Coming soon">Models</a></div></div></div></nav>
+<nav class="nav"><div class="brand"><a href="index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 AI <span class="caret">&#9662;</span></button><div class="menu mega"><div class="menu-col"><div class="menu-head">🤖 Agents</div><a class="item" href="ai/agents/coding/index.html"><span class="i">💻</span><span>Coding</span></a><a class="item" href="ai/agents/general/index.html"><span class="i">🧩</span><span>General-purpose</span></a></div><div class="menu-col"><div class="menu-head">🧠 Models</div><a class="item disabled" title="Coming soon"><span>Open weight</span><span class="nsoon">soon</span></a><a class="item disabled" title="Coming soon"><span>Closed weight</span><span class="nsoon">soon</span></a></div></div></div></div></nav>
 
 <div class="wrap">
-  <h1>Big<span style="color:var(--accent)">Rank</span> <span class="live">● LIVE</span></h1>
-  <p class="lede">Data-driven rankings of open-source projects by real usage and momentum signals — not benchmarks or surveys.</p>
-  <p class="meta">Signals are collected once per day from public APIs (GitHub, Hacker News, Reddit, marketplace installs) and snapshotted into the repository, so every number is auditable and every rank is reproducible.</p>
-
-  <div class="cards">
-    <div class="card"><h2>AI</h2><a class="card-item" href="ai/coding/index.html">Coding agents</a><a class="card-item" href="ai/general/index.html">General-purpose agents</a><div class="card-item disabled">Models <span class="soon">soon</span></div></div>
+  <div class="hero">
+    <h1>Big<span style="color:var(--accent)">Rank</span> <span class="live">● LIVE</span></h1>
+    <p class="lede">Data-driven rankings of AI projects, updated daily.</p>
   </div>
 
-  <footer class="site-footer">BigRank v1.1.0<span id="footerCommit"></span></footer>
+  <div class="cards">
+    <div class="card"><div class="card-head"><span class="che">🤖</span>Agents</div><a class="card-item" href="ai/agents/coding/index.html"><span class="iemoji">💻</span><span class="itext"><span class="iname">Coding</span><span class="idesc">Cursor, Claude Code, Copilot, Windsurf & more</span></span><span class="iarrow">→</span></a><a class="card-item" href="ai/agents/general/index.html"><span class="iemoji">🧩</span><span class="itext"><span class="iname">General-purpose</span><span class="idesc">OpenClaw, AutoGPT, Open Interpreter & more</span></span><span class="iarrow">→</span></a></div><div class="card"><div class="card-head"><span class="che">🧠</span>Models</div><div class="card-item disabled"><span class="itext"><span class="iname">Open weight</span></span><span class="soon">soon</span></div><div class="card-item disabled"><span class="itext"><span class="iname">Closed weight</span></span><span class="soon">soon</span></div></div>
+  </div>
+
+  <footer class="site-footer">BigRank v1.2.0<span id="footerCommit"></span></footer>
 </div>
 
 <script>
 (function () {
-  const c = "922ef641";
+  const c = "daa1c35";
   const el = document.getElementById("footerCommit");
   if (c) el.innerHTML = ' · commit <span class="sha">' + c + "</span>";
   else el.remove();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Coding Agent Usage Rankings (Live)</title>
+<title>AI Coding Agent Rankings (Live)</title>
 <meta name="description" content="Live ranking of AI coding agents by actual usage signals — GitHub stars/commits, Hacker News, Reddit, VS Code/Open VSX/JetBrains installs. Updated daily.">
 <style>
   :root {
@@ -42,6 +42,9 @@
   .weights label { display: flex; align-items: center; gap: 5px; }
   .weights input { width: 74px; accent-color: var(--accent); }
   .reset { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
+  .more { display: block; width: 100%; margin-top: 14px; background: transparent; border: 1px dashed var(--border); color: var(--muted); border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .more:hover { color: var(--text); border-color: var(--accent); }
+  .more[hidden] { display: none; }
 
   .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); }
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 1150px; }
@@ -126,19 +129,23 @@
   }
   .gbtn .caret { font-size: 10px; margin-left: 3px; }
   .group:hover .gbtn, .group:focus-within .gbtn { color: var(--text); background: var(--panel2); border-color: var(--border); }
-  .menu {
-    display: none; position: absolute; top: 100%; right: 0; min-width: 215px;
+  .menu.mega {
+    display: none; position: absolute; top: 100%; right: 0; min-width: 300px;
     background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-    padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30;
+    padding: 8px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30; flex-wrap: wrap;
   }
-  .group:hover .menu, .group:focus-within .menu { display: block; }
+  .group:hover .menu.mega, .group:focus-within .menu.mega { display: flex; }
+  .menu-col { min-width: 150px; flex: 1; }
+  .menu-head { font-size: 10.5px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); padding: 4px 10px 6px; }
   .menu a.item {
-    display: block; padding: 8px 12px; border-radius: 7px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; color: var(--muted);
     text-decoration: none; font-size: 13.5px; font-weight: 600;
   }
+  .menu a.item .i { font-size: 15px; width: 20px; text-align: center; flex: none; }
   .menu a.item:hover { color: var(--text); background: var(--panel2); }
   .menu a.item.on { color: var(--text); background: var(--panel2); border: 1px solid var(--border); }
   .menu a.item.disabled { opacity: .45; cursor: not-allowed; }
+  .menu .nsoon { font-size: 10px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; margin-left: auto; }
 </style>
 </head>
 <body>
@@ -146,7 +153,7 @@
 
 <div class="wrap">
   <header>
-    <h1>AI Coding Agent Usage Rankings <span class="live">● LIVE</span></h1>
+    <h1>AI Coding Agent Rankings <span class="live">● LIVE</span></h1>
     <div class="meta">
       <span>Last updated: <b id="lastUpdated">–</b> (UTC)</span>
       <span>History: <b id="daysTracked">–</b> days</span>
@@ -189,6 +196,7 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
+  <button class="more" id="moreBtn" hidden></button>
   <p class="foot" id="footNote"></p>
 
   <details class="how">
@@ -286,6 +294,8 @@ const TABLE_COLS = [
 let view = "install";
 let sortKey = null; // null = composite
 let weights = { install: {...D.meta.weights_install}, momentum: {...D.meta.weights_momentum} };
+const ROW_LIMIT = 10;
+let showMore = false;
 
 const fmt = (v, f) => {
   if (v == null || !isFinite(v)) return "<span class='dash'>–</span>";
@@ -445,7 +455,7 @@ function render() {
 
   const seriesKey = isMomentum ? "momentum" : "install";
   const deltas = rankDelta(tools, seriesKey);
-  const rows = tools.map((t, i) => {
+  const rowArr = tools.map((t, i) => {
     const comp = t._composite;
     const w = comp == null ? 0 : comp;
     const last7 = t.series[seriesKey].slice(-7).filter(v => v != null);
@@ -469,9 +479,16 @@ function render() {
       <td>${sparkline(t.series[seriesKey], isMomentum ? "mo" : "")}</td>
       ${TABLE_COLS.map(m => `<td class="num">${fmt(t.values[m], META[m].fmt)}</td>`).join("")}
     </tr>`;
-  }).join("");
+  });
+  const rows = rowArr.join("");
 
-  document.getElementById("tableBody").innerHTML = rows;
+  const moreBtn = document.getElementById("moreBtn");
+  moreBtn.hidden = rowArr.length <= ROW_LIMIT;
+  moreBtn.textContent = showMore
+    ? `Show top ${ROW_LIMIT} ▴`
+    : `Show all (${rowArr.length}) ▾`;
+
+  document.getElementById("tableBody").innerHTML = showMore ? rows : rowArr.slice(0, ROW_LIMIT).join("");
   document.getElementById("lastUpdated").textContent = D.meta.updated;
   document.getElementById("daysTracked").textContent = D.meta.days;
   document.getElementById("dataStart").textContent = D.meta.start;
@@ -491,11 +508,17 @@ function buildSortOptions() {
     Object.entries(META).map(([k, m]) => `<option value="${k}">${m.label}</option>`).join("");
 }
 
+document.getElementById("moreBtn").addEventListener("click", () => {
+  showMore = !showMore;
+  render();
+});
+
 document.getElementById("viewSeg").addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (!btn) return;
   view = btn.dataset.view;
   sortKey = null;
+  showMore = false;
   document.getElementById("sortSel").value = "";
   renderWeights();
   render();
@@ -503,11 +526,13 @@ document.getElementById("viewSeg").addEventListener("click", e => {
 
 document.getElementById("sortSel").addEventListener("change", e => {
   sortKey = e.target.value || null;
+  showMore = false;
   render();
 });
 
 document.getElementById("resetW").addEventListener("click", () => {
   weights = { install: {...D.meta.weights_install}, momentum: {...D.meta.weights_momentum} };
+  showMore = false;
   renderWeights(); render();
 });
 
@@ -521,6 +546,7 @@ document.getElementById("weights").addEventListener("input", e => {
 document.querySelectorAll("th[data-sort]").forEach(th =>
   th.addEventListener("click", () => {
     sortKey = th.dataset.sort;
+    showMore = false;
     document.getElementById("sortSel").value = sortKey;
     render();
   }));

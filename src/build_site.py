@@ -1,4 +1,4 @@
-"""Render site/ai/coding/data.js + site/ai/coding/index.html from the snapshot history."""
+"""Render site/ai/agents/coding/data.js + site/ai/agents/coding/index.html from the snapshot history."""
 import json
 import os
 import sys
@@ -10,8 +10,8 @@ from nav import render_nav  # noqa: E402
 import score  # noqa: E402
 
 TEMPLATE = os.path.join(ROOT, "src", "templates", "index.html")
-PAGE_DIR = os.path.join(SITE_DIR, "ai", "coding")
-PAGE_PATH = "ai/coding/index.html"
+PAGE_DIR = os.path.join(SITE_DIR, "ai", "agents", "coding")
+PAGE_PATH = "ai/agents/coding/index.html"
 
 
 def main():

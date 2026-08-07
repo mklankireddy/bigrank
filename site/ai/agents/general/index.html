@@ -39,19 +39,23 @@
   }
   .gbtn .caret { font-size: 10px; margin-left: 3px; }
   .group:hover .gbtn, .group:focus-within .gbtn { color: var(--text); background: var(--panel2); border-color: var(--border); }
-  .menu {
-    display: none; position: absolute; top: 100%; right: 0; min-width: 215px;
+  .menu.mega {
+    display: none; position: absolute; top: 100%; right: 0; min-width: 300px;
     background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-    padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30;
+    padding: 8px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30; flex-wrap: wrap;
   }
-  .group:hover .menu, .group:focus-within .menu { display: block; }
+  .group:hover .menu.mega, .group:focus-within .menu.mega { display: flex; }
+  .menu-col { min-width: 150px; flex: 1; }
+  .menu-head { font-size: 10.5px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); padding: 4px 10px 6px; }
   .menu a.item {
-    display: block; padding: 8px 12px; border-radius: 7px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; color: var(--muted);
     text-decoration: none; font-size: 13.5px; font-weight: 600;
   }
+  .menu a.item .i { font-size: 15px; width: 20px; text-align: center; flex: none; }
   .menu a.item:hover { color: var(--text); background: var(--panel2); }
   .menu a.item.on { color: var(--text); background: var(--panel2); border: 1px solid var(--border); }
   .menu a.item.disabled { opacity: .45; cursor: not-allowed; }
+  .menu .nsoon { font-size: 10px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; margin-left: auto; }
 
   .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); }
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 1150px; }
@@ -90,6 +94,9 @@
   .badge.stale { color: var(--red); background: rgba(248,113,113,.12); }
   .badge.archived { color: var(--muted); background: var(--panel2); }
   .foot { color: var(--muted); font-size: 13px; margin-top: 16px; }
+  .more { display: block; width: 100%; margin-top: 14px; background: transparent; border: 1px dashed var(--border); color: var(--muted); border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .more:hover { color: var(--text); border-color: var(--accent); }
+  .more[hidden] { display: none; }
   .site-footer { color: var(--muted); font-size: 12px; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); }
   .site-footer .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 
@@ -103,11 +110,11 @@
 </style>
 </head>
 <body>
-<nav class="nav"><div class="brand"><a href="../../index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">AI <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../coding/index.html">Coding agents</a><a class="item on" href="index.html">General-purpose agents</a><a class="item disabled" title="Coming soon">Models</a></div></div></div></nav>
+<nav class="nav"><div class="brand"><a href="../../../index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 AI <span class="caret">&#9662;</span></button><div class="menu mega"><div class="menu-col"><div class="menu-head">🤖 Agents</div><a class="item" href="../coding/index.html"><span class="i">💻</span><span>Coding</span></a><a class="item on" href="index.html"><span class="i">🧩</span><span>General-purpose</span></a></div><div class="menu-col"><div class="menu-head">🧠 Models</div><a class="item disabled" title="Coming soon"><span>Open weight</span><span class="nsoon">soon</span></a><a class="item disabled" title="Coming soon"><span>Closed weight</span><span class="nsoon">soon</span></a></div></div></div></div></nav>
 
 <div class="wrap">
   <header>
-    <h1>Open-Source AI General-Purpose Agent Rankings <span class="live">● LIVE</span></h1>
+    <h1>AI General-Purpose Agent Rankings <span class="live">● LIVE</span></h1>
     <div class="meta">
       <span>Last updated: <b id="lastUpdated">–</b> (UTC)</span>
       <span>History: <b id="daysTracked">–</b> days</span>
@@ -138,6 +145,7 @@
       <tbody id="tableBody"></tbody>
     </table>
   </div>
+  <button class="more" id="moreBtn" hidden></button>
   <p class="foot" id="footNote"></p>
 
   <details class="how">
@@ -213,7 +221,7 @@ const dshort = (v) => v ? v.slice(0, 10) : "–";
 const scoreCell = (sc, cls) =>
   `<div class="scorebar"><span class="num">${num(sc)}</span><span class="bar ${cls}"><i style="width:${Math.min(100, sc)}%"></i></span></div>`;
 
-const rows = [...D.agents]
+const rowArr = [...D.agents]
   .sort((a, b) => b.scores.overall - a.scores.overall)
   .map((a, i) => {
     const v = a.values;
@@ -230,9 +238,25 @@ const rows = [...D.agents]
       <td class="num">${dshort(a.latest_release)}</td>
       <td style="text-align:left;white-space:normal">${a.setup || "–"}<span class="effort">${a.effort || ""}</span></td>
     </tr>`;
-  }).join("");
+  });
+const rows = rowArr.join("");
 
-document.getElementById("tableBody").innerHTML = rows;
+const ROW_LIMIT = 10;
+let showMore = false;
+const moreBtn = document.getElementById("moreBtn");
+const renderTable = () => {
+  moreBtn.hidden = rowArr.length <= ROW_LIMIT;
+  moreBtn.textContent = showMore
+    ? `Show top ${ROW_LIMIT} ▴`
+    : `Show all (${rowArr.length}) ▾`;
+  document.getElementById("tableBody").innerHTML = showMore ? rows : rowArr.slice(0, ROW_LIMIT).join("");
+};
+moreBtn.addEventListener("click", () => {
+  showMore = !showMore;
+  renderTable();
+});
+
+renderTable();
 document.getElementById("lastUpdated").textContent = D.meta.updated;
 document.getElementById("daysTracked").textContent = D.meta.days;
 document.getElementById("dataStart").textContent = D.meta.start;

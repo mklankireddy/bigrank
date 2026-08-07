@@ -17,7 +17,7 @@ AGENT_ARCHIVE_PATH = os.path.join(ROOT, "data", "agents_archive.jsonl")
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 
 def short_commit():

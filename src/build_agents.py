@@ -1,4 +1,4 @@
-"""Render site/ai/general/data.js + site/ai/general/index.html from agent snapshots."""
+"""Render site/ai/agents/general/data.js + site/ai/agents/general/index.html from agent snapshots."""
 import json
 import os
 import sys
@@ -11,8 +11,8 @@ from nav import render_nav  # noqa: E402
 from score import composite, normalize  # noqa: E402
 
 AGENTS_TEMPLATE = os.path.join(ROOT, "src", "templates", "agents.html")
-AGENTS_DIR = os.path.join(SITE_DIR, "ai", "general")
-AGENTS_PAGE_PATH = "ai/general/index.html"
+AGENTS_DIR = os.path.join(SITE_DIR, "ai", "agents", "general")
+AGENTS_PAGE_PATH = "ai/agents/general/index.html"
 
 AGENT_METRICS = {
     "stars": ("github", "stars"),
