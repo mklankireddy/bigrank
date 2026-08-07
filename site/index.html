@@ -84,6 +84,13 @@
   details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-top: 22px; }
   summary { cursor: pointer; font-weight: 700; color: var(--text); }
   details p, details li { font-size: 13.5px; color: var(--muted); }
+  details.how h4 { margin: 14px 0 6px; font-size: 12.5px; color: var(--text); }
+  details.how ul { margin: 4px 0 0; padding-left: 18px; }
+  details.how ul li { margin-bottom: 4px; }
+  details.how .intro { margin-bottom: 6px; }
+  .src-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 6px 16px; margin: 6px 0 2px; }
+  .src-item { display: flex; gap: 8px; align-items: baseline; }
+  .src-item .pill { margin-right: 0; flex: none; }
   details code { background: var(--panel2); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
   .pill { display: inline-block; background: var(--panel2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; font-size: 11.5px; color: var(--muted); margin-right: 6px; }
   .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; margin-left: 6px; }
@@ -172,41 +179,37 @@
   </div>
   <p class="foot" id="footNote"></p>
 
-  <details>
+  <details class="how">
     <summary>How this ranking works</summary>
-    <p>
+    <p class="intro">
       This page scores AI coding tools by <b>public usage signals</b>, not benchmarks or surveys. Every signal is
       collected once per day from public APIs and snapshotted into the repository's <code>data/snapshots/</code>
       directory, so the entire history is auditable.
     </p>
-    <p>
-      <span class="pill">GitHub</span>stars, forks, commits pushed to the tool's own repo in the trailing 30 days,
-      and commit-message mentions across GitHub.
-      <span class="pill">Hacker News</span>comment-mention counts for the trailing 7 and 30 days (Algolia API).
-      <span class="pill">Reddit</span>mentions in the trailing 7 and 30 days (OAuth search, newest-first, capped at 1000).
-      <span class="pill">VS Code Marketplace</span>extension installs, downloads, and weekly trending.
-      <span class="pill">Open VSX</span>open-source marketplace download count.
-      <span class="pill">JetBrains</span>official plugin downloads.
-    </p>
-    <p>
-      Each metric is min-max normalized across the tracked tools to 0–100. <b>Install base</b> blends cumulative
-      reach (stars, installs, downloads, 30d mention volume). <b>Momentum</b> blends 30-day deltas and recent
-      activity (stars gained, installs gained, commits, 7d mention volume). Drag the weight sliders to re-weight —
-      the ranking recomputes instantly in your browser.
-    </p>
-    <p>
-      <b>Coverage penalty.</b> Missing sources count as <b>zero</b> in the composite — a tool that only has data
-      for some sources is capped by the weight those sources carry (the denominator is the full weight sum). Rows
-      with incomplete data show a <span class="cov">n/m sources</span> badge; hover it for details. This prevents
-      tools with a single loud signal (e.g. only Hacker News mentions) from topping the ranking.
-    </p>
-    <p>
-      <b>Caveats.</b> These are <i>relative signals, not absolute usage</i>. Ambiguous names (cursor, windsurf,
-      cline, devin, aider, continue) are disambiguated with query phrases and still carry noise. GitHub commit
-      search is noisy (AI-generated commits) and is not part of the composite score. Tools without an official
-      plugin/extension show <span class="dash">–</span> for that source. Counts are server-reported
-      install/download totals, not active users.
-    </p>
+    <h4>Data sources</h4>
+    <div class="src-grid">
+      <div class="src-item"><span class="pill">GitHub</span><span>stars, forks, commits pushed to the tool's repo in the trailing 30 days, and commit-message mentions.</span></div>
+      <div class="src-item"><span class="pill">Hacker News</span><span>comment mentions for the trailing 7 and 30 days (Algolia API).</span></div>
+      <div class="src-item"><span class="pill">Reddit</span><span>mentions for the trailing 7 and 30 days (OAuth search, newest-first, capped at 1000).</span></div>
+      <div class="src-item"><span class="pill">VS Code Marketplace</span><span>extension installs, downloads, and weekly trending.</span></div>
+      <div class="src-item"><span class="pill">Open VSX</span><span>open-source marketplace download count.</span></div>
+      <div class="src-item"><span class="pill">JetBrains</span><span>official plugin downloads.</span></div>
+    </div>
+    <h4>Scoring</h4>
+    <p>Each metric is min-max normalized across the tracked tools to 0–100. Drag the weight sliders to re-weight — the ranking recomputes instantly in your browser.</p>
+    <ul>
+      <li><b>Install base</b> — cumulative reach: stars, installs, downloads, and 30d mention volume.</li>
+      <li><b>Momentum</b> — recent activity: 30-day deltas, commits, and 7d mention volume.</li>
+    </ul>
+    <h4>Coverage penalty</h4>
+    <p>Missing sources count as <b>zero</b> in the composite — a tool with data for only some sources is capped by the weight those sources carry (the denominator is the full weight sum). Rows with incomplete data show a <span class="cov">n/m sources</span> badge; hover it for details. This stops tools with a single loud signal (e.g. only Hacker News mentions) from topping the ranking.</p>
+    <h4>Caveats</h4>
+    <ul>
+      <li>These are <i>relative signals, not absolute usage</i>.</li>
+      <li>Ambiguous names (cursor, windsurf, cline, devin, aider, continue) are disambiguated with query phrases and still carry noise.</li>
+      <li>GitHub commit search is noisy (AI-generated commits) and is not part of the composite score.</li>
+      <li>Tools without an official plugin/extension show <span class="dash">–</span> for that source; counts are server-reported totals, not active users.</li>
+    </ul>
   </details>
 
   <details>

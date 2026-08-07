@@ -187,6 +187,19 @@
       "jetbrains": null,
       "hn_query": "\"openhands\"",
       "reddit_query": "\"openhands\""
+    },
+    {
+      "id": "grok-build",
+      "name": "Grok Build",
+      "vendor": "xAI",
+      "category": "CLI agent",
+      "homepage": "https://x.ai/build",
+      "github": { "repo": "xai-org/grok-build" },
+      "vscode": null,
+      "openvsx": null,
+      "jetbrains": null,
+      "hn_query": "\"grok build\"",
+      "reddit_query": "\"grok build\""
     }
   ]
 }

@@ -1,7 +1,7 @@
 # AI Coding Tool Usage Rankings (Live)
 
 An always-on ranking of AI coding tools — Cursor, Claude Code, GitHub Copilot, Windsurf,
-Codex, Devin, Aider, Cline, Continue, Gemini CLI, Replit, OpenHands — scored by **public
+Codex, Devin, Aider, Cline, Continue, Gemini CLI, Replit, OpenHands, Grok Build — scored by **public
 usage signals**, not benchmarks or surveys.
 
 The collector runs **daily** via GitHub Actions, snapshots every source into
