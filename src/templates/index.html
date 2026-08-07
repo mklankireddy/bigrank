@@ -20,7 +20,6 @@
   header { padding: 28px 0 8px; }
   h1 { font-size: 26px; margin: 0 0 4px; }
   h1 .live { color: var(--green); font-size: 13px; vertical-align: 4px; letter-spacing: .5px; }
-  .sub { color: var(--muted); margin: 0 0 14px; }
   .meta { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: 13px; margin-bottom: 16px; }
   .meta b { color: var(--text); font-weight: 600; }
 
@@ -79,6 +78,8 @@
   .spark path { fill: none; stroke: var(--blue); stroke-width: 1.6; }
   .spark.mo path { stroke: var(--amber); }
   .foot { color: var(--muted); font-size: 13px; margin-top: 16px; }
+  .site-footer { color: var(--muted); font-size: 12px; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .site-footer .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 
   details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-top: 22px; }
   summary { cursor: pointer; font-weight: 700; color: var(--text); }
@@ -130,7 +131,6 @@
 <div class="wrap">
   <header>
     <h1>AI Coding Tool Usage Rankings <span class="live">● LIVE</span></h1>
-    <p class="sub">Cursor · Claude Code · GitHub Copilot · Windsurf · Codex · Devin · Aider · Cline · Continue · Gemini CLI · Replit · OpenHands</p>
     <div class="meta">
       <span>Last updated: <b id="lastUpdated">–</b> (UTC)</span>
       <span>History: <b id="daysTracked">–</b> days</span>
@@ -224,6 +224,8 @@
     </p>
     <p><a id="requestLink" class="btn" href="#" target="_blank" rel="noopener">Request a new tool</a></p>
   </details>
+
+  <footer class="site-footer">BigRank v<span id="footerVersion">–</span><span id="footerCommit"></span></footer>
 </div>
 
 <script src="data.js"></script>
@@ -444,6 +446,10 @@ function render() {
   document.getElementById("lastUpdated").textContent = D.meta.updated;
   document.getElementById("daysTracked").textContent = D.meta.days;
   document.getElementById("dataStart").textContent = D.meta.start;
+  document.getElementById("footerVersion").textContent = D.meta.version || "–";
+  const fc = document.getElementById("footerCommit");
+  if (D.meta.build_commit) fc.innerHTML = ` · commit <span class="sha">${D.meta.build_commit}</span>`;
+  else fc.remove();
   renderSources();
   document.getElementById("footNote").textContent =
     `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : (isMomentum ? "Momentum (30d)" : "Install base")}. ` +

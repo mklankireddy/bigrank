@@ -10,6 +10,22 @@ import score  # noqa: E402
 
 TEMPLATE = os.path.join(ROOT, "src", "templates", "index.html")
 
+VERSION = "1.0.0"
+
+
+def short_commit():
+    sha = os.environ.get("GITHUB_SHA", "")
+    if not sha:
+        try:
+            import subprocess
+            sha = subprocess.check_output(
+                ["git", "rev-parse", "--short", "HEAD"],
+                cwd=ROOT, stderr=subprocess.DEVNULL,
+            ).decode().strip()
+        except Exception:
+            sha = ""
+    return sha[:8] or None
+
 
 def main():
     cfg = load_config()
@@ -52,6 +68,8 @@ def main():
             "start": dates[0],
             "days": len(dates),
             "repo": os.environ.get("GITHUB_REPOSITORY") or cfg["meta"].get("repo", ""),
+            "version": VERSION,
+            "build_commit": short_commit(),
             "weights_install": cfg["meta"]["weights_install"],
             "weights_momentum": cfg["meta"]["weights_momentum"],
         },
