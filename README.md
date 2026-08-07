@@ -8,7 +8,7 @@ The collector runs **daily** via GitHub Actions, snapshots every source into
 `data/snapshots/<date>.jsonl`, and deploys a static ranking page to GitHub Pages.
 The full history is committed to this repo, so every number is auditable.
 
-Live page: [rank](https://<your-username>.github.io/rank/) (enable Pages, see below).
+Live page: [bigrank](https://<your-username>.github.io/bigrank/) (enable Pages, see below).
 
 ## Signals collected (per tool, per day)
 

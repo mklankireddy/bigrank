@@ -10,7 +10,7 @@ CONFIG_PATH = os.path.join(ROOT, "config", "tools.json")
 DATA_DIR = os.path.join(ROOT, "data", "snapshots")
 SITE_DIR = os.path.join(ROOT, "site")
 
-USER_AGENT = "ai-coding-tool-rank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "rank") + ")"
+USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30
 
 

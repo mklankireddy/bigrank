@@ -32,7 +32,7 @@ def _get_token(session):
         data={"grant_type": "client_credentials"},
         auth=(client_id, client_secret),
         timeout=30,
-        headers={"User-Agent": os.environ.get("USER_AGENT", "ai-coding-tool-rank/0.1")},
+        headers={"User-Agent": os.environ.get("USER_AGENT", "bigrank/0.1")},
     )
     resp.raise_for_status()
     body = resp.json()

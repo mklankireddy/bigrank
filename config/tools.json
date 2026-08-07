@@ -1,7 +1,7 @@
 {
   "meta": {
     "description": "Tools tracked by the AI Coding Tool Usage Ranking.",
-    "repo": "",
+    "repo": "mklankireddy/bigrank",
     "weights_install": {
       "stars": 22,
       "vscode_installs": 32,
