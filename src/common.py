@@ -7,15 +7,15 @@ import requests
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(ROOT, "config", "tools.json")
-DATA_DIR = os.path.join(ROOT, "data", "snapshots")
-ARCHIVE_PATH = os.path.join(ROOT, "data", "archive.jsonl")
+DATA_DIR = os.path.join(ROOT, "data", "coding-agents_snapshots")
+ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "coding-agents_archive.jsonl")
 SITE_DIR = os.path.join(ROOT, "site")
 AGENT_CONFIG_PATH = os.path.join(ROOT, "config", "agents.json")
-AGENT_DATA_DIR = os.path.join(ROOT, "data", "agent_snapshots")
-AGENT_ARCHIVE_PATH = os.path.join(ROOT, "data", "agents_archive.jsonl")
+AGENT_DATA_DIR = os.path.join(ROOT, "data", "general-purpose-agents_snapshots")
+AGENT_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "general-purpose-agents_archive.jsonl")
 RUNNER_CONFIG_PATH = os.path.join(ROOT, "config", "local-model-runner.json")
 RUNNER_DATA_DIR = os.path.join(ROOT, "data", "local-model-runner_snapshots")
-RUNNER_ARCHIVE_PATH = os.path.join(ROOT, "data", "local-model-runner_archive.jsonl")
+RUNNER_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "local-model-runner_archive.jsonl")
 
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30

@@ -45,8 +45,6 @@ NAV = [
                         "page": "ai/model/local-model-runner/index.html",
                         "desc": "Ollama, llama.cpp, vLLM & more",
                     },
-                    {"key": "open", "label": "Open weight", "disabled": True, "title": "Coming soon"},
-                    {"key": "closed", "label": "Closed weight", "disabled": True, "title": "Coming soon"},
                 ],
             },
         ],

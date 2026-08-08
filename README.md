@@ -5,14 +5,14 @@ Codex, Devin, Aider, Cline, Continue, Gemini CLI, Replit, OpenHands, Grok Build,
 usage signals**, not benchmarks or surveys.
 
 The collector runs **daily** via GitHub Actions, snapshots every source into
-`data/snapshots/<date>.jsonl`, and deploys a static ranking page to GitHub Pages.
+`data/coding-agents_snapshots/<date>.jsonl`, and deploys a static ranking page to GitHub Pages.
 Daily snapshots are kept for the trailing **30 days**; older history is
-consolidated into `data/archive.jsonl` (one line per tool-day) so the full
+consolidated into `data/archives/coding-agents_archive.jsonl` (one line per tool-day) so the full
 history is committed to this repo and every number is auditable.
 
 The same pipeline also powers a **general-purpose agents** ranking
-(`data/agent_snapshots/`, `data/agents_archive.jsonl`) and a **local model runner**
-ranking (`data/local-model-runner_snapshots/`, `data/local-model-runner_archive.jsonl`).
+(`data/general-purpose-agents_snapshots/`, `data/archives/general-purpose-agents_archive.jsonl`) and a **local model runner**
+ranking (`data/local-model-runner_snapshots/`, `data/archives/local-model-runner_archive.jsonl`).
 
 Live page: [bigrank](https://<your-username>.github.io/bigrank/) (enable Pages, see below).
 
@@ -47,7 +47,7 @@ A separate board ranks **local model runners and inference servers** (Ollama, ll
 vLLM, LM Studio, SGLang, TensorRT-LLM, Hugging Face TGI, LocalAI, GPT4All, Tabby, OpenWebUI
 and more) under **AI → Models → Local Model Runner**. Tracked in `config/local-model-runner.json`;
 daily snapshots in `data/local-model-runner_snapshots/`, archived to
-`data/local-model-runner_archive.jsonl` after 30 days.
+`data/archives/local-model-runner_archive.jsonl` after 30 days.
 
 | Source | Metric | API |
 |---|---|---|
@@ -88,27 +88,27 @@ config/tools.json          # tracked tools + repo/ext/plugin ids + search phrase
 config/agents.json         # tracked open-source agents + activity/adoption weights + setup notes
 config/local-model-runner.json  # tracked local model runners + weights + display-only tags
 src/
-  collect.py               # runs all collectors -> data/snapshots/<date>.jsonl, then prunes old days
-  collect_agents.py        # agent collectors -> data/agent_snapshots/<date>.jsonl
+  collect.py               # runs all collectors -> data/coding-agents_snapshots/<date>.jsonl, then prunes old days
+  collect_agents.py        # agent collectors -> data/general-purpose-agents_snapshots/<date>.jsonl
   collect_local_model_runner.py  # runner collectors -> data/local-model-runner_snapshots/<date>.jsonl
   nav.py                   # single source of truth for the top nav (group -> sections -> items) + landing cards
   build_landing.py         # renders site/index.html (landing page)
-  build_site.py            # renders site/ai/agents/coding/ (AI coding agents ranking)
+  build_site.py            # renders site/ai/agents/coding/ (coding agents ranking)
   build_agents.py          # renders site/ai/agents/general/ (general-purpose agents ranking)
   build_local_model_runner.py  # renders site/ai/model/local-model-runner/ (local model runner ranking)
   score.py                 # normalization + composites + time series
   common.py                # config load, HTTP, snapshot I/O, retention/archive
   sources/                 # github.py, github_agent.py, github_runner.py, hn.py, reddit.py, vscode.py, openvsx.py, jetbrains.py, docker.py, pypi.py, npm.py
-  templates/index.html     # the AI coding agents ranking page
+  templates/index.html     # the coding agents ranking page
   templates/agents.html    # the general-purpose agents ranking page
   templates/local_model_runner.html  # the local model runner ranking page
   templates/landing.html   # the landing page
-data/snapshots/<date>.jsonl  # daily tool snapshots, trailing 30 days
-data/agent_snapshots/<date>.jsonl  # daily agent snapshots, trailing 30 days
+data/coding-agents_snapshots/<date>.jsonl  # daily coding-agent snapshots, trailing 30 days
+data/general-purpose-agents_snapshots/<date>.jsonl  # daily agent snapshots, trailing 30 days
 data/local-model-runner_snapshots/<date>.jsonl  # daily runner snapshots, trailing 30 days
-data/archive.jsonl           # consolidated tool history older than 30 days
-data/agents_archive.jsonl    # consolidated agent history older than 30 days
-data/local-model-runner_archive.jsonl  # consolidated runner history older than 30 days
+data/archives/coding-agents_archive.jsonl  # consolidated coding-agent history older than 30 days
+data/archives/general-purpose-agents_archive.jsonl  # consolidated agent history older than 30 days
+data/archives/local-model-runner_archive.jsonl  # consolidated runner history older than 30 days
 site/                      # generated static site (index.html, ai/agents/, ai/model/)
 .github/workflows/collect.yml
 ```
@@ -117,8 +117,9 @@ site/                      # generated static site (index.html, ai/agents/, ai/m
 
 The landing page's **Raw data & tool requests** section lets visitors:
 
-- **Browse the snapshot archive** — a link to the `data/snapshots/` and `data/agent_snapshots/`
-  folders in the repo (read-only; history is auditable).
+- **Browse the snapshot archive** — a link to the `data/coding-agents_snapshots/`,
+  `data/general-purpose-agents_snapshots/`, and `data/local-model-runner_snapshots/` folders in the repo
+  (read-only; history is auditable).
 - **Request a tool** — a small form (title, what needs to be ranked and how, official link)
   that opens a pre-filled GitHub issue. Visitors fill in the three fields; the only extra step
   is clicking *Submit* on GitHub's page (login required), since a static site cannot create
