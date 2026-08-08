@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BigRank — Live Open-Source Rankings</title>
-<meta name="description" content="Data-driven rankings of open-source projects, updated daily from public APIs: GitHub, Hacker News, Reddit, and marketplace installs.">
+<meta name="description" content="Live rankings of AI tools based on real usage signals.">
 <style>
   :root {
     --bg: #0b0e14; --panel: #12161f; --panel2: #181d29; --border: #232a3a;
@@ -96,7 +96,7 @@
 <div class="wrap">
   <div class="hero">
     <h1>Big<span style="color:var(--accent)">Rank</span> <span class="live">● LIVE</span></h1>
-    <p class="lede">Data-driven rankings of AI projects, updated daily.</p>
+    <p class="lede">Live rankings of AI tools based on real usage signals.</p>
   </div>
 
   <div class="cards">
@@ -133,12 +133,12 @@
     </form>
   </details>
 
-  <footer class="site-footer">BigRank v1.4.0<span id="footerCommit"></span></footer>
+  <footer class="site-footer">BigRank v1.5.0<span id="footerCommit"></span></footer>
 </div>
 
 <script>
 (function () {
-  const c = "b2ddb899";
+  const c = "b2ddb89";
   const el = document.getElementById("footerCommit");
   if (c) el.innerHTML = ' · commit <span class="sha">' + c + "</span>";
   else el.remove();

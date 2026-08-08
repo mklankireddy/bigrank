@@ -23,7 +23,7 @@ FREE_APPS_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "free-apps_archi
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30
 
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 
 # GoatCounter analytics (https://www.goatcounter.com). Set to your site code
 # (e.g. "bigrank") to enable the tracking snippet on every page; empty = off.
