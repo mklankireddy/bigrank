@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Coding Agent Rankings (Live)</title>
-<meta name="description" content="Live ranking of AI coding agents by actual usage signals — GitHub stars/commits, Hacker News, Reddit, VS Code/Open VSX/JetBrains installs. Updated daily.">
+<title>Local Model Runner Rankings (Live)</title>
+<meta name="description" content="Live ranking of local model runners and inference servers by public usage signals — GitHub stars/commits, Docker Hub pulls, PyPI/npm downloads, Hacker News and Reddit mentions. Updated daily.">
 <style>
   :root {
     --bg: #0b0e14; --panel: #12161f; --panel2: #181d29; --border: #232a3a;
@@ -103,6 +103,9 @@
   .tag.p-free { color: var(--green); border-color: rgba(74,222,128,.45); }
   .tag.p-freemium { color: var(--amber); border-color: rgba(251,191,36,.45); }
   .tag.p-paid { color: var(--red); border-color: rgba(248,113,113,.45); }
+  .tag.easy { color: var(--green); border-color: rgba(74,222,128,.45); }
+  .tag.medium { color: var(--amber); border-color: rgba(251,191,36,.45); }
+  .tag.advanced { color: var(--red); border-color: rgba(248,113,113,.45); }
   .cov { color: var(--amber); font-size: 11px; margin-left: 4px; cursor: help; }
 
   .nav {
@@ -141,17 +144,17 @@
 </style>
 </head>
 <body>
-<nav class="nav"><div class="brand"><a href="../../../index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 AI <span class="caret">&#9662;</span></button><div class="menu mega"><div class="menu-col"><div class="menu-head">🤖 Agents</div><a class="item on" href="index.html"><span class="i">💻</span><span>Coding</span></a><a class="item" href="../general/index.html"><span class="i">🧩</span><span>General-purpose</span></a></div><div class="menu-col"><div class="menu-head">🧠 Models</div><a class="item" href="../../model/local-model-runner/index.html"><span class="i">🖥️</span><span>Local Model Runner</span></a><a class="item disabled" title="Coming soon"><span>Open weight</span><span class="nsoon">soon</span></a><a class="item disabled" title="Coming soon"><span>Closed weight</span><span class="nsoon">soon</span></a></div></div></div></div></nav>
+{{NAV}}
 
 <div class="wrap">
   <header>
-    <h1>AI Coding Agent Rankings <span class="live">● LIVE</span></h1>
+    <h1>🖥️ Local Model Runner Rankings <span class="live">● LIVE</span></h1>
     <div class="meta">
       <span>Last updated: <b id="lastUpdated">–</b> (UTC)</span>
       <span>History: <b id="daysTracked">–</b> days</span>
       <span>Snapshot: <b id="dataStart">–</b></span>
-      <span class="tag p-free" title="No payment required (may need your own LLM/API key)">Free</span>
-      <span class="tag p-freemium" title="Free tier, but full value is tied to a paid plan">Freemium</span>
+      <span class="tag p-free" title="No payment required (fully open source)">Free</span>
+      <span class="tag p-freemium" title="Free core, but full value is tied to a paid plan">Freemium</span>
       <span class="tag p-paid" title="Subscription required">Paid</span>
     </div>
   </header>
@@ -171,18 +174,18 @@
       <thead>
         <tr>
           <th class="rank">#</th>
-          <th class="tool">Tool</th>
+          <th class="tool">Runner</th>
           <th id="compHead">Score</th>
           <th id="sparkHead">30d trend</th>
           <th data-sort="stars">Stars</th>
           <th data-sort="stars_delta_30d">Stars Δ30d</th>
+          <th data-sort="docker_pulls">Docker pulls</th>
+          <th data-sort="pypi_downloads">PyPI /mo</th>
+          <th data-sort="npm_downloads">npm /mo</th>
           <th data-sort="commits_30d">Commits 30d</th>
-          <th data-sort="vscode_installs">VSCode installs</th>
-          <th data-sort="vscode_installs_delta_30d">Installs Δ30d</th>
-          <th data-sort="openvsx_downloads">OpenVSX</th>
-          <th data-sort="jetbrains_downloads">JetBrains</th>
           <th data-sort="hn_30d">HN 30d</th>
           <th data-sort="reddit_30d">Reddit 30d</th>
+          <th>Tags</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -194,35 +197,38 @@
   <details class="how">
     <summary>How this ranking works</summary>
     <p class="intro">
-      This page scores AI coding tools by <b>public usage signals</b>, not benchmarks or surveys. Every signal is
-      collected once per day from public APIs and snapshotted into the repository's <code>data/snapshots/</code>
-      directory, so the entire history is auditable.
+      This page ranks <b>local model runners and inference servers</b> (Ollama, llama.cpp, vLLM, LM Studio,
+      SGLang, TGI, LocalAI and more) by <b>public usage signals</b> — not benchmarks or marketing. Every signal is
+      collected once per day from public APIs and snapshotted into the repository's
+      <code>data/local-model-runner_snapshots/</code> directory, so the entire history is auditable.
     </p>
     <h4>Data sources</h4>
     <div class="src-grid">
-      <div class="src-item"><span class="pill">GitHub</span><span>stars, forks, commits pushed to the tool's repo in the trailing 30 days, and commit-message mentions.</span></div>
+      <div class="src-item"><span class="pill">GitHub</span><span>stars, forks, and commits pushed to the runner's repo in the trailing 30 days.</span></div>
+      <div class="src-item"><span class="pill">Docker Hub</span><span>cumulative image pull count (runners with an official image only).</span></div>
+      <div class="src-item"><span class="pill">PyPI</span><span>monthly package downloads via PyPI Stats (Python installs, where a package exists).</span></div>
+      <div class="src-item"><span class="pill">npm</span><span>monthly package downloads (JS/TS installs, where a package exists).</span></div>
       <div class="src-item"><span class="pill">Hacker News</span><span>comment mentions for the trailing 7 and 30 days (Algolia API).</span></div>
       <div class="src-item"><span class="pill">Reddit</span><span>mentions for the trailing 7 and 30 days (OAuth search, newest-first, capped at 1000).</span></div>
-      <div class="src-item"><span class="pill">VS Code Marketplace</span><span>extension installs, downloads, and weekly trending.</span></div>
-      <div class="src-item"><span class="pill">Open VSX</span><span>open-source marketplace download count.</span></div>
-      <div class="src-item"><span class="pill">JetBrains</span><span>official plugin downloads.</span></div>
     </div>
     <h4>Scoring</h4>
-    <p>Each metric is min-max normalized across the tracked tools to 0–100. Drag the weight sliders to re-weight — the ranking recomputes instantly in your browser.</p>
+    <p>Each metric is min-max normalized across the tracked runners to 0–100. Drag the weight sliders to re-weight — the ranking recomputes instantly in your browser.</p>
     <ul>
-      <li><b>Install base</b> — cumulative reach: stars, installs, downloads, and 30d mention volume.</li>
-      <li><b>Momentum</b> — recent activity: 30-day deltas, commits, and 7d mention volume.</li>
+      <li><b>Install base</b> — cumulative reach: stars, Docker pulls, package downloads, forks, and 30d mention volume.</li>
+      <li><b>Momentum</b> — recent activity: 30-day deltas in stars/pulls/downloads, commits, and 7d mention volume.</li>
     </ul>
     <h4>Coverage penalty</h4>
-    <p>Missing sources count as <b>zero</b> in the composite — a tool with data for only some sources is capped by the weight those sources carry (the denominator is the full weight sum). Rows with incomplete data show a <span class="cov">n/m sources</span> badge; hover it for details. This stops tools with a single loud signal (e.g. only Hacker News mentions) from topping the ranking.</p>
+    <p>Missing sources count as <b>zero</b> in the composite — a runner with data for only some sources is capped by the weight those sources carry (the denominator is the full weight sum). Rows with incomplete data show a <span class="cov">n/m sources</span> badge; hover it for details. This matters here: projects that publish only a <code>ghcr.io</code> image or no package at all (e.g. LM Studio, Hugging Face TGI, Open WebUI) have no Docker Hub pull count, so they score lower on Install base even if heavily used — that is intentional and visible via the badge.</p>
+    <h4>Tags</h4>
+    <p>The colored pills next to each runner are <b>hand-maintained, display-only</b> notes and never affect the score. <span class="tag easy">easy</span> / <span class="tag medium">medium</span> / <span class="tag advanced">advanced</span> = rough setup difficulty. <b>focus</b> = <i>consumer</i>, <i>server</i>, <i>multi</i>, or <i>apple-silicon</i>. <b>type</b> = <i>runner</i>, <i>server</i>, <i>frontend</i>, or <i>hybrid</i>.</p>
     <h4>Pricing tags</h4>
-    <p>The <b>Free / Freemium / Paid</b> tag next to each tool is hand-maintained from each product's official pricing page — an approximation, not a metric, and it does not affect the score. <b>Free</b> = no payment required (may need your own LLM/API key). <b>Freemium</b> = a usable free tier, but limits/features push you toward a paid plan. <b>Paid</b> = subscription required to use it at all.</p>
+    <p>The <b>Free / Freemium / Paid</b> tag next to each runner is hand-maintained from each project's official pricing page — an approximation, not a metric, and it does not affect the score.</p>
     <h4>Caveats</h4>
     <ul>
-      <li>These are <i>relative signals, not absolute usage</i>.</li>
-      <li>Ambiguous names (cursor, windsurf, cline, devin, aider, continue) are disambiguated with query phrases and still carry noise.</li>
-      <li>GitHub commit search is noisy (AI-generated commits) and is not part of the composite score.</li>
-      <li>Tools without an official plugin/extension show <span class="dash">–</span> for that source; counts are server-reported totals, not active users.</li>
+      <li>These are <i>relative signals, not absolute usage or active-user counts</i>. Docker pulls and downloads are cumulative server-reported totals.</li>
+      <li>Runners without an official Docker Hub image or package show <span class="dash">–</span> for that source.</li>
+      <li>Some projects are libraries (ExLlamaV2, llama.cpp bindings) — their PyPI numbers measure the library's reach, not a full app install base.</li>
+      <li>Ambiguous names (jan, tabby, localai) are disambiguated with query phrases and still carry some noise.</li>
     </ul>
   </details>
 
@@ -231,14 +237,14 @@
 
 <script src="data.js"></script>
 <script>
-const D = window.RANKING_DATA;
+const D = window.LOCAL_MODEL_RUNNER_DATA;
 const MEDALS = ["🥇", "🥈", "🥉"];
 const rankCell = (i) => i < 3
   ? `<span class="medal" title="Rank ${i + 1}">${MEDALS[i]}</span>`
   : i + 1;
 const PRICE = {
-  free: ["Free", "no payment required (may need your own LLM/API key)"],
-  freemium: ["Freemium", "free tier, but full value is tied to a paid plan"],
+  free: ["Free", "no payment required (fully open source)"],
+  freemium: ["Freemium", "free core, but full value is tied to a paid plan"],
   paid: ["Paid", "subscription required"],
 };
 const ptag = (p) => PRICE[p]
@@ -248,23 +254,21 @@ const META = {
   stars: { label: "GitHub stars", src: "github", fmt: "compact" },
   forks: { label: "Forks", src: "github", fmt: "compact" },
   commits_30d: { label: "Commits 30d", src: "github", fmt: "compact" },
-  commit_mentions: { label: "Commit mentions", src: "github", fmt: "compact" },
   stars_delta_30d: { label: "Stars Δ30d", src: "github", fmt: "signed" },
-  vscode_installs: { label: "VSCode installs", src: "vscode", fmt: "compact" },
-  vscode_installs_delta_30d: { label: "Installs Δ30d", src: "vscode", fmt: "signed" },
-  vscode_downloads: { label: "VSCode downloads", src: "vscode", fmt: "compact" },
-  vscode_trending_weekly: { label: "VSCode trending/wk", src: "vscode", fmt: "dec" },
-  openvsx_downloads: { label: "OpenVSX downloads", src: "openvsx", fmt: "compact" },
-  jetbrains_downloads: { label: "JetBrains downloads", src: "jetbrains", fmt: "compact" },
+  docker_pulls: { label: "Docker pulls", src: "docker", fmt: "compact" },
+  docker_pulls_delta_30d: { label: "Docker pulls Δ30d", src: "docker", fmt: "signed" },
+  pypi_downloads: { label: "PyPI downloads /mo", src: "pypi", fmt: "compact" },
+  pypi_downloads_delta_30d: { label: "PyPI Δ30d", src: "pypi", fmt: "signed" },
+  npm_downloads: { label: "npm downloads /mo", src: "npm", fmt: "compact" },
+  npm_downloads_delta_30d: { label: "npm Δ30d", src: "npm", fmt: "signed" },
   hn_7d: { label: "HN mentions 7d", src: "hn", fmt: "compact" },
   hn_30d: { label: "HN mentions 30d", src: "hn", fmt: "compact" },
   reddit_7d: { label: "Reddit mentions 7d", src: "reddit", fmt: "compact" },
   reddit_30d: { label: "Reddit mentions 30d", src: "reddit", fmt: "compact" },
 };
 const TABLE_COLS = [
-  "stars", "stars_delta_30d", "commits_30d", "vscode_installs",
-  "vscode_installs_delta_30d", "openvsx_downloads", "jetbrains_downloads",
-  "hn_30d", "reddit_30d",
+  "stars", "stars_delta_30d", "docker_pulls", "pypi_downloads",
+  "npm_downloads", "commits_30d", "hn_30d", "reddit_30d",
 ];
 
 let view = "install";
@@ -378,8 +382,16 @@ function rankChip(d) {
     : `<span class="rd down" title="down ${-d} vs yesterday">▼${-d}</span>`;
 }
 
+function tagPills(t) {
+  if (!t.tags) return "<span class='dash'>–</span>";
+  const ease = `<span class="tag ${t.tags.ease || ""}">${t.tags.ease || ""}</span>`;
+  const focus = `<span class="pill">${t.tags.focus || ""}</span>`;
+  const type = `<span class="pill">${t.tags.type || ""}</span>`;
+  return `${ease}${focus}${type}`;
+}
+
 function render() {
-  const tools = D.tools.slice();
+  const tools = D.runners.slice();
   const isMomentum = view === "momentum";
   document.querySelectorAll("#viewSeg button").forEach(b =>
     b.classList.toggle("on", b.dataset.view === view));
@@ -407,7 +419,7 @@ function render() {
       <td class="rank">${rankCell(i)}${rankChip(deltas[t.id])}</td>
       <td class="tool">
         <a href="${t.homepage || '#'}" target="_blank" rel="noopener">
-          <span class="nm">${t.name}</span><span class="tag">${t.category || ""}</span>${ptag(t.pricing)}
+          <span class="nm">${t.name}</span>${ptag(t.pricing)}
         </a>
         <div class="vn">${t.vendor || ""}${cov.pct < 100 ? ` <span class="cov" title="Score based on ${cov.n} of ${totSrc} sources — missing sources count as zero">${cov.n}/${totSrc} sources</span>` : ""}</div>
       </td>
@@ -418,6 +430,7 @@ function render() {
       </div></td>
       <td>${sparkline(t.series[seriesKey], isMomentum ? "mo" : "")}</td>
       ${TABLE_COLS.map(m => `<td class="num">${fmt(t.values[m], META[m].fmt)}</td>`).join("")}
+      <td style="text-align:left;white-space:normal">${tagPills(t)}</td>
     </tr>`;
   });
   const rows = rowArr.join("");
@@ -438,7 +451,7 @@ function render() {
   else fc.remove();
   document.getElementById("footNote").textContent =
     `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : (isMomentum ? "Momentum (30d)" : "Install base")}. ` +
-    "Scores are min-max normalized across tracked tools; missing sources count as zero (coverage penalty). A — means that source has no data for the tool.";
+    "Scores are min-max normalized across tracked runners; missing sources count as zero (coverage penalty). A — means that source has no data for the runner.";
 }
 
 function buildSortOptions() {

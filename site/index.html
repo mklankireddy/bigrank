@@ -91,7 +91,7 @@
 </style>
 </head>
 <body>
-<nav class="nav"><div class="brand"><a href="index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 AI <span class="caret">&#9662;</span></button><div class="menu mega"><div class="menu-col"><div class="menu-head">🤖 Agents</div><a class="item" href="ai/agents/coding/index.html"><span class="i">💻</span><span>Coding</span></a><a class="item" href="ai/agents/general/index.html"><span class="i">🧩</span><span>General-purpose</span></a></div><div class="menu-col"><div class="menu-head">🧠 Models</div><a class="item disabled" title="Coming soon"><span>Open weight</span><span class="nsoon">soon</span></a><a class="item disabled" title="Coming soon"><span>Closed weight</span><span class="nsoon">soon</span></a></div></div></div></div></nav>
+<nav class="nav"><div class="brand"><a href="index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 AI <span class="caret">&#9662;</span></button><div class="menu mega"><div class="menu-col"><div class="menu-head">🤖 Agents</div><a class="item" href="ai/agents/coding/index.html"><span class="i">💻</span><span>Coding</span></a><a class="item" href="ai/agents/general/index.html"><span class="i">🧩</span><span>General-purpose</span></a></div><div class="menu-col"><div class="menu-head">🧠 Models</div><a class="item" href="ai/model/local-model-runner/index.html"><span class="i">🖥️</span><span>Local Model Runner</span></a><a class="item disabled" title="Coming soon"><span>Open weight</span><span class="nsoon">soon</span></a><a class="item disabled" title="Coming soon"><span>Closed weight</span><span class="nsoon">soon</span></a></div></div></div></div></nav>
 
 <div class="wrap">
   <div class="hero">
@@ -100,17 +100,26 @@
   </div>
 
   <div class="cards">
-    <div class="card"><div class="card-head"><span class="che">🤖</span>Agents</div><a class="card-item" href="ai/agents/coding/index.html"><span class="iemoji">💻</span><span class="itext"><span class="iname">Coding</span><span class="idesc">Cursor, Claude Code, Copilot, Windsurf & more</span></span><span class="iarrow">→</span></a><a class="card-item" href="ai/agents/general/index.html"><span class="iemoji">🧩</span><span class="itext"><span class="iname">General-purpose</span><span class="idesc">OpenClaw, AutoGPT, Open Interpreter & more</span></span><span class="iarrow">→</span></a></div><div class="card"><div class="card-head"><span class="che">🧠</span>Models</div><div class="card-item disabled"><span class="itext"><span class="iname">Open weight</span></span><span class="soon">soon</span></div><div class="card-item disabled"><span class="itext"><span class="iname">Closed weight</span></span><span class="soon">soon</span></div></div>
+    <div class="card"><div class="card-head"><span class="che">🤖</span>Agents</div><a class="card-item" href="ai/agents/coding/index.html"><span class="iemoji">💻</span><span class="itext"><span class="iname">Coding</span><span class="idesc">Cursor, Claude Code, Copilot, Windsurf & more</span></span><span class="iarrow">→</span></a><a class="card-item" href="ai/agents/general/index.html"><span class="iemoji">🧩</span><span class="itext"><span class="iname">General-purpose</span><span class="idesc">OpenClaw, AutoGPT, Open Interpreter & more</span></span><span class="iarrow">→</span></a></div><div class="card"><div class="card-head"><span class="che">🧠</span>Models</div><a class="card-item" href="ai/model/local-model-runner/index.html"><span class="iemoji">🖥️</span><span class="itext"><span class="iname">Local Model Runner</span><span class="idesc">Ollama, llama.cpp, vLLM & more</span></span><span class="iarrow">→</span></a><div class="card-item disabled"><span class="itext"><span class="iname">Open weight</span></span><span class="soon">soon</span></div><div class="card-item disabled"><span class="itext"><span class="iname">Closed weight</span></span><span class="soon">soon</span></div></div>
   </div>
 
   <details>
     <summary>Raw data & tool requests</summary>
     <p>
       Every day the collector records each ranking's metrics from public APIs and stores them as auditable
-      snapshots — one JSON file per day, one line per entry. Anyone can inspect or download the raw numbers
-      behind these rankings.
+<<<<<<< HEAD
+      snapshots — one JSON file per day, one line per entry, under <code>data/snapshots</code> (coding tools),
+      <code>data/agent_snapshots</code> (agents), and <code>data/local-model-runner_snapshots</code> (local model runners).
+      Anyone can inspect or download the raw numbers behind these rankings.
     </p>
-    <p><b>Snapshot archive</b> — <a href="https://github.com/mklankireddy/bigrank/tree/main/data/snapshots" target="_blank" rel="noopener">view all in the repository</a></p>
+    <p><b>Snapshot archive</b> — <a href="https://github.com/mklankireddy/bigrank/tree/main/data" target="_blank" rel="noopener">view all in the repository</a></p>
+=======
+      snapshots — one JSON file per day, one line per entry, under <code>data/snapshots</code> (coding tools),
+      <code>data/agent_snapshots</code> (agents), and <code>data/local-model-runner_snapshots</code> (local model runners).
+      Anyone can inspect or download the raw numbers behind these rankings.
+    </p>
+    <p><b>Snapshot archive</b> — <a href="https://github.com/mklankireddy/bigrank/tree/main/data" target="_blank" rel="noopener">view all in the repository</a></p>
+>>>>>>> c0aa3a7 (Add Local Model Runner rankings board (v1.3.0): 18 runners, docker/pypi/npm signals)
 
     <h4>Request a new tool</h4>
     <p>
@@ -132,12 +141,20 @@
     </form>
   </details>
 
-  <footer class="site-footer">BigRank v1.2.0<span id="footerCommit"></span></footer>
+<<<<<<< HEAD
+  <footer class="site-footer">BigRank v1.3.0<span id="footerCommit"></span></footer>
+=======
+  <footer class="site-footer">BigRank v1.3.0<span id="footerCommit"></span></footer>
+>>>>>>> c0aa3a7 (Add Local Model Runner rankings board (v1.3.0): 18 runners, docker/pypi/npm signals)
 </div>
 
 <script>
 (function () {
-  const c = "4f586596";
+<<<<<<< HEAD
+  const c = "4f58659";
+=======
+  const c = "4f58659";
+>>>>>>> c0aa3a7 (Add Local Model Runner rankings board (v1.3.0): 18 runners, docker/pypi/npm signals)
   const el = document.getElementById("footerCommit");
   if (c) el.innerHTML = ' · commit <span class="sha">' + c + "</span>";
   else el.remove();

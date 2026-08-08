@@ -13,11 +13,14 @@ SITE_DIR = os.path.join(ROOT, "site")
 AGENT_CONFIG_PATH = os.path.join(ROOT, "config", "agents.json")
 AGENT_DATA_DIR = os.path.join(ROOT, "data", "agent_snapshots")
 AGENT_ARCHIVE_PATH = os.path.join(ROOT, "data", "agents_archive.jsonl")
+RUNNER_CONFIG_PATH = os.path.join(ROOT, "config", "local-model-runner.json")
+RUNNER_DATA_DIR = os.path.join(ROOT, "data", "local-model-runner_snapshots")
+RUNNER_ARCHIVE_PATH = os.path.join(ROOT, "data", "local-model-runner_archive.jsonl")
 
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 
 def short_commit():
@@ -66,6 +69,35 @@ def get_json(session, url, **kwargs):
         except requests.RequestException as e:
             last = e
             time.sleep(5 * (attempt + 1))
+            continue
+    raise RuntimeError(f"failed after retries: {last} {url}")
+
+
+def get_json_fast(session, url, attempts=2, **kwargs):
+    """GET with a short retry schedule; raises after ~5s total.
+
+    For third-party stats APIs (PyPI Stats) that rate-limit aggressively: a
+    429 becomes a fast failure, so the caller can record None for the day
+    rather than stall the whole daily run on backoff sleeps.
+    """
+    kwargs.setdefault("timeout", 15)
+    last = None
+    for attempt in range(attempts):
+        try:
+            resp = session.get(url, **kwargs)
+            if resp.status_code == 200:
+                return resp.json()
+            last = resp
+            if resp.status_code in (403, 429):
+                time.sleep(2 * (attempt + 1))
+                continue
+            if resp.status_code >= 500:
+                time.sleep(2 * (attempt + 1))
+                continue
+            resp.raise_for_status()
+        except requests.RequestException as e:
+            last = e
+            time.sleep(2 * (attempt + 1))
             continue
     raise RuntimeError(f"failed after retries: {last} {url}")
 
@@ -188,3 +220,26 @@ def consolidate_agents(keep_days=30, today=None):
     if today is None:
         today = date.today()
     return _consolidate(AGENT_DATA_DIR, AGENT_ARCHIVE_PATH, keep_days, today, "agent")
+
+
+def load_runner_config():
+    with open(RUNNER_CONFIG_PATH, "r") as f:
+        return json.load(f)
+
+
+def runner_snapshot_path(d=None):
+    if d is None:
+        d = date.today().isoformat()
+    return os.path.join(RUNNER_DATA_DIR, str(d) + ".jsonl")
+
+
+def load_runner_snapshots():
+    """Return {date_str: {runner_id: rec}} (archive + daily, daily wins)."""
+    return _load_daily_files(RUNNER_DATA_DIR, "runner", _load_archive(RUNNER_ARCHIVE_PATH, "runner"))
+
+
+def consolidate_runners(keep_days=30, today=None):
+    """Move runner snapshot files older than the retention window into the archive."""
+    if today is None:
+        today = date.today()
+    return _consolidate(RUNNER_DATA_DIR, RUNNER_ARCHIVE_PATH, keep_days, today, "runner")

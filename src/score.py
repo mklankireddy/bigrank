@@ -21,6 +21,26 @@ DELTA_METRICS = {
     "vscode_installs_delta_30d": ("vscode", "installs"),
 }
 
+RUNNER_METRICS = {
+    "stars": ("github", "stars"),
+    "forks": ("github", "forks"),
+    "commits_30d": ("github", "commits_30d"),
+    "hn_7d": ("hn", "mentions_7d"),
+    "hn_30d": ("hn", "mentions_30d"),
+    "reddit_7d": ("reddit", "mentions_7d"),
+    "reddit_30d": ("reddit", "mentions_30d"),
+    "docker_pulls": ("docker", "pulls"),
+    "pypi_downloads": ("pypi", "last_month"),
+    "npm_downloads": ("npm", "downloads"),
+}
+
+RUNNER_DELTA_METRICS = {
+    "stars_delta_30d": ("github", "stars"),
+    "docker_pulls_delta_30d": ("docker", "pulls"),
+    "pypi_downloads_delta_30d": ("pypi", "last_month"),
+    "npm_downloads_delta_30d": ("npm", "downloads"),
+}
+
 
 def get_metric(rec, src, key):
     return ((rec or {}).get("sources") or {}).get(src, {}).get(key)
@@ -73,56 +93,63 @@ def coverage(scores, weights, tool_ids):
     return out
 
 
-def raw_and_scores(snapshots, cfg, latest_date, pivot_date):
-    """Return (raw, scores) for every metric across tools.
+def raw_and_scores(snapshots, cfg, latest_date, pivot_date, metrics=METRICS,
+                   delta_metrics=DELTA_METRICS, item_key="tools"):
+    """Return (raw, scores) for every metric across tools/runners.
 
-    raw:    {tool_id: {metric: value}}
-    scores: {metric: {tool_id: 0..100}}
+    raw:    {item_id: {metric: value}}
+    scores: {metric: {item_id: 0..100}}
     """
-    tools = cfg["tools"]
-    raw = {t["id"]: {} for t in tools}
+    items = cfg[item_key]
+    raw = {t["id"]: {} for t in items}
     latest = snapshots[latest_date]
     pivot = snapshots.get(pivot_date, latest)
 
-    for t in tools:
+    for t in items:
         tid = t["id"]
         rec = latest.get(tid, {})
-        for metric, (src, key) in METRICS.items():
+        for metric, (src, key) in metrics.items():
             raw[tid][metric] = get_metric(rec, src, key)
         rec_p = pivot.get(tid, {})
-        for metric, (src, key) in DELTA_METRICS.items():
+        for metric, (src, key) in delta_metrics.items():
             a = get_metric(rec, src, key)
             b = get_metric(rec_p, src, key)
             raw[tid][metric] = a - b if (a is not None and b is not None) else None
 
-    all_metrics = set(METRICS) | set(DELTA_METRICS)
+    all_metrics = set(metrics) | set(delta_metrics)
     scores = {m: normalize({tid: raw[tid][m] for tid in raw}) for m in all_metrics}
     return raw, scores
 
 
-def build_series(snapshots, cfg):
-    """Per-tool time series of composites + key raw metrics, keyed by date."""
+def build_series(snapshots, cfg, metrics=METRICS, delta_metrics=DELTA_METRICS,
+                 item_key="tools", w_install_key="weights_install",
+                 w_momentum_key="weights_momentum", series_keys=None,
+                 extra_metrics=None):
+    """Per-item time series of composites + key raw metrics, keyed by date."""
     dates = sorted(snapshots)
-    tool_ids = [t["id"] for t in cfg["tools"]]
-    w_install = cfg["meta"]["weights_install"]
-    w_momentum = cfg["meta"]["weights_momentum"]
+    item_ids = [t["id"] for t in cfg[item_key]]
+    w_install = cfg["meta"][w_install_key]
+    w_momentum = cfg["meta"][w_momentum_key]
+    if series_keys is None:
+        series_keys = ["install", "momentum", "stars", "hn_30d", "vscode_installs"]
+    if extra_metrics is None:
+        extra_metrics = ["stars", "hn_30d", "vscode_installs"]
 
     series = {
-        tid: {"dates": dates, "install": [], "momentum": [], "stars": [], "hn_30d": [], "vscode_installs": []}
-        for tid in tool_ids
+        tid: {"dates": dates, **{k: [] for k in series_keys}}
+        for tid in item_ids
     }
 
     for i, d in enumerate(dates):
         pivot = dates[max(0, i - 29)]
         view = {d: snapshots[d], pivot: snapshots[pivot]}
-        raw, scores = raw_and_scores(view, cfg, d, pivot)
-        ci = composite(scores, w_install, tool_ids)
-        cm = composite(scores, w_momentum, tool_ids)
-        for tid in tool_ids:
+        raw, scores = raw_and_scores(view, cfg, d, pivot, metrics, delta_metrics, item_key)
+        ci = composite(scores, w_install, item_ids)
+        cm = composite(scores, w_momentum, item_ids)
+        for tid in item_ids:
             series[tid]["install"].append(ci[tid])
             series[tid]["momentum"].append(cm[tid])
-            series[tid]["stars"].append(raw[tid]["stars"])
-            series[tid]["hn_30d"].append(raw[tid]["hn_30d"])
-            series[tid]["vscode_installs"].append(raw[tid]["vscode_installs"])
+            for m in extra_metrics:
+                series[tid][m].append(raw[tid][m])
 
     return series

@@ -14,7 +14,7 @@ TEMPLATE = os.path.join(ROOT, "src", "templates", "landing.html")
 def main():
     cfg = load_config()
     repo = os.environ.get("GITHUB_REPOSITORY") or cfg["meta"].get("repo", "")
-    archive = f"https://github.com/{repo}/tree/main/data/snapshots" if repo else "#"
+    archive = f"https://github.com/{repo}/tree/main/data" if repo else "#"
 
     with open(TEMPLATE) as f:
         html = f.read()
