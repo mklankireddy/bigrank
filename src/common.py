@@ -16,11 +16,14 @@ AGENT_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "general-purpose-age
 RUNNER_CONFIG_PATH = os.path.join(ROOT, "config", "local-model-runner.json")
 RUNNER_DATA_DIR = os.path.join(ROOT, "data", "local-model-runner_snapshots")
 RUNNER_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "local-model-runner_archive.jsonl")
+FREE_APPS_CONFIG_PATH = os.path.join(ROOT, "config", "free_apps.json")
+FREE_APPS_DATA_DIR = os.path.join(ROOT, "data", "free-apps_snapshots")
+FREE_APPS_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "free-apps_archive.jsonl")
 
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30
 
-VERSION = "1.3.1"
+VERSION = "1.4.0"
 
 # GoatCounter analytics (https://www.goatcounter.com). Set to your site code
 # (e.g. "bigrank") to enable the tracking snippet on every page; empty = off.
@@ -257,3 +260,26 @@ def consolidate_runners(keep_days=30, today=None):
     if today is None:
         today = date.today()
     return _consolidate(RUNNER_DATA_DIR, RUNNER_ARCHIVE_PATH, keep_days, today, "runner")
+
+
+def load_free_apps_config():
+    with open(FREE_APPS_CONFIG_PATH, "r") as f:
+        return json.load(f)
+
+
+def free_app_snapshot_path(d=None):
+    if d is None:
+        d = date.today().isoformat()
+    return os.path.join(FREE_APPS_DATA_DIR, str(d) + ".jsonl")
+
+
+def load_free_app_snapshots():
+    """Return {date_str: {app_id: rec}} (archive + daily, daily wins)."""
+    return _load_daily_files(FREE_APPS_DATA_DIR, "app", _load_archive(FREE_APPS_ARCHIVE_PATH, "app"))
+
+
+def consolidate_free_apps(keep_days=30, today=None):
+    """Move free-app snapshot files older than the retention window into the archive."""
+    if today is None:
+        today = date.today()
+    return _consolidate(FREE_APPS_DATA_DIR, FREE_APPS_ARCHIVE_PATH, keep_days, today, "app")

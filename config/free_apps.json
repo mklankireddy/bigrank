@@ -1,0 +1,465 @@
+{
+  "meta": {
+    "description": "Everyday AI apps ranked for free-tier usefulness — what students and people who cannot pay for frontier models can actually use.",
+    "repo": "mklankireddy/bigrank",
+    "weights_value": {
+      "free_tier": 25,
+      "ease_of_access": 15,
+      "usefulness": 20,
+      "hn_30d": 15,
+      "reddit_30d": 15,
+      "stars": 10
+    },
+    "weights_momentum": {
+      "hn_7d": 30,
+      "reddit_7d": 25,
+      "stars_delta_30d": 20,
+      "hn_30d": 15,
+      "reddit_30d": 10
+    }
+  },
+  "apps": [
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT",
+      "vendor": "OpenAI",
+      "category": "Chat assistant",
+      "pricing": "freemium",
+      "homepage": "https://chatgpt.com",
+      "github": null,
+      "hn_query": "\"chatgpt\"",
+      "reddit_query": "\"chatgpt\"",
+      "manual": {
+        "free_tier": 80,
+        "ease_of_access": 95,
+        "usefulness": 90,
+        "free_tier_note": "Free model access (GPT-4o mini, GPT-5 mini), no card required; limits on advanced models."
+      }
+    },
+    {
+      "id": "claude",
+      "name": "Claude",
+      "vendor": "Anthropic",
+      "category": "Chat assistant",
+      "pricing": "freemium",
+      "homepage": "https://claude.ai",
+      "github": null,
+      "hn_query": "\"claude\"",
+      "reddit_query": "\"claude\"",
+      "manual": {
+        "free_tier": 65,
+        "ease_of_access": 90,
+        "usefulness": 88,
+        "free_tier_note": "Free tier with daily message limits; strong for writing and long-context work."
+      }
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini",
+      "vendor": "Google",
+      "category": "Chat assistant",
+      "pricing": "freemium",
+      "homepage": "https://gemini.google.com",
+      "github": null,
+      "hn_query": "\"gemini\"",
+      "reddit_query": "\"gemini\"",
+      "manual": {
+        "free_tier": 90,
+        "ease_of_access": 95,
+        "usefulness": 85,
+        "free_tier_note": "Generous free tier, deep Google/Workspace integration, free for students."
+      }
+    },
+    {
+      "id": "perplexity",
+      "name": "Perplexity",
+      "vendor": "Perplexity AI",
+      "category": "AI search",
+      "pricing": "freemium",
+      "homepage": "https://www.perplexity.ai",
+      "github": null,
+      "hn_query": "\"perplexity\"",
+      "reddit_query": "\"perplexity\"",
+      "manual": {
+        "free_tier": 70,
+        "ease_of_access": 92,
+        "usefulness": 82,
+        "free_tier_note": "Free with limited Pro searches/day; great for cited research and study queries."
+      }
+    },
+    {
+      "id": "copilot",
+      "name": "Microsoft Copilot",
+      "vendor": "Microsoft",
+      "category": "Chat assistant",
+      "pricing": "freemium",
+      "homepage": "https://copilot.microsoft.com",
+      "github": null,
+      "hn_query": "\"microsoft copilot\" OR \"copilot\" microsoft",
+      "reddit_query": "\"microsoft copilot\" OR \"copilot\" microsoft",
+      "manual": {
+        "free_tier": 75,
+        "ease_of_access": 90,
+        "usefulness": 75,
+        "free_tier_note": "Free GPT access in Windows/Edge; generous for everyday writing and research."
+      }
+    },
+    {
+      "id": "grok",
+      "name": "Grok",
+      "vendor": "xAI",
+      "category": "Chat assistant",
+      "pricing": "freemium",
+      "homepage": "https://grok.com",
+      "github": null,
+      "hn_query": "\"grok\" ai",
+      "reddit_query": "\"grok\" ai",
+      "manual": {
+        "free_tier": 55,
+        "ease_of_access": 70,
+        "usefulness": 65,
+        "free_tier_note": "Free tier exists but is limited; often tied to X/𝕏 account."
+      }
+    },
+    {
+      "id": "notebooklm",
+      "name": "NotebookLM",
+      "vendor": "Google",
+      "category": "Research assistant",
+      "pricing": "free",
+      "homepage": "https://notebooklm.google.com",
+      "github": null,
+      "hn_query": "\"notebooklm\"",
+      "reddit_query": "\"notebooklm\"",
+      "manual": {
+        "free_tier": 95,
+        "ease_of_access": 92,
+        "usefulness": 92,
+        "free_tier_note": "Free, no card; upload your sources, grounded answers + Audio Overviews — ideal for studying."
+      }
+    },
+    {
+      "id": "ai-studio",
+      "name": "Google AI Studio",
+      "vendor": "Google",
+      "category": "Developer playground",
+      "pricing": "free",
+      "homepage": "https://aistudio.google.com",
+      "github": null,
+      "hn_query": "\"google ai studio\"",
+      "reddit_query": "\"google ai studio\"",
+      "manual": {
+        "free_tier": 92,
+        "ease_of_access": 75,
+        "usefulness": 85,
+        "free_tier_note": "Free access to Gemini models, generous quota, code + multimodal; more technical."
+      }
+    },
+    {
+      "id": "hugging-chat",
+      "name": "Hugging Chat",
+      "vendor": "Hugging Face",
+      "category": "Chat assistant",
+      "pricing": "free",
+      "homepage": "https://huggingface.co/chat",
+      "github": null,
+      "hn_query": "\"hugging chat\"",
+      "reddit_query": "\"hugging chat\"",
+      "manual": {
+        "free_tier": 78,
+        "ease_of_access": 85,
+        "usefulness": 70,
+        "free_tier_note": "Free, open-model chat with image generation; good open alternative."
+      }
+    },
+    {
+      "id": "le-chat",
+      "name": "Mistral Le Chat",
+      "vendor": "Mistral AI",
+      "category": "Chat assistant",
+      "pricing": "freemium",
+      "homepage": "https://chat.mistral.ai",
+      "github": null,
+      "hn_query": "\"le chat\" mistral",
+      "reddit_query": "\"le chat\" mistral",
+      "manual": {
+        "free_tier": 80,
+        "ease_of_access": 85,
+        "usefulness": 72,
+        "free_tier_note": "Free tier with solid open models; good speed, no card required."
+      }
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "vendor": "DeepSeek",
+      "category": "Chat assistant",
+      "pricing": "free",
+      "homepage": "https://chat.deepseek.com",
+      "github": { "repo": "deepseek-ai/DeepSeek-V3" },
+      "hn_query": "\"deepseek\"",
+      "reddit_query": "\"deepseek\"",
+      "manual": {
+        "free_tier": 85,
+        "ease_of_access": 85,
+        "usefulness": 78,
+        "free_tier_note": "Free chat with a strong reasoning model; open weights, privacy caveats."
+      }
+    },
+    {
+      "id": "meta-ai",
+      "name": "Meta AI",
+      "vendor": "Meta",
+      "category": "Chat assistant",
+      "pricing": "free",
+      "homepage": "https://www.meta.ai",
+      "github": null,
+      "hn_query": "\"meta ai\"",
+      "reddit_query": "\"meta ai\"",
+      "manual": {
+        "free_tier": 75,
+        "ease_of_access": 80,
+        "usefulness": 65,
+        "free_tier_note": "Free across Meta apps; solid everyday assistant, image generation built in."
+      }
+    },
+    {
+      "id": "poe",
+      "name": "Poe",
+      "vendor": "Quora",
+      "category": "Chat assistant",
+      "pricing": "freemium",
+      "homepage": "https://poe.com",
+      "github": null,
+      "hn_query": "\"poe\" quora",
+      "reddit_query": "\"poe\" quora",
+      "manual": {
+        "free_tier": 60,
+        "ease_of_access": 85,
+        "usefulness": 65,
+        "free_tier_note": "Free daily points; browse GPT, Claude, Gemini and more from one app."
+      }
+    },
+    {
+      "id": "kimi",
+      "name": "Kimi",
+      "vendor": "Moonshot AI",
+      "category": "Chat assistant",
+      "pricing": "free",
+      "homepage": "https://www.kimi.com",
+      "github": null,
+      "hn_query": "\"kimi\" moonshot",
+      "reddit_query": "\"kimi\" moonshot",
+      "manual": {
+        "free_tier": 88,
+        "ease_of_access": 85,
+        "usefulness": 80,
+        "free_tier_note": "Free strong reasoning model with a very large context window."
+      }
+    },
+    {
+      "id": "qwen-chat",
+      "name": "Qwen Chat",
+      "vendor": "Alibaba",
+      "category": "Chat assistant",
+      "pricing": "free",
+      "homepage": "https://chat.qwen.ai",
+      "github": null,
+      "hn_query": "\"qwen chat\"",
+      "reddit_query": "\"qwen chat\"",
+      "manual": {
+        "free_tier": 90,
+        "ease_of_access": 82,
+        "usefulness": 78,
+        "free_tier_note": "Free access to Qwen models — text, images and long documents."
+      }
+    },
+    {
+      "id": "character-ai",
+      "name": "Character.AI",
+      "vendor": "Character AI",
+      "category": "Chat assistant",
+      "pricing": "free",
+      "homepage": "https://character.ai",
+      "github": null,
+      "hn_query": "\"character.ai\"",
+      "reddit_query": "\"character ai\"",
+      "manual": {
+        "free_tier": 70,
+        "ease_of_access": 90,
+        "usefulness": 40,
+        "free_tier_note": "Free personality-driven chat; more entertainment than a study tool."
+      }
+    },
+    {
+      "id": "phind",
+      "name": "Phind",
+      "vendor": "Phind",
+      "category": "AI search",
+      "pricing": "freemium",
+      "homepage": "https://www.phind.com",
+      "github": null,
+      "hn_query": "\"phind\"",
+      "reddit_query": "\"phind\"",
+      "manual": {
+        "free_tier": 65,
+        "ease_of_access": 80,
+        "usefulness": 75,
+        "free_tier_note": "Free AI search aimed at developers; cited answers with web access."
+      }
+    },
+    {
+      "id": "you-com",
+      "name": "You.com",
+      "vendor": "You.com",
+      "category": "AI search",
+      "pricing": "freemium",
+      "homepage": "https://you.com",
+      "github": null,
+      "hn_query": "\"you.com\"",
+      "reddit_query": "\"you.com\"",
+      "manual": {
+        "free_tier": 60,
+        "ease_of_access": 85,
+        "usefulness": 70,
+        "free_tier_note": "Free AI search with citations; daily limit on AI messages."
+      }
+    },
+    {
+      "id": "ideogram",
+      "name": "Ideogram",
+      "vendor": "Ideogram",
+      "category": "Image generation",
+      "pricing": "freemium",
+      "homepage": "https://ideogram.ai",
+      "github": null,
+      "hn_query": "\"ideogram\"",
+      "reddit_query": "\"ideogram\"",
+      "manual": {
+        "free_tier": 65,
+        "ease_of_access": 88,
+        "usefulness": 75,
+        "free_tier_note": "Free daily credits; best-in-class text rendered inside images."
+      }
+    },
+    {
+      "id": "bing-image-creator",
+      "name": "Bing Image Creator",
+      "vendor": "Microsoft",
+      "category": "Image generation",
+      "pricing": "free",
+      "homepage": "https://www.bing.com/images/create",
+      "github": null,
+      "hn_query": "\"bing image creator\"",
+      "reddit_query": "\"bing image creator\"",
+      "manual": {
+        "free_tier": 90,
+        "ease_of_access": 92,
+        "usefulness": 70,
+        "free_tier_note": "Free image generation powered by DALL·E; needs a Microsoft account."
+      }
+    },
+    {
+      "id": "suno",
+      "name": "Suno",
+      "vendor": "Suno",
+      "category": "Music",
+      "pricing": "freemium",
+      "homepage": "https://suno.com",
+      "github": null,
+      "hn_query": "\"suno\"",
+      "reddit_query": "\"suno\"",
+      "manual": {
+        "free_tier": 70,
+        "ease_of_access": 85,
+        "usefulness": 72,
+        "free_tier_note": "Free daily credits; full songs from text prompts."
+      }
+    },
+    {
+      "id": "grammarly",
+      "name": "Grammarly",
+      "vendor": "Grammarly",
+      "category": "Writing assistant",
+      "pricing": "freemium",
+      "homepage": "https://www.grammarly.com",
+      "github": null,
+      "hn_query": "\"grammarly\"",
+      "reddit_query": "\"grammarly\"",
+      "manual": {
+        "free_tier": 80,
+        "ease_of_access": 95,
+        "usefulness": 85,
+        "free_tier_note": "Free grammar and tone suggestions; premium for advanced rewrites."
+      }
+    },
+    {
+      "id": "quillbot",
+      "name": "QuillBot",
+      "vendor": "QuillBot",
+      "category": "Writing assistant",
+      "pricing": "freemium",
+      "homepage": "https://quillbot.com",
+      "github": null,
+      "hn_query": "\"quillbot\"",
+      "reddit_query": "\"quillbot\"",
+      "manual": {
+        "free_tier": 75,
+        "ease_of_access": 90,
+        "usefulness": 80,
+        "free_tier_note": "Free paraphrasing, summarizing and grammar; premium lifts word limits."
+      }
+    },
+    {
+      "id": "elicit",
+      "name": "Elicit",
+      "vendor": "Elicit",
+      "category": "Research assistant",
+      "pricing": "freemium",
+      "homepage": "https://elicit.com",
+      "github": null,
+      "hn_query": "\"elicit\"",
+      "reddit_query": "\"elicit\"",
+      "manual": {
+        "free_tier": 70,
+        "ease_of_access": 70,
+        "usefulness": 82,
+        "free_tier_note": "Free research workflow — search, summarize and extract from papers."
+      }
+    },
+    {
+      "id": "elevenlabs",
+      "name": "ElevenLabs",
+      "vendor": "ElevenLabs",
+      "category": "Text-to-speech",
+      "pricing": "freemium",
+      "homepage": "https://elevenlabs.io",
+      "github": null,
+      "hn_query": "\"elevenlabs\"",
+      "reddit_query": "\"elevenlabs\"",
+      "manual": {
+        "free_tier": 65,
+        "ease_of_access": 75,
+        "usefulness": 60,
+        "free_tier_note": "Free monthly characters; best-in-class AI voices and dubbing."
+      }
+    },
+    {
+      "id": "deepl",
+      "name": "DeepL",
+      "vendor": "DeepL SE",
+      "category": "Translation",
+      "pricing": "freemium",
+      "homepage": "https://www.deepl.com",
+      "github": null,
+      "hn_query": "\"deepl\"",
+      "reddit_query": "\"deepl\"",
+      "manual": {
+        "free_tier": 85,
+        "ease_of_access": 90,
+        "usefulness": 75,
+        "free_tier_note": "Free translator with natural-sounding output; unlimited text, doc limits on free."
+      }
+    }
+  ]
+}

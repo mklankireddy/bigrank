@@ -11,8 +11,9 @@ consolidated into `data/archives/coding-agents_archive.jsonl` (one line per tool
 history is committed to this repo and every number is auditable.
 
 The same pipeline also powers a **general-purpose agents** ranking
-(`data/general-purpose-agents_snapshots/`, `data/archives/general-purpose-agents_archive.jsonl`) and a **local model runner**
-ranking (`data/local-model-runner_snapshots/`, `data/archives/local-model-runner_archive.jsonl`).
+(`data/general-purpose-agents_snapshots/`, `data/archives/general-purpose-agents_archive.jsonl`), a **local model runner**
+ranking (`data/local-model-runner_snapshots/`, `data/archives/local-model-runner_archive.jsonl`), and a **free AI apps**
+ranking (`data/free-apps_snapshots/`, `data/archives/free-apps_archive.jsonl`).
 
 Live page: [bigrank](https://<your-username>.github.io/bigrank/) (enable Pages, see below).
 
@@ -66,6 +67,32 @@ in `config/local-model-runner.json` and are adjustable client-side.
 Each runner carries hand-maintained, display-only tags (`ease`, `focus`, `type`) plus a
 `pricing` tag — none of these affect the score.
 
+## Free AI apps ranking
+
+A separate board ranks **everyday consumer AI apps** (ChatGPT, Claude, Gemini, Copilot,
+Perplexity, Grok, NotebookLM, Google AI Studio, Hugging Chat, Mistral Le Chat, DeepSeek,
+Meta AI) by how useful they are on their **free tier** — what students and people who can't
+pay for frontier models can actually use. Tracked in `config/free_apps.json`; daily snapshots
+in `data/free-apps_snapshots/`, archived to `data/archives/free-apps_archive.jsonl` after 30 days.
+
+| Source | Metric | API |
+|---|---|---|
+| GitHub | stars + 30d star delta (only apps with an open-source repo) | `GET /repos/{owner}/{repo}` |
+| Hacker News | mentions in trailing 7d / 30d | Algolia `hn.algolia.com/api/v1/search` |
+| Reddit | mentions in trailing 7d / 30d (newest-first, capped at 1000) | OAuth `search.json` |
+| Hand-maintained | free-tier / ease-of-access / usefulness ratings (0–100) + note | `config/free_apps.json` |
+
+Two composite views (**Free Tier Value** and **Momentum**), same min-max + coverage-penalty
+scoring as the other boards; weights live in `config/free_apps.json` and are adjustable
+client-side.
+
+**Automated vs hand-maintained:** the daily snapshot only carries public signals — most of
+these apps are closed-source, so the GitHub column is mostly empty by design. Three factors
+(`free_tier`, `ease_of_access`, `usefulness`) are **human ratings** maintained in the config
+by the maintainer, never snapshotted, and always present (so they never trigger the coverage
+penalty). They are marked <span class="tag hand">hand</span> in the table and are subjective
+by nature.
+
 ## Pricing tags
 
 Each tool/agent also carries a hand-maintained `pricing` tag in `config/tools.json` /
@@ -87,29 +114,35 @@ above each table.
 config/tools.json          # tracked tools + repo/ext/plugin ids + search phrases + weights
 config/agents.json         # tracked open-source agents + activity/adoption weights + setup notes
 config/local-model-runner.json  # tracked local model runners + weights + display-only tags
+config/free_apps.json      # tracked free AI apps + hand-maintained factors + weights
 src/
   collect.py               # runs all collectors -> data/coding-agents_snapshots/<date>.jsonl, then prunes old days
   collect_agents.py        # agent collectors -> data/general-purpose-agents_snapshots/<date>.jsonl
   collect_local_model_runner.py  # runner collectors -> data/local-model-runner_snapshots/<date>.jsonl
+  collect_free_apps.py     # free-app collectors -> data/free-apps_snapshots/<date>.jsonl
   nav.py                   # single source of truth for the top nav (group -> sections -> items) + landing cards
   build_landing.py         # renders site/index.html (landing page)
   build_site.py            # renders site/ai/agents/coding/ (coding agents ranking)
   build_agents.py          # renders site/ai/agents/general/ (general-purpose agents ranking)
   build_local_model_runner.py  # renders site/ai/model/local-model-runner/ (local model runner ranking)
+  build_free_apps.py       # renders site/ai/apps/free/ (free AI apps ranking)
   score.py                 # normalization + composites + time series
   common.py                # config load, HTTP, snapshot I/O, retention/archive
   sources/                 # github.py, github_agent.py, github_runner.py, hn.py, reddit.py, vscode.py, openvsx.py, jetbrains.py, docker.py, pypi.py, npm.py
   templates/index.html     # the coding agents ranking page
   templates/agents.html    # the general-purpose agents ranking page
   templates/local_model_runner.html  # the local model runner ranking page
+  templates/free_apps.html # the free AI apps ranking page
   templates/landing.html   # the landing page
 data/coding-agents_snapshots/<date>.jsonl  # daily coding-agent snapshots, trailing 30 days
 data/general-purpose-agents_snapshots/<date>.jsonl  # daily agent snapshots, trailing 30 days
 data/local-model-runner_snapshots/<date>.jsonl  # daily runner snapshots, trailing 30 days
+data/free-apps_snapshots/<date>.jsonl  # daily free-app snapshots, trailing 30 days
 data/archives/coding-agents_archive.jsonl  # consolidated coding-agent history older than 30 days
 data/archives/general-purpose-agents_archive.jsonl  # consolidated agent history older than 30 days
 data/archives/local-model-runner_archive.jsonl  # consolidated runner history older than 30 days
-site/                      # generated static site (index.html, ai/agents/, ai/model/)
+data/archives/free-apps_archive.jsonl  # consolidated free-app history older than 30 days
+site/                      # generated static site (index.html, ai/agents/, ai/model/, ai/apps/)
 .github/workflows/collect.yml
 ```
 
@@ -118,15 +151,16 @@ site/                      # generated static site (index.html, ai/agents/, ai/m
 The landing page's **Raw data & tool requests** section lets visitors:
 
 - **Browse the snapshot archive** — a link to the `data/coding-agents_snapshots/`,
-  `data/general-purpose-agents_snapshots/`, and `data/local-model-runner_snapshots/` folders in the repo
+  `data/general-purpose-agents_snapshots/`, `data/local-model-runner_snapshots/`, and
+  `data/free-apps_snapshots/` folders in the repo
   (read-only; history is auditable).
 - **Request a tool** — a small form (title, what needs to be ranked and how, official link)
   that opens a pre-filled GitHub issue. Visitors fill in the three fields; the only extra step
   is clicking *Submit* on GitHub's page (login required), since a static site cannot create
   issues via the API. The matching GitHub issue form lives at
   `.github/ISSUE_TEMPLATE/tool_request.yml`. Only maintainers can change `config/tools.json`,
-  `config/agents.json`, and `config/local-model-runner.json`, so the tracked lists and scoring
-  are never editable from the page.
+  `config/agents.json`, `config/local-model-runner.json`, and `config/free_apps.json`, so the
+  tracked lists and scoring are never editable from the page.
 
 The repo URL for those links is set automatically from `GITHUB_REPOSITORY` in CI, or via
 `meta.repo` in `config/tools.json` for local previews.
@@ -141,6 +175,7 @@ python src/build_landing.py                            # build landing page
 python src/build_site.py                               # build site/ai/agents/coding/
 python src/build_agents.py                             # build site/ai/agents/general/
 python src/build_local_model_runner.py                 # build site/ai/model/local-model-runner/
+python src/build_free_apps.py                          # build site/ai/apps/free/
 python -m http.server -d site 8000                     # preview
 ```
 
@@ -179,6 +214,15 @@ Edit `config/local-model-runner.json` and add an entry with the runner's GitHub 
 HN/Reddit search phrases, and display-only `tags` (`ease` = easy/medium/advanced,
 `focus` = consumer/server/multi/apple-silicon, `type` = runner/server/frontend/hybrid).
 The page, snapshots, and scoring all pick the entry up automatically.
+
+## Adding a free app
+
+Edit `config/free_apps.json` and add an entry with the app's name, vendor, category,
+`pricing` tag, homepage, `github.repo` (only if the product is open-source), HN/Reddit
+search phrases, and the hand-maintained `manual` block: `free_tier`, `ease_of_access`,
+`usefulness` (0–100) plus a `free_tier_note` shown under the app name. The daily collector,
+page, and scoring pick the entry up automatically; the manual factors are updated by
+editing the config (a pull request), not by the daily run.
 
 ## Caveats
 

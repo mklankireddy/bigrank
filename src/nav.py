@@ -47,6 +47,19 @@ NAV = [
                     },
                 ],
             },
+            {
+                "label": "Apps",
+                "emoji": "📱",
+                "items": [
+                    {
+                        "key": "free-apps",
+                        "label": "Free Apps",
+                        "emoji": "🎁",
+                        "page": "ai/apps/free/index.html",
+                        "desc": "ChatGPT, Claude, Gemini, Copilot free tiers & more",
+                    },
+                ],
+            },
         ],
     },
 ]

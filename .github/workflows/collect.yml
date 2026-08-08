@@ -42,12 +42,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+      - name: Collect free-apps snapshot
+        run: python src/collect_free_apps.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
       - name: Build site
         run: |
           python src/build_landing.py
           python src/build_site.py
           python src/build_agents.py
           python src/build_local_model_runner.py
+          python src/build_free_apps.py
       - name: Commit data + site
         run: |
           git config user.name "github-actions[bot]"
