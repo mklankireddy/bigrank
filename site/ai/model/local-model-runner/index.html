@@ -124,27 +124,14 @@
   }
   .gbtn .caret { font-size: 10px; margin-left: 3px; }
   .group:hover .gbtn, .group:focus-within .gbtn { color: var(--text); background: var(--panel2); border-color: var(--border); }
-  .menu.mega {
-    display: none; position: absolute; top: 100%; right: 0; min-width: 300px;
+  .menu {
+    display: none; position: absolute; top: 100%; right: 0; min-width: 210px;
     background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-    padding: 8px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30; flex-wrap: wrap;
+    padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30;
   }
-  .group:hover .menu.mega, .group:focus-within .menu.mega { display: flex; }
-  .menu-col { min-width: 150px; flex: 1; }
-  .menu-title {
-    display: flex; align-items: center; gap: 10px; flex-basis: 100%;
-    padding: 6px 12px 12px; margin-bottom: 8px; border-bottom: 1px solid var(--border);
-    font-size: 15px; color: var(--text);
-  }
-  .menu-title .i { font-size: 18px; width: auto; text-align: left; }
-  .menu-title b { font-weight: 800; }
-  .menu-title span { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 1px; }
-  .menu-head {
-    font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase;
-    color: var(--muted); padding: 8px 10px 6px; margin-bottom: 4px; border-bottom: 1px solid var(--border);
-  }
+  .group:hover .menu, .group:focus-within .menu { display: block; }
   .menu a.item {
-    display: flex; align-items: center; gap: 8px; padding: 8px 10px 8px 16px; border-radius: 7px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 7px; color: var(--muted);
     text-decoration: none; font-size: 13.5px; font-weight: 600;
   }
   .menu a.item .i { font-size: 15px; width: 20px; text-align: center; flex: none; }
@@ -157,7 +144,7 @@
 </style>
 </head>
 <body>
-<nav class="nav"><div class="brand"><a href="../../../index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 AI <span class="caret">&#9662;</span></button><div class="menu mega"><div class="menu-title"><span class="i">🤖</span><div><b>AI</b><span>Live rankings</span></div></div><div class="menu-col"><div class="menu-head">🤖 Agents</div><a class="item" href="../../agents/coding/index.html"><span class="i">💻</span><span>Coding</span><span class="arrow">→</span></a><a class="item" href="../../agents/general/index.html"><span class="i">🧩</span><span>General-purpose</span><span class="arrow">→</span></a></div><div class="menu-col"><div class="menu-head">🧠 Models</div><a class="item on" href="index.html"><span class="i">🖥️</span><span>Local Model Runner</span><span class="arrow">→</span></a></div><div class="menu-col"><div class="menu-head">📱 Apps</div><a class="item" href="../../apps/free/index.html"><span class="i">🎁</span><span>Free Apps</span><span class="arrow">→</span></a></div></div></div></div></nav>
+<nav class="nav"><div class="brand"><a href="../../../index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 Agents <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../../agents/coding/index.html"><span class="i">💻</span><span>Coding</span><span class="arrow">→</span></a><a class="item" href="../../agents/general/index.html"><span class="i">🧩</span><span>General-purpose</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">📱 Apps <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../../apps/free/index.html"><span class="i">🎁</span><span>Free Apps</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">🧠 Models <span class="caret">&#9662;</span></button><div class="menu"><a class="item on" href="index.html"><span class="i">🖥️</span><span>Local Model Runner</span><span class="arrow">→</span></a></div></div></div></nav>
 
 <div class="wrap">
   <header>
