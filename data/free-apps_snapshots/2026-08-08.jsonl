@@ -1,7 +1,7 @@
-{"app": "chatgpt", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1511, "mentions_7d": 353}}}
-{"app": "claude", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 5944, "mentions_7d": 1305}}}
-{"app": "gemini", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1073, "mentions_7d": 282}}}
-{"app": "perplexity", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 36, "mentions_7d": 5}}}
+{"app": "chatgpt", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1509, "mentions_7d": 352}}}
+{"app": "claude", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 5933, "mentions_7d": 1302}}}
+{"app": "gemini", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1072, "mentions_7d": 281}}}
+{"app": "perplexity", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 34, "mentions_7d": 5}}}
 {"app": "copilot", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1, "mentions_7d": 0}}}
 {"app": "grok", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 140, "mentions_7d": 28}}}
 {"app": "notebooklm", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 33, "mentions_7d": 1}}}
