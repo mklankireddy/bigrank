@@ -20,7 +20,21 @@ RUNNER_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "local-model-runner
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30
 
-VERSION = "1.3.0"
+VERSION = "1.3.1"
+
+# GoatCounter analytics (https://www.goatcounter.com). Set to your site code
+# (e.g. "bigrank") to enable the tracking snippet on every page; empty = off.
+GOATCOUNTER_CODE = os.environ.get("GOATCOUNTER_CODE", "bigmakstech")
+
+
+def goatcounter_snippet():
+    """Return the GoatCounter tracking snippet, or "" when no site code is set."""
+    if not GOATCOUNTER_CODE:
+        return ""
+    return (
+        f'<script data-goatcounter="https://{GOATCOUNTER_CODE}.goatcounter.com/count"\n'
+        f'        async src="//gc.zgo.at/count.js"></script>\n'
+    )
 
 
 def short_commit():

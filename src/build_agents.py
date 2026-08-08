@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import ROOT, SITE_DIR, VERSION, load_agent_config, load_agent_snapshots, short_commit  # noqa: E402
+from common import ROOT, SITE_DIR, VERSION, goatcounter_snippet, load_agent_config, load_agent_snapshots, short_commit  # noqa: E402
 from nav import render_nav  # noqa: E402
 from score import composite, normalize  # noqa: E402
 
@@ -117,6 +117,7 @@ def main():
     with open(AGENTS_TEMPLATE) as f:
         html = f.read()
     html = html.replace("{{NAV}}", render_nav("general", AGENTS_PAGE_PATH))
+    html = html.replace("{{GOATCOUNTER}}", goatcounter_snippet())
     with open(os.path.join(AGENTS_DIR, "index.html"), "w") as f:
         f.write(html)
     print(f"built agents page for {latest} ({len(dates)} days, {len(agents_data)} agents)")

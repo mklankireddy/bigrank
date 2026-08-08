@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import ROOT, SITE_DIR, VERSION, load_runner_config, load_runner_snapshots, short_commit  # noqa: E402
+from common import ROOT, SITE_DIR, VERSION, goatcounter_snippet, load_runner_config, load_runner_snapshots, short_commit  # noqa: E402
 from nav import render_nav  # noqa: E402
 from score import RUNNER_DELTA_METRICS, RUNNER_METRICS, build_series, composite, coverage, raw_and_scores  # noqa: E402
 
@@ -78,6 +78,7 @@ def main():
     with open(TEMPLATE) as f:
         html = f.read()
     html = html.replace("{{NAV}}", render_nav("local-model-runner", PAGE_PATH))
+    html = html.replace("{{GOATCOUNTER}}", goatcounter_snippet())
     with open(os.path.join(PAGE_DIR, "index.html"), "w") as f:
         f.write(html)
     print(f"built local-model-runner page for {latest} ({len(dates)} days, {len(runners_data)} runners)")

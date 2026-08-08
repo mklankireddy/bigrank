@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import ROOT, SITE_DIR, VERSION, load_config, load_snapshots, short_commit  # noqa: E402
+from common import ROOT, SITE_DIR, VERSION, goatcounter_snippet, load_config, load_snapshots, short_commit  # noqa: E402
 from nav import render_nav  # noqa: E402
 import score  # noqa: E402
 
@@ -71,6 +71,7 @@ def main():
     with open(TEMPLATE) as f:
         html = f.read()
     html = html.replace("{{NAV}}", render_nav("coding", PAGE_PATH))
+    html = html.replace("{{GOATCOUNTER}}", goatcounter_snippet())
     with open(os.path.join(PAGE_DIR, "index.html"), "w") as f:
         f.write(html)
     print(f"built site for {latest} ({len(dates)} days, {len(tools_data)} tools)")

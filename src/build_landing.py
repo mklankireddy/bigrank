@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from common import ROOT, SITE_DIR, VERSION, load_config, short_commit  # noqa: E402
+from common import ROOT, SITE_DIR, VERSION, goatcounter_snippet, load_config, short_commit  # noqa: E402
 from nav import render_cards, render_nav  # noqa: E402
 
 TEMPLATE = os.path.join(ROOT, "src", "templates", "landing.html")
@@ -24,6 +24,7 @@ def main():
     html = html.replace("{{REPO}}", json.dumps(repo))
     html = html.replace("{{VERSION}}", VERSION)
     html = html.replace("{{COMMIT}}", short_commit() or "")
+    html = html.replace("{{GOATCOUNTER}}", goatcounter_snippet())
     os.makedirs(SITE_DIR, exist_ok=True)
     with open(os.path.join(SITE_DIR, "index.html"), "w") as f:
         f.write(html)
