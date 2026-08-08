@@ -13,6 +13,7 @@ NAV = [
     {
         "label": "AI",
         "emoji": "🤖",
+        "tagline": "Live rankings",
         "sections": [
             {
                 "label": "Agents",
@@ -80,7 +81,7 @@ def _item(active, from_page, item):
     on = " on" if item["key"] == active else ""
     return (
         f'<a class="item{on}" href="{_rel_href(from_page, item["page"])}">'
-        f'{emoji}<span>{item["label"]}</span></a>'
+        f'{emoji}<span>{item["label"]}</span><span class="arrow">→</span></a>'
     )
 
 
@@ -95,10 +96,14 @@ def render_nav(active, from_page):
             head = f'{section["emoji"]} {section["label"]}' if section.get("emoji") else section["label"]
             cols.append(f'<div class="menu-col"><div class="menu-head">{head}</div>{items}</div>')
         gemoji = f'{group["emoji"]} ' if group.get("emoji") else ""
+        title = f'<div class="menu-title"><span class="i">{group["emoji"]}</span><div><b>{group["label"]}</b>'
+        if group.get("tagline"):
+            title += f'<span>{group["tagline"]}</span>'
+        title += "</div></div>"
         groups.append(
             '<div class="group">'
             f'<button class="gbtn" aria-haspopup="true">{gemoji}{group["label"]} <span class="caret">&#9662;</span></button>'
-            '<div class="menu mega">' + "".join(cols) + "</div>"
+            '<div class="menu mega">' + title + "".join(cols) + "</div>"
             "</div>"
         )
     return '<nav class="nav">' + brand + '<div class="groups">' + "".join(groups) + "</div></nav>"

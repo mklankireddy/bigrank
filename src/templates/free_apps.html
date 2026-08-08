@@ -132,13 +132,26 @@
   }
   .group:hover .menu.mega, .group:focus-within .menu.mega { display: flex; }
   .menu-col { min-width: 150px; flex: 1; }
-  .menu-head { font-size: 10.5px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); padding: 4px 10px 6px; }
+  .menu-title {
+    display: flex; align-items: center; gap: 10px; flex-basis: 100%;
+    padding: 6px 12px 12px; margin-bottom: 8px; border-bottom: 1px solid var(--border);
+    font-size: 15px; color: var(--text);
+  }
+  .menu-title .i { font-size: 18px; width: auto; text-align: left; }
+  .menu-title b { font-weight: 800; }
+  .menu-title span { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-top: 1px; }
+  .menu-head {
+    font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase;
+    color: var(--muted); padding: 8px 10px 6px; margin-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
   .menu a.item {
-    display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; color: var(--muted);
+    display: flex; align-items: center; gap: 8px; padding: 8px 10px 8px 16px; border-radius: 7px; color: var(--muted);
     text-decoration: none; font-size: 13.5px; font-weight: 600;
   }
   .menu a.item .i { font-size: 15px; width: 20px; text-align: center; flex: none; }
+  .menu a.item .arrow { margin-left: auto; font-size: 12px; opacity: 0; transition: opacity .12s; }
   .menu a.item:hover { color: var(--text); background: var(--panel2); }
+  .menu a.item:hover .arrow { opacity: 1; color: var(--accent); }
   .menu a.item.on { color: var(--text); background: var(--panel2); border: 1px solid var(--border); }
   .menu a.item.disabled { opacity: .45; cursor: not-allowed; }
   .menu .nsoon { font-size: 10px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; margin-left: auto; }
@@ -166,6 +179,12 @@
       <button data-view="momentum">Momentum (30d)</button>
     </div>
     <select id="sortSel" title="Sort by a single metric"></select>
+    <select id="priceSel" title="Filter by pricing tier">
+      <option value="all">All tiers</option>
+      <option value="free">Free</option>
+      <option value="freemium">Freemium</option>
+      <option value="paid">Paid</option>
+    </select>
     <button class="reset" id="resetW">Reset weights</button>
     <div class="weights" id="weights"></div>
   </div>
@@ -268,6 +287,7 @@ const TABLE_COLS = [
 
 let view = "value";
 let sortKey = null; // null = composite
+let priceFilter = "all";
 let weights = { value: {...D.meta.weights_value}, momentum: {...D.meta.weights_momentum} };
 const ROW_LIMIT = 10;
 let showMore = false;
@@ -378,7 +398,7 @@ function rankChip(d) {
 }
 
 function render() {
-  const apps = D.apps.slice();
+  const apps = D.apps.filter(a => priceFilter === "all" || a.pricing === priceFilter);
   const isMomentum = view === "momentum";
   document.querySelectorAll("#viewSeg button").forEach(b =>
     b.classList.toggle("on", b.dataset.view === view));
@@ -442,9 +462,16 @@ function render() {
   const fc = document.getElementById("footerCommit");
   if (D.meta.build_commit) fc.innerHTML = ` · commit <span class="sha">${D.meta.build_commit}</span>`;
   else fc.remove();
-  document.getElementById("footNote").textContent =
-    `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : (isMomentum ? "Momentum (30d)" : "Free Tier Value")}. ` +
-    "Scores are min-max normalized across tracked apps; missing sources count as zero (coverage penalty). Amber = hand-maintained factor (reviewed by the maintainer, not from the daily snapshot). A — means that source has no data for the app.";
+  let note = `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : (isMomentum ? "Momentum (30d)" : "Free Tier Value")}. `;
+  note += "Scores are min-max normalized across tracked apps; missing sources count as zero (coverage penalty). ";
+  note += "Amber = hand-maintained factor (reviewed by the maintainer, not from the daily snapshot). ";
+  if (priceFilter !== "all") {
+    const p = priceFilter === "free" ? "Free" : priceFilter === "paid" ? "Paid" : "Freemium";
+    note += `Filtered to ${p} apps only.`;
+  } else {
+    note += "A — means that source has no data for the app.";
+  }
+  document.getElementById("footNote").textContent = note;
 }
 
 function buildSortOptions() {
@@ -471,6 +498,12 @@ document.getElementById("viewSeg").addEventListener("click", e => {
 
 document.getElementById("sortSel").addEventListener("change", e => {
   sortKey = e.target.value || null;
+  showMore = false;
+  render();
+});
+
+document.getElementById("priceSel").addEventListener("change", e => {
+  priceFilter = e.target.value;
   showMore = false;
   render();
 });
