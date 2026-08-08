@@ -81,6 +81,7 @@ def main():
             "vendor": a.get("vendor"),
             "category": a.get("category"),
             "pricing": a.get("pricing"),
+            "platform": a.get("platform") or [],
             "homepage": a.get("homepage"),
             "manual": a.get("manual") or {},
             "values": raw[aid],

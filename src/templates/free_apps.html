@@ -171,6 +171,7 @@
       <option value="free">Free</option>
       <option value="freemium">Freemium</option>
     </select>
+    <select id="platformSel" title="Filter by platform"></select>
     <button class="reset" id="resetW">Reset weights</button>
     <div class="weights" id="weights"></div>
   </div>
@@ -229,6 +230,8 @@
     <p>Missing sources count as <b>zero</b> in the composite. Apps with no open-source repo (most of these) have no star count, so they lose the weight that metric carries — visible via the <span class="cov">n/m sources</span> badge. The hand-maintained factors never trigger this penalty.</p>
     <h4>Pricing tags</h4>
     <p>The <b>Free / Freemium / Paid</b> tag next to each app is hand-maintained from each product's official pricing page — an approximation, not a metric, and it does not affect the score.</p>
+    <h4>Platform tags</h4>
+    <p>The grey pills (<span class="pill">Web</span> <span class="pill">Mobile</span> <span class="pill">Desktop</span> <span class="pill">Ext</span> <span class="pill">CLI</span>) say where you can run the app — web, native mobile, desktop client, browser extension, or command line. They are hand-maintained and display-only. The <b>All platforms</b> filter matches any app that has the chosen platform (an app may have several).</p>
     <h4>Caveats</h4>
     <ul>
       <li>Hand-maintained ratings are subjective and may lag product changes; free tiers change frequently.</li>
@@ -255,6 +258,14 @@ const PRICE = {
 const ptag = (p) => PRICE[p]
   ? `<span class="tag p-${p}" title="${PRICE[p][1]}">${PRICE[p][0]}</span>`
   : "";
+const PLAT = {
+  web: "Web",
+  mobile: "Mobile",
+  desktop: "Desktop",
+  extension: "Ext",
+  cli: "CLI",
+};
+const pplat = (pl) => pl.map(p => PLAT[p] ? `<span class="pill">${PLAT[p]}</span>` : "").join(" ");
 const MANUAL = new Set(["free_tier", "ease_of_access", "usefulness"]);
 const META = {
   free_tier: { label: "Free tier (hand)", src: "hand", fmt: "" },
@@ -274,6 +285,7 @@ const TABLE_COLS = [
 let view = "value";
 let sortKey = null; // null = composite
 let priceFilter = "all";
+let platformFilter = "all";
 let weights = { value: {...D.meta.weights_value}, momentum: {...D.meta.weights_momentum} };
 const ROW_LIMIT = 10;
 let showMore = false;
@@ -384,7 +396,9 @@ function rankChip(d) {
 }
 
 function render() {
-  const apps = D.apps.filter(a => priceFilter === "all" || a.pricing === priceFilter);
+  const apps = D.apps.filter(a =>
+    (priceFilter === "all" || a.pricing === priceFilter) &&
+    (platformFilter === "all" || (a.platform || []).includes(platformFilter)));
   const isMomentum = view === "momentum";
   document.querySelectorAll("#viewSeg button").forEach(b =>
     b.classList.toggle("on", b.dataset.view === view));
@@ -410,13 +424,14 @@ function render() {
     const totSrc = new Set(Object.keys(weights[view]).map(m => META[m] && META[m].src)).size;
     const note = (a.manual && a.manual.free_tier_note) ? `<div class="note">${a.manual.free_tier_note}</div>` : "";
     const cat = a.category ? `<span class="pill">${a.category}</span>` : "";
+    const plat = pplat(a.platform || []);
     return `<tr class="${i < 3 ? "top3" : ""}">
       <td class="rank">${rankCell(i)}${rankChip(deltas[a.id])}</td>
       <td class="tool">
         <a href="${a.homepage || '#'}" target="_blank" rel="noopener">
           <span class="nm">${a.name}</span>${ptag(a.pricing)}
         </a>
-        <div class="vn">${a.vendor || ""} ${cat}${cov.pct < 100 ? ` <span class="cov" title="Score based on ${cov.n} of ${totSrc} sources — missing sources count as zero">${cov.n}/${totSrc} sources</span>` : ""}</div>
+        <div class="vn">${a.vendor || ""} ${cat}${plat}${cov.pct < 100 ? ` <span class="cov" title="Score based on ${cov.n} of ${totSrc} sources — missing sources count as zero">${cov.n}/${totSrc} sources</span>` : ""}</div>
         ${note}
       </td>
       <td class="score-cell"><div class="scorebar">
@@ -453,9 +468,12 @@ function render() {
   note += "Amber = hand-maintained factor (reviewed by the maintainer, not from the daily snapshot). ";
   if (priceFilter !== "all") {
     const p = priceFilter === "free" ? "Free" : priceFilter === "paid" ? "Paid" : "Freemium";
-    note += `Filtered to ${p} apps only.`;
+    note += `Filtered to ${p} apps only. `;
   } else {
-    note += "A — means that source has no data for the app.";
+    note += "A — means that source has no data for the app. ";
+  }
+  if (platformFilter !== "all") {
+    note += `Filtered to apps with a ${PLAT[platformFilter] || platformFilter} client.`;
   }
   document.getElementById("footNote").textContent = note;
 }
@@ -464,6 +482,15 @@ function buildSortOptions() {
   const el = document.getElementById("sortSel");
   el.innerHTML = `<option value="">Composite score</option>` +
     Object.entries(META).map(([k, m]) => `<option value="${k}">${m.label}</option>`).join("");
+}
+
+function buildPlatformOptions() {
+  const seen = new Set();
+  D.apps.forEach(a => (a.platform || []).forEach(p => seen.add(p)));
+  const order = ["web", "mobile", "desktop", "extension", "cli"];
+  const el = document.getElementById("platformSel");
+  el.innerHTML = `<option value="all">All platforms</option>` +
+    order.filter(p => seen.has(p)).map(p => `<option value="${p}">${PLAT[p]}</option>`).join("");
 }
 
 document.getElementById("moreBtn").addEventListener("click", () => {
@@ -494,6 +521,12 @@ document.getElementById("priceSel").addEventListener("change", e => {
   render();
 });
 
+document.getElementById("platformSel").addEventListener("change", e => {
+  platformFilter = e.target.value;
+  showMore = false;
+  render();
+});
+
 document.getElementById("resetW").addEventListener("click", () => {
   weights = { value: {...D.meta.weights_value}, momentum: {...D.meta.weights_momentum} };
   showMore = false;
@@ -516,6 +549,7 @@ document.querySelectorAll("th[data-sort]").forEach(th =>
   }));
 
 buildSortOptions();
+buildPlatformOptions();
 renderWeights();
 render();
 </script>

@@ -162,6 +162,12 @@
       <button data-view="momentum">Momentum (30d)</button>
     </div>
     <select id="sortSel" title="Sort by a single metric"></select>
+    <select id="priceSel" title="Filter by pricing tier">
+      <option value="all">All tiers</option>
+      <option value="free">Free</option>
+      <option value="freemium">Freemium</option>
+      <option value="paid">Paid</option>
+    </select>
     <button class="reset" id="resetW">Reset weights</button>
     <div class="weights" id="weights"></div>
   </div>
@@ -269,6 +275,7 @@ const TABLE_COLS = [
 
 let view = "install";
 let sortKey = null; // null = composite
+let priceFilter = "all";
 let weights = { install: {...D.meta.weights_install}, momentum: {...D.meta.weights_momentum} };
 const ROW_LIMIT = 10;
 let showMore = false;
@@ -379,7 +386,7 @@ function rankChip(d) {
 }
 
 function render() {
-  const tools = D.tools.slice();
+  const tools = D.tools.filter(t => priceFilter === "all" || t.pricing === priceFilter);
   const isMomentum = view === "momentum";
   document.querySelectorAll("#viewSeg button").forEach(b =>
     b.classList.toggle("on", b.dataset.view === view));
@@ -436,9 +443,15 @@ function render() {
   const fc = document.getElementById("footerCommit");
   if (D.meta.build_commit) fc.innerHTML = ` · commit <span class="sha">${D.meta.build_commit}</span>`;
   else fc.remove();
-  document.getElementById("footNote").textContent =
-    `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : (isMomentum ? "Momentum (30d)" : "Install base")}. ` +
-    "Scores are min-max normalized across tracked tools; missing sources count as zero (coverage penalty). A — means that source has no data for the tool.";
+  let note = `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : (isMomentum ? "Momentum (30d)" : "Install base")}. `;
+  note += "Scores are min-max normalized across tracked tools; missing sources count as zero (coverage penalty). ";
+  if (priceFilter !== "all") {
+    const p = priceFilter === "free" ? "Free" : priceFilter === "paid" ? "Paid" : "Freemium";
+    note += `Filtered to ${p} tools only.`;
+  } else {
+    note += "A — means that source has no data for the tool.";
+  }
+  document.getElementById("footNote").textContent = note;
 }
 
 function buildSortOptions() {
@@ -465,6 +478,12 @@ document.getElementById("viewSeg").addEventListener("click", e => {
 
 document.getElementById("sortSel").addEventListener("change", e => {
   sortKey = e.target.value || null;
+  showMore = false;
+  render();
+});
+
+document.getElementById("priceSel").addEventListener("change", e => {
+  priceFilter = e.target.value;
   showMore = false;
   render();
 });

@@ -218,7 +218,8 @@ The page, snapshots, and scoring all pick the entry up automatically.
 ## Adding a free app
 
 Edit `config/free_apps.json` and add an entry with the app's name, vendor, category,
-`pricing` tag, homepage, `github.repo` (only if the product is open-source), HN/Reddit
+`pricing` tag, optional `platform` array (where it runs: `web`, `mobile`, `desktop`,
+`extension`, `cli`), homepage, `github.repo` (only if the product is open-source), HN/Reddit
 search phrases, and the hand-maintained `manual` block: `free_tier`, `ease_of_access`,
 `usefulness` (0–100) plus a `free_tier_note` shown under the app name. The daily collector,
 page, and scoring pick the entry up automatically; the manual factors are updated by
