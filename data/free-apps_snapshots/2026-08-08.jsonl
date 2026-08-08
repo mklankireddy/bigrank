@@ -1,14 +1,14 @@
-{"app": "chatgpt", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1509, "mentions_7d": 352}}}
-{"app": "claude", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 5933, "mentions_7d": 1302}}}
-{"app": "gemini", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1072, "mentions_7d": 281}}}
+{"app": "chatgpt", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1507, "mentions_7d": 352}}}
+{"app": "claude", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 5931, "mentions_7d": 1300}}}
+{"app": "gemini", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1070, "mentions_7d": 281}}}
 {"app": "perplexity", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 34, "mentions_7d": 5}}}
 {"app": "copilot", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 1, "mentions_7d": 0}}}
-{"app": "grok", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 140, "mentions_7d": 28}}}
+{"app": "grok", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 139, "mentions_7d": 28}}}
 {"app": "notebooklm", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 33, "mentions_7d": 1}}}
 {"app": "ai-studio", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 13, "mentions_7d": 1}}}
 {"app": "hugging-chat", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
 {"app": "le-chat", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 2, "mentions_7d": 2}}}
-{"app": "deepseek", "date": "2026-08-08", "sources": {"github": {"archived": false, "commits_30d": 0, "forks": 16723, "open_issues": 215, "pushed_at": "2025-08-28T03:24:37Z", "stars": 104142}, "hn": {"mentions_30d": 1097, "mentions_7d": 321}}}
+{"app": "deepseek", "date": "2026-08-08", "sources": {"github": {"archived": false, "commits_30d": 0, "forks": 16723, "open_issues": 215, "pushed_at": "2025-08-28T03:24:37Z", "stars": 104142}, "hn": {"mentions_30d": 1096, "mentions_7d": 321}}}
 {"app": "meta-ai", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 14, "mentions_7d": 6}}}
 {"app": "poe", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
 {"app": "kimi", "date": "2026-08-08", "sources": {"hn": {"mentions_30d": 102, "mentions_7d": 8}}}
