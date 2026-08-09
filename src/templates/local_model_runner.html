@@ -82,6 +82,34 @@
   .spark { width: 110px; height: 30px; }
   .spark path { fill: none; stroke: var(--blue); stroke-width: 1.6; }
   .spark.mo path { stroke: var(--amber); }
+  @media (max-width: 768px) {
+    .table-wrap { border-radius: 8px; }
+    .table-wrap table { min-width: 0; table-layout: fixed; }
+    .table-wrap th, .table-wrap td { padding: 8px 6px; }
+    .table-wrap th[data-sort], .table-wrap td.num,
+    .table-wrap th.tags, .table-wrap td.tags { display: none; }
+    .table-wrap .rank { width: 36px; }
+    .table-wrap #compHead { width: 124px; }
+    .table-wrap #sparkHead { width: 84px; }
+    .table-wrap .score-cell { min-width: 0; }
+    .table-wrap .bar { width: 52px; }
+    .table-wrap .sparkline { width: 84px; }
+    .table-wrap .spark { width: 84px; }
+  }
+  @media (max-width: 520px) {
+    .table-wrap th, .table-wrap td { padding: 7px 4px; }
+    .table-wrap th#sparkHead, .table-wrap td.trend { display: none; }
+    .table-wrap .rank { width: 34px; }
+    .table-wrap #compHead { width: 64px; }
+    .table-wrap .scorebar { gap: 5px; }
+    .table-wrap .scorebar .bar { display: none; }
+    .table-wrap .score-cell .num { font-size: 12px; }
+    .table-wrap .tool { white-space: normal; }
+    .table-wrap .tool a { display: block; }
+    .table-wrap .tool .nm { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .table-wrap .tool .vn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .table-wrap .tool a .tag { display: block; width: fit-content; margin: 2px 0 0; }
+  }
   .foot { color: var(--muted); font-size: 13px; margin-top: 16px; }
   .site-footer { color: var(--muted); font-size: 12px; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); }
   .site-footer .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
@@ -189,7 +217,7 @@
           <th data-sort="commits_30d">Commits 30d</th>
           <th data-sort="hn_30d">HN 30d</th>
           <th data-sort="reddit_30d">Reddit 30d</th>
-          <th>Tags</th>
+          <th class="tags">Tags</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -433,9 +461,9 @@ function render() {
         <div class="bar ${isMomentum ? 'mo' : ''}"><i style="width:${w}%"></i></div>
         <span class="num ${up ? 'up' : 'down'}" title="vs. 7 days ago">${comp == null ? "" : arrow}</span>
       </div></td>
-      <td>${sparkline(t.series[seriesKey], isMomentum ? "mo" : "")}</td>
+      <td class="trend">${sparkline(t.series[seriesKey], isMomentum ? "mo" : "")}</td>
       ${TABLE_COLS.map(m => `<td class="num">${fmt(t.values[m], META[m].fmt)}</td>`).join("")}
-      <td style="text-align:left;white-space:normal">${tagPills(t)}</td>
+      <td class="tags" style="text-align:left;white-space:normal">${tagPills(t)}</td>
     </tr>`;
   });
   const rows = rowArr.join("");

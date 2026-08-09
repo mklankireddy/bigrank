@@ -90,4 +90,42 @@ def render_nav(active, from_page):
             '<div class="menu">' + items + "</div>"
             "</div>"
         )
-    return '<nav class="nav">' + brand + '<div class="groups">' + "".join(groups) + "</div></nav>"
+    groups_html = '<div class="groups" id="groups">' + "".join(groups) + "</div>"
+    burger = (
+        '<button class="burger" aria-label="Menu" aria-expanded="false" '
+        'aria-controls="groups" type="button">&#9776;</button>'
+    )
+    style = (
+        "<style>"
+        ".burger{display:none;background:transparent;border:1px solid transparent;"
+        "color:var(--text);font-size:20px;line-height:1;padding:4px 10px;border-radius:8px;cursor:pointer}"
+        ".burger:hover{background:var(--panel2);border-color:var(--border)}"
+        "@media (max-width:768px){"
+        ".burger{display:block}"
+        ".nav .groups{display:none;position:absolute;top:100%;left:0;right:0;"
+        "flex-direction:column;align-items:stretch;gap:2px;background:var(--panel);"
+        "border-bottom:1px solid var(--border);padding:6px 12px 10px}"
+        ".nav.open .groups{display:flex}"
+        ".nav .groups .group{width:100%}"
+        ".nav .groups .gbtn{width:100%;text-align:left}"
+        ".nav .groups .menu{position:static;min-width:0;box-shadow:none;"
+        "border:1px solid var(--border);margin:2px 0 6px}"
+        ".nav .groups .menu a.item{padding:9px 12px}}"
+        "</style>"
+    )
+    script = (
+        "<script>(function(){"
+        "var nav=document.querySelector('.nav'),b=nav&&nav.querySelector('.burger');"
+        "if(!nav||!b)return;"
+        "var close=function(){nav.classList.remove('open');b.setAttribute('aria-expanded','false')};"
+        "b.addEventListener('click',function(e){e.stopPropagation();"
+        "var open=nav.classList.toggle('open');b.setAttribute('aria-expanded',open?'true':'false')});"
+        "document.addEventListener('click',function(e){if(!nav.contains(e.target))close()});"
+        "document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});"
+        "})();"
+        "</script>"
+    )
+    return (
+        '<nav class="nav">' + brand + burger + groups_html + "</nav>"
+        + style + script
+    )

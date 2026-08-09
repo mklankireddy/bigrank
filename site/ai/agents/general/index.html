@@ -79,6 +79,28 @@
   .bar { width: 90px; height: 7px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
   .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius: 4px; }
   .bar.ad i { background: linear-gradient(90deg, var(--amber), var(--red)); }
+  @media (max-width: 768px) {
+    .table-wrap { border-radius: 8px; }
+    .table-wrap table { min-width: 0; table-layout: fixed; }
+    .table-wrap th, .table-wrap td { padding: 8px 5px; }
+    .table-wrap th.mh, .table-wrap td.mh, .table-wrap td.num { display: none; }
+    .table-wrap .rank { width: 32px; }
+    .table-wrap th.scr, .table-wrap td.score-cell { width: 88px; }
+    .table-wrap .bar { width: 44px; }
+  }
+  @media (max-width: 520px) {
+    .table-wrap th, .table-wrap td { padding: 7px 4px; }
+    .table-wrap .rank { width: 30px; }
+    .table-wrap th.scr, .table-wrap td.score-cell { width: 52px; }
+    .table-wrap .scorebar { gap: 5px; }
+    .table-wrap .scorebar .bar { display: none; }
+    .table-wrap .score-cell .num { font-size: 12px; }
+    .table-wrap .agent { white-space: normal; }
+    .table-wrap .agent a { display: block; }
+    .table-wrap .agent .nm { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .table-wrap .agent .vn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .table-wrap .agent a .tag { display: block; width: fit-content; margin: 2px 0 0; }
+  }
   .num { font-variant-numeric: tabular-nums; }
   .dash { color: var(--muted); }
   .effort { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 7px; margin-left: 5px; }
@@ -109,7 +131,7 @@
 </style>
 </head>
 <body>
-<nav class="nav"><div class="brand"><a href="../../../index.html">Big<span>Rank</span></a></div><div class="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 Agents <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../coding/index.html"><span class="i">💻</span><span>Coding</span><span class="arrow">→</span></a><a class="item on" href="index.html"><span class="i">🧩</span><span>General-purpose</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">📱 Apps <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../../apps/free/index.html"><span class="i">🎁</span><span>Free Apps</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">🧠 Models <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../../model/local-model-runner/index.html"><span class="i">🖥️</span><span>Local Model Runner</span><span class="arrow">→</span></a></div></div></div></nav>
+<nav class="nav"><div class="brand"><a href="../../../index.html">Big<span>Rank</span></a></div><button class="burger" aria-label="Menu" aria-expanded="false" aria-controls="groups" type="button">&#9776;</button><div class="groups" id="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 Agents <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../coding/index.html"><span class="i">💻</span><span>Coding</span><span class="arrow">→</span></a><a class="item on" href="index.html"><span class="i">🧩</span><span>General-purpose</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">📱 Apps <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../../apps/free/index.html"><span class="i">🎁</span><span>Free Apps</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">🧠 Models <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="../../model/local-model-runner/index.html"><span class="i">🖥️</span><span>Local Model Runner</span><span class="arrow">→</span></a></div></div></div></nav><style>.burger{display:none;background:transparent;border:1px solid transparent;color:var(--text);font-size:20px;line-height:1;padding:4px 10px;border-radius:8px;cursor:pointer}.burger:hover{background:var(--panel2);border-color:var(--border)}@media (max-width:768px){.burger{display:block}.nav .groups{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:2px;background:var(--panel);border-bottom:1px solid var(--border);padding:6px 12px 10px}.nav.open .groups{display:flex}.nav .groups .group{width:100%}.nav .groups .gbtn{width:100%;text-align:left}.nav .groups .menu{position:static;min-width:0;box-shadow:none;border:1px solid var(--border);margin:2px 0 6px}.nav .groups .menu a.item{padding:9px 12px}}</style><script>(function(){var nav=document.querySelector('.nav'),b=nav&&nav.querySelector('.burger');if(!nav||!b)return;var close=function(){nav.classList.remove('open');b.setAttribute('aria-expanded','false')};b.addEventListener('click',function(e){e.stopPropagation();var open=nav.classList.toggle('open');b.setAttribute('aria-expanded',open?'true':'false')});document.addEventListener('click',function(e){if(!nav.contains(e.target))close()});document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();</script>
 
 <div class="wrap">
   <header>
@@ -130,15 +152,15 @@
         <tr>
           <th class="rank">#</th>
           <th class="agent">Agent</th>
-          <th>Category</th>
-          <th>Activity</th>
-          <th>Adoption</th>
-          <th>Freshness</th>
-          <th>Commits 30d</th>
-          <th>Issues closed / open</th>
-          <th>Stars</th>
-          <th>Last release</th>
-          <th>Ease of running</th>
+          <th class="mh">Category</th>
+          <th class="scr">Activity</th>
+          <th class="scr">Adoption</th>
+          <th class="mh">Freshness</th>
+          <th class="mh">Commits 30d</th>
+          <th class="mh">Issues closed / open</th>
+          <th class="mh">Stars</th>
+          <th class="mh">Last release</th>
+          <th class="mh">Ease of running</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -227,15 +249,15 @@ const rowArr = [...D.agents]
     return `<tr class="${i < 3 ? "top3" : ""}">
       <td class="rank">${rankCell(i)}</td>
       <td class="agent"><a href="${a.homepage || "#"}" target="_blank" rel="noopener"><span class="nm">${a.name}</span>${ptag(a.pricing)} <span class="vn">${a.vendor || ""}</span></a></td>
-      <td><span class="pill">${a.category || "–"}</span></td>
+      <td class="mh"><span class="pill">${a.category || "–"}</span></td>
       <td class="score-cell">${scoreCell(a.scores.activity, "")}</td>
       <td class="score-cell">${scoreCell(a.scores.adoption, "ad")}</td>
-      <td><span class="badge ${a.freshness}">${BADGES[a.freshness] || a.freshness}</span></td>
+      <td class="mh"><span class="badge ${a.freshness}">${BADGES[a.freshness] || a.freshness}</span></td>
       <td class="num">${num(v.commits_30d)}</td>
       <td class="num">${num(v.issues_closed_30d)} / ${num(v.open_issues)}</td>
       <td class="num">${num(v.stars)}</td>
       <td class="num">${dshort(a.latest_release)}</td>
-      <td style="text-align:left;white-space:normal">${a.setup || "–"}<span class="effort">${a.effort || ""}</span></td>
+      <td class="mh" style="text-align:left;white-space:normal">${a.setup || "–"}<span class="effort">${a.effort || ""}</span></td>
     </tr>`;
   });
 const rows = rowArr.join("");
