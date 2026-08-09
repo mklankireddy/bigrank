@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BigRank — Live Open-Source Rankings</title>
-<meta name="description" content="Live rankings of AI tools based on real usage signals.">
+<title>BigRank — Daily Rankings of AI Tools</title>
+<meta name="description" content="Discover which AI tools are gaining traction across coding agents, AI agents, local AI, and other categories.">
 <style>
   :root {
     --bg: #0b0e14; --panel: #12161f; --panel2: #181d29; --border: #232a3a;
     --text: #d7dce6; --muted: #8b93a7; --accent: #6ea8fe; --green: #4ade80;
+    --red: #f87171; --amber: #fbbf24; --blue: #6ea8fe; --purple: #b4a5ff;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; background: var(--bg); color: var(--text);
     font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 60px; }
+  .wrap { padding: 48px 24px 60px; }
 
   .nav {
     position: sticky; top: 0; z-index: 20;
@@ -51,24 +52,51 @@
   .menu a.item.disabled { opacity: .45; cursor: not-allowed; }
   .menu .nsoon { font-size: 10px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; margin-left: auto; }
 
-  .hero { padding: 26px 0 4px; }
-  h1 { font-size: 34px; margin: 0 0 8px; }
-  h1 .live { color: var(--green); font-size: 13px; vertical-align: 5px; letter-spacing: .5px; }
+  .hero { padding: 26px 0 22px; }
   p.lede { color: var(--muted); font-size: 16px; margin: 0; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; margin-top: 34px; }
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-  .card-head { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
-  .card-head .che { font-size: 20px; }
-  .card-item { display: flex; align-items: center; gap: 12px; padding: 11px 12px; border: 1px solid transparent; border-radius: 10px; color: var(--text); text-decoration: none; }
-  .card-item .iemoji { font-size: 20px; width: 26px; text-align: center; flex: none; }
-  .card-item .itext { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-  .card-item .iname { font-weight: 700; font-size: 14px; }
-  .card-item .idesc { color: var(--muted); font-size: 12.5px; }
-  .card-item .iarrow { color: var(--muted); flex: none; }
-  a.card-item:hover { background: var(--panel2); border-color: var(--border); }
-  a.card-item:hover .iarrow { color: var(--accent); }
-  .card-item.disabled { opacity: .5; cursor: not-allowed; }
-  .card-item .soon { font-size: 10.5px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; margin-left: auto; flex: none; }
+  .secs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 28px; align-items: start; }
+  @media (max-width: 900px) { .secs { grid-template-columns: 1fr; } }
+  .sec { margin-top: 0; }
+  .sec-head { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .sec-head .che { font-size: 18px; }
+  .sec-upd { color: var(--muted); font-size: 12px; margin: -2px 0 10px; }
+  .sec-list { border: 1px solid var(--border); border-radius: 10px; background: var(--panel); overflow: hidden; }
+  .sec-headrow {
+    display: flex; align-items: center; gap: 14px; padding: 6px 14px;
+    background: var(--panel2); border-bottom: 1px solid var(--border);
+    font-size: 11px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase; color: var(--muted);
+  }
+  .sec-headrow .h-rank { width: 56px; flex: none; }
+  .sec-headrow .h-tool { flex: 1; }
+  .sec-headrow .h-score { flex: none; width: 150px; text-align: center; }
+  .sec-row {
+    display: flex; align-items: center; gap: 14px; padding: 8px 14px;
+  }
+  .sec-row + .sec-row { border-top: 1px solid var(--border); }
+  .sec-row .m-rank { display: flex; align-items: center; gap: 5px; width: 56px; flex: none; }
+  .sec-row .m-medal { font-size: 15px; line-height: 1; }
+  .sec-row .m-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .sec-row .m-name { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sec-row .m-vn { color: var(--muted); font-size: 12px; }
+  .sec-row .m-score { display: flex; align-items: center; justify-content: center; gap: 8px; width: 150px; flex: none; }
+  .sec-row .m-num { font-weight: 700; font-size: 14px; color: var(--accent); min-width: 34px; text-align: right; }
+  .sec-row .bar { width: 80px; height: 7px; background: var(--panel2); border-radius: 4px; overflow: hidden; flex: none; }
+  .sec-row .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius: 4px; }
+  .sec-foot {
+    display: block; text-align: center; color: var(--accent); text-decoration: none;
+    font-weight: 600; font-size: 13px; padding: 9px 16px; border-top: 1px solid var(--border);
+  }
+  .sec-foot:hover { color: var(--text); background: var(--panel2); }
+  .rd { font-size: 10.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .rd.up { color: var(--green); }
+  .rd.down { color: var(--red); }
+  .rd.same { color: var(--muted); }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; margin-left: 6px; }
+  .tag.p-free { color: var(--green); border-color: rgba(74,222,128,.45); }
+  .tag.p-freemium { color: var(--amber); border-color: rgba(251,191,36,.45); }
+  .tag.p-paid { color: var(--red); border-color: rgba(248,113,113,.45); }
   .site-footer { color: var(--muted); font-size: 12px; margin-top: 42px; padding-top: 12px; border-top: 1px solid var(--border); }
   .site-footer .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 
@@ -95,13 +123,10 @@
 
 <div class="wrap">
   <div class="hero">
-    <h1>Big<span style="color:var(--accent)">Rank</span> <span class="live">● LIVE</span></h1>
-    <p class="lede">Live rankings of AI tools based on real usage signals.</p>
+    <p class="lede">Discover which AI tools are gaining traction across coding agents, AI agents, local AI, and other categories.</p>
   </div>
 
-  <div class="cards">
-    {{CARDS}}
-  </div>
+  <div id="sections" class="secs"></div>
 
   <details>
     <summary>Raw data & tool requests</summary>
@@ -136,7 +161,115 @@
   <footer class="site-footer">BigRank v{{VERSION}}<span id="footerCommit"></span></footer>
 </div>
 
+<script src="ai/agents/coding/data.js"></script>
+<script src="ai/agents/general/data.js"></script>
+<script src="ai/apps/free/data.js"></script>
+<script src="ai/model/local-model-runner/data.js"></script>
 <script>
+(function () {
+  const MEDALS = ["🥇", "🥈", "🥉"];
+  const PRICE = { free: "Free", freemium: "Freemium", paid: "Paid" };
+  const ptag = (p) => p ? `<span class="tag p-${p}">${PRICE[p] || p}</span>` : "";
+  const overallSeries = (a) => {
+    const act = a.series.activity || [], ado = a.series.adoption || [];
+    return act.map((v, i) => (v == null || ado[i] == null) ? null : 0.5 * v + 0.5 * ado[i]);
+  };
+  const SECTIONS = [
+    { label: "Coding Agents", emoji: "💻", page: "ai/agents/coding/", data: window.RANKING_DATA,
+      items: d => d.tools, score: a => a.composite.install, series: a => a.series.install },
+    { label: "General-purpose Agents", emoji: "🧩", page: "ai/agents/general/", data: window.AGENTS_DATA,
+      items: d => d.agents, score: a => a.scores.overall, series: overallSeries },
+    { label: "Free Apps", emoji: "🎁", page: "ai/apps/free/", data: window.FREE_APPS_DATA,
+      items: d => d.apps, score: a => a.composite.value, series: a => a.series.value },
+    { label: "Local Model Runners", emoji: "🖥️", page: "ai/model/local-model-runner/", data: window.LOCAL_MODEL_RUNNER_DATA,
+      items: d => d.runners, score: a => a.composite.install, series: a => a.series.install },
+  ];
+  const rankDelta = (items, seriesOf) => {
+    const today = {}, prev = {};
+    items.forEach(a => {
+      const s = seriesOf(a) || [];
+      today[a.id] = s.length ? s[s.length - 1] : null;
+      prev[a.id] = s.length > 1 ? s[s.length - 2] : null;
+    });
+    const ranks = (map) => {
+      const ids = items.map(a => a.id);
+      ids.sort((x, y) => (map[y] == null ? -Infinity : map[y]) - (map[x] == null ? -Infinity : map[x]));
+      const out = {};
+      let lastVal = null, lastRank = 0;
+      ids.forEach((id, i) => {
+        const v = map[id];
+        if (v == null) { out[id] = null; return; }
+        if (v !== lastVal) { lastVal = v; lastRank = i + 1; }
+        out[id] = lastRank;
+      });
+      return out;
+    };
+    const r0 = ranks(prev), r1 = ranks(today);
+    const out = {};
+    items.forEach(a => {
+      out[a.id] = (r0[a.id] == null || r1[a.id] == null) ? null : r0[a.id] - r1[a.id];
+    });
+    return out;
+  };
+  const rankChip = (d) => {
+    if (d == null) return "";
+    if (d === 0) return '<span class="rd same" title="steady vs yesterday">–</span>';
+    return d > 0
+      ? `<span class="rd up" title="up ${d} vs yesterday">▲${d}</span>`
+      : `<span class="rd down" title="down ${-d} vs yesterday">▼${-d}</span>`;
+  };
+  const host = document.getElementById("sections");
+  if (host) {
+    SECTIONS.forEach(s => {
+      if (!s.data) return;
+      const ranked = s.items(s.data)
+        .map(a => ({ a, sc: s.score(a) }))
+        .filter(r => r.sc != null && isFinite(r.sc))
+        .sort((x, y) => y.sc - x.sc)
+        .slice(0, 3);
+      const deltas = rankDelta(s.items(s.data), s.series);
+      const rows = ranked.map((r, i) => {
+        const a = r.a;
+        const sr = s.series(a) || [];
+        const last7 = sr.slice(-7).filter(v => v != null);
+        const up = last7.length >= 2 && last7[last7.length - 1] >= last7[0];
+        const arrow = up
+          ? '<span class="up" title="vs. 7 days ago">▲</span>'
+          : '<span class="down" title="vs. 7 days ago">▼</span>';
+        const cat = a.category ? `<span class="tag">${a.category}</span>` : "";
+        return `<div class="sec-row">
+          <span class="m-rank"><span class="m-medal">${MEDALS[i]}</span>${rankChip(deltas[a.id])}</span>
+          <span class="m-text">
+            <span class="m-name">${a.name || a.id}${cat}${ptag(a.pricing)}</span>
+            <span class="m-vn">${a.vendor || ""}</span>
+          </span>
+            <span class="m-score">
+              <span class="m-num">${r.sc.toFixed(0)}</span>
+              <span class="bar"><i style="width:${Math.min(100, r.sc)}%"></i></span>
+              ${arrow}
+            </span>
+          </div>`;
+      }).join("");
+      if (!rows) return;
+      const upd = s.data.meta && s.data.meta.updated
+        ? `<div class="sec-upd">Updated ${s.data.meta.updated} · ${s.data.meta.days || ""} days of history</div>`
+        : "";
+      host.insertAdjacentHTML("beforeend",
+        `<section class="sec">
+          <div class="sec-head"><span class="che">${s.emoji}</span>${s.label}</div>
+          ${upd}
+          <div class="sec-list">
+            <div class="sec-headrow">
+              <span class="h-rank">#</span><span class="h-tool">Tool</span>
+              <span class="h-score">Score</span>
+            </div>
+            ${rows}
+            <a class="sec-foot" href="${s.page}">View full rankings →</a>
+          </div>
+        </section>`);
+    });
+  }
+})();
 (function () {
   const c = "{{COMMIT}}";
   const el = document.getElementById("footerCommit");

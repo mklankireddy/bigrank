@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from common import ROOT, SITE_DIR, VERSION, goatcounter_snippet, load_agent_config, load_agent_snapshots, short_commit  # noqa: E402
 from nav import render_nav  # noqa: E402
-from score import composite, normalize  # noqa: E402
+from score import build_series, composite, normalize  # noqa: E402
 
 AGENTS_TEMPLATE = os.path.join(ROOT, "src", "templates", "agents.html")
 AGENTS_DIR = os.path.join(SITE_DIR, "ai", "agents", "general")
@@ -74,6 +74,14 @@ def main():
     adoption = composite(scores, wad, agent_ids)
     overall = {aid: round(0.5 * activity[aid] + 0.5 * adoption[aid], 1) for aid in agent_ids}
 
+    series = build_series(
+        snaps, cfg, metrics=AGENT_METRICS, delta_metrics={},
+        item_key="agents", w_install_key="weights_activity",
+        w_momentum_key="weights_adoption",
+        series_keys=["activity", "adoption", "stars", "commits_30d", "hn_30d"],
+        extra_metrics=["stars", "commits_30d", "hn_30d"],
+    )
+
     agents_data = []
     for a in cfg["agents"]:
         aid = a["id"]
@@ -90,6 +98,7 @@ def main():
             "effort": a.get("effort"),
             "values": raw[aid],
             "scores": {"activity": activity[aid], "adoption": adoption[aid], "overall": overall[aid]},
+            "series": series[aid],
             "freshness": freshness(rec),
             "open_issues": g.get("open_issues"),
             "latest_release": g.get("latest_release"),

@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from common import ROOT, SITE_DIR, VERSION, goatcounter_snippet, load_config, short_commit  # noqa: E402
-from nav import render_cards, render_nav  # noqa: E402
+from nav import render_nav  # noqa: E402
 
 TEMPLATE = os.path.join(ROOT, "src", "templates", "landing.html")
 
@@ -19,7 +19,6 @@ def main():
     with open(TEMPLATE) as f:
         html = f.read()
     html = html.replace("{{NAV}}", render_nav(active=None, from_page="index.html"))
-    html = html.replace("{{CARDS}}", render_cards())
     html = html.replace("{{ARCHIVE_LINK}}", archive)
     html = html.replace("{{REPO}}", json.dumps(repo))
     html = html.replace("{{VERSION}}", VERSION)

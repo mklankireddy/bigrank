@@ -91,28 +91,3 @@ def render_nav(active, from_page):
             "</div>"
         )
     return '<nav class="nav">' + brand + '<div class="groups">' + "".join(groups) + "</div></nav>"
-
-
-def render_cards():
-    """Return landing-page section cards (hrefs are site-relative, so only valid from the root page)."""
-    cards = []
-    for group in NAV:
-        items = []
-        for item in group["items"]:
-            if item.get("disabled"):
-                items.append(
-                    f'<div class="card-item disabled">'
-                    f'<span class="itext"><span class="iname">{item["label"]}</span></span>'
-                    f'<span class="soon">soon</span></div>'
-                )
-            else:
-                desc = f'<span class="idesc">{item["desc"]}</span>' if item.get("desc") else ""
-                items.append(
-                    f'<a class="card-item" href="{item["page"]}">'
-                    f'<span class="iemoji">{item["emoji"]}</span>'
-                    f'<span class="itext"><span class="iname">{item["label"]}</span>{desc}</span>'
-                    f'<span class="iarrow">→</span></a>'
-                )
-        head = f'<span class="che">{group["emoji"]}</span>{group["label"]}' if group.get("emoji") else group["label"]
-        cards.append('<div class="card"><div class="card-head">' + head + "</div>" + "".join(items) + "</div>")
-    return "".join(cards)
