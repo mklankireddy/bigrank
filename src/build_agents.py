@@ -12,7 +12,7 @@ from score import build_series, composite, normalize  # noqa: E402
 
 AGENTS_TEMPLATE = os.path.join(ROOT, "src", "templates", "agents.html")
 AGENTS_DIR = os.path.join(SITE_DIR, "ai", "agents", "general")
-AGENTS_PAGE_PATH = "ai/agents/general/index.html"
+AGENTS_PAGE_PATH = "ai/agents/general/"
 
 AGENT_METRICS = {
     "stars": ("github", "stars"),

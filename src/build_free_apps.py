@@ -31,7 +31,7 @@ from score import (  # noqa: E402
 
 TEMPLATE = os.path.join(ROOT, "src", "templates", "free_apps.html")
 PAGE_DIR = os.path.join(SITE_DIR, "ai", "apps", "free")
-PAGE_PATH = "ai/apps/free/index.html"
+PAGE_PATH = "ai/apps/free/"
 
 SERIES_KEYS = ["value", "momentum", "free_tier", "hn_30d"]
 EXTRA_METRICS = ["free_tier", "hn_30d"]

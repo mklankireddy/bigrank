@@ -11,7 +11,7 @@ import score  # noqa: E402
 
 TEMPLATE = os.path.join(ROOT, "src", "templates", "index.html")
 PAGE_DIR = os.path.join(SITE_DIR, "ai", "agents", "coding")
-PAGE_PATH = "ai/agents/coding/index.html"
+PAGE_PATH = "ai/agents/coding/"
 
 
 def main():

@@ -11,7 +11,7 @@ from score import RUNNER_DELTA_METRICS, RUNNER_METRICS, build_series, composite,
 
 TEMPLATE = os.path.join(ROOT, "src", "templates", "local_model_runner.html")
 PAGE_DIR = os.path.join(SITE_DIR, "ai", "model", "local-model-runner")
-PAGE_PATH = "ai/model/local-model-runner/index.html"
+PAGE_PATH = "ai/model/local-model-runner/"
 
 SERIES_KEYS = ["install", "momentum", "stars", "docker_pulls", "pypi_downloads", "hn_30d"]
 EXTRA_METRICS = ["stars", "docker_pulls", "pypi_downloads", "hn_30d"]

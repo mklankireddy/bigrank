@@ -6,7 +6,7 @@ Adding a future group (e.g. "Movies" -> English/Indian) means editing this one f
 """
 import os
 
-LANDING_PAGE = "index.html"
+LANDING_PAGE = ""
 
 NAV = [
     {
@@ -17,14 +17,14 @@ NAV = [
                 "key": "coding",
                 "label": "Coding",
                 "emoji": "💻",
-                "page": "ai/agents/coding/index.html",
+                "page": "ai/agents/coding/",
                 "desc": "Cursor, Claude Code, Copilot, Windsurf & more",
             },
             {
                 "key": "general",
                 "label": "General-purpose",
                 "emoji": "🧩",
-                "page": "ai/agents/general/index.html",
+                "page": "ai/agents/general/",
                 "desc": "OpenClaw, AutoGPT, Open Interpreter & more",
             },
         ],
@@ -37,7 +37,7 @@ NAV = [
                 "key": "free-apps",
                 "label": "Free Apps",
                 "emoji": "🎁",
-                "page": "ai/apps/free/index.html",
+                "page": "ai/apps/free/",
                 "desc": "ChatGPT, Claude, Gemini, Copilot free tiers & more",
             },
         ],
@@ -50,7 +50,7 @@ NAV = [
                 "key": "local-model-runner",
                 "label": "Local Model Runner",
                 "emoji": "🖥️",
-                "page": "ai/model/local-model-runner/index.html",
+                "page": "ai/model/local-model-runner/",
                 "desc": "Ollama, llama.cpp, vLLM & more",
             },
         ],
@@ -60,6 +60,8 @@ NAV = [
 
 def _rel_href(from_page, to_page):
     base = os.path.dirname(from_page) or os.curdir
+    if not to_page:
+        return os.path.relpath(os.curdir, base).replace("\\", "/")
     return os.path.relpath(to_page, base).replace("\\", "/")
 
 
@@ -71,15 +73,21 @@ def _item(active, from_page, item):
             f'{emoji}<span>{item["label"]}</span><span class="nsoon">soon</span></a>'
         )
     on = " on" if item["key"] == active else ""
+    href = _rel_href(from_page, item["page"])
+    if item["page"].endswith("/") and not href.endswith("/"):
+        href += "/"
     return (
-        f'<a class="item{on}" href="{_rel_href(from_page, item["page"])}">'
+        f'<a class="item{on}" href="{href}">'
         f'{emoji}<span>{item["label"]}</span><span class="arrow">→</span></a>'
     )
 
 
 def render_nav(active, from_page):
     """Return the nav HTML for a page rendered at ``from_page`` (site-relative)."""
-    brand = f'<div class="brand"><a href="{_rel_href(from_page, LANDING_PAGE)}">Big<span>Rank</span></a></div>'
+    brand_href = _rel_href(from_page, LANDING_PAGE)
+    if not LANDING_PAGE:
+        brand_href += "/"
+    brand = f'<div class="brand"><a href="{brand_href}">Big<span>Rank</span></a></div>'
     groups = []
     for group in NAV:
         items = "".join(_item(active, from_page, item) for item in group["items"])
