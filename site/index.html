@@ -79,6 +79,13 @@
   .secs .tool .vn { color: var(--muted); font-size: 11.5px; }
   .secs .tool a { color: var(--text); text-decoration: none; }
   .secs .tool a:hover { color: var(--accent); }
+  .secs .logo {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; margin-right: 7px; vertical-align: -4px;
+    border-radius: 6px; background: var(--panel2); border: 1px solid var(--border);
+    font-size: 11px; font-weight: 800; color: var(--muted); flex: none; overflow: hidden;
+  }
+  .secs .logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 3px; }
   .secs .rank { width: 52px; color: var(--muted); font-weight: 700; }
   .secs .rank .medal { font-size: 15px; line-height: 1; }
   .secs .score-cell { min-width: 130px; }
@@ -225,6 +232,31 @@
   const MEDALS = ["🥇", "🥈", "🥉"];
   const PRICE = { free: "Free", freemium: "Freemium", paid: "Paid" };
   const ptag = (p) => p ? `<span class="tag p-${p}">${PRICE[p] || p}</span>` : "";
+  const LOGO_FIX = {
+    aider: "https://github.com/Aider-AI.png",
+    plandex: "https://github.com/plandex-ai.png",
+    gpt4all: "https://github.com/nomic-ai.png",
+    phind: "https://icon.horse/icon/www.phind.com",
+  };
+  const logo = (o) => {
+    let src = LOGO_FIX[o.id] || "";
+    if (!src) {
+      try {
+        const u = new URL(o.homepage || "");
+        const fv = (h) => `https://www.google.com/s2/favicons?domain=${h}&sz=64`;
+        if (u.hostname === "github.com") {
+          const owner = u.pathname.split("/")[1] || "";
+          const stop = ["features", "topics", "collections", "marketplace", "sponsors", "about", "login", "site", "explore", "pricing", "search", "docs", "contact", "policies"];
+          src = (owner && !stop.includes(owner.toLowerCase())) ? `https://github.com/${owner}.png` : fv("github.com");
+        } else {
+          src = fv(u.hostname);
+        }
+      } catch (e) { src = ""; }
+    }
+    if (!src) return "";
+    const init = ((o.name || o.id) || "?")[0].toUpperCase();
+    return `<span class="logo" aria-hidden="true">${init}<img src="${src}" alt="" loading="lazy" onerror="this.remove()"></span>`;
+  };
   const overallSeries = (a) => {
     const act = a.series.activity || [], ado = a.series.adoption || [];
     return act.map((v, i) => (v == null || ado[i] == null) ? null : 0.5 * v + 0.5 * ado[i]);
@@ -323,7 +355,7 @@
       hasScore: true, hasTrend: true, cols: COLS.coding,
       tool(a, cov) {
         const cat = a.category ? `<span class="tag">${a.category}</span>` : "";
-        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener"><span class="nm">${a.name || a.id}</span>${cat}${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""}${cov}</div>`;
+        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener">${logo(a)}<span class="nm">${a.name || a.id}</span>${cat}${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""}${cov}</div>`;
       } },
     { label: "General-purpose Agents", emoji: "🧩", toolLabel: "Agent", page: "ai/agents/general/", data: window.AGENTS_DATA,
       items: d => d.agents, score: a => a.scores.overall, series: overallSeries,
@@ -340,7 +372,7 @@
         { head: `<th class="mh">Ease of running</th>`, td: (a) => `<td class="mh" style="text-align:left;white-space:normal">${a.setup || "–"}<span class="effort">${a.effort || ""}</span></td>` },
       ],
       tool(a) {
-        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener"><span class="nm">${a.name || a.id}</span>${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""}</div>`;
+        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener">${logo(a)}<span class="nm">${a.name || a.id}</span>${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""}</div>`;
       } },
     { label: "Free Apps", emoji: "🎁", toolLabel: "App", page: "ai/apps/free/", data: window.FREE_APPS_DATA,
       items: d => d.apps, score: a => a.composite.value, series: a => a.series.value,
@@ -348,13 +380,13 @@
       tool(a, cov) {
         const cat = a.category ? `<span class="pill">${a.category}</span>` : "";
         const note = (a.manual && a.manual.free_tier_note) ? `<div class="note">${a.manual.free_tier_note}</div>` : "";
-        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener"><span class="nm">${a.name || a.id}</span>${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""} ${cat}${pplat(a.platform)}${cov}</div>${note}`;
+        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener">${logo(a)}<span class="nm">${a.name || a.id}</span>${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""} ${cat}${pplat(a.platform)}${cov}</div>${note}`;
       } },
     { label: "Local Model Runners", emoji: "🖥️", toolLabel: "Runner", page: "ai/model/local-model-runner/", data: window.LOCAL_MODEL_RUNNER_DATA,
       items: d => d.runners, score: a => a.composite.install, series: a => a.series.install,
       hasScore: true, hasTrend: true, cols: COLS.runner,
       tool(a, cov) {
-        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener"><span class="nm">${a.name || a.id}</span>${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""}${cov}</div>`;
+        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener">${logo(a)}<span class="nm">${a.name || a.id}</span>${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""}${cov}</div>`;
       } },
   ];
   const rankDelta = (items, seriesOf) => {
@@ -475,7 +507,7 @@
   }
 })();
 (function () {
-  const c = "625babbe";
+  const c = "625babb";
   const el = document.getElementById("footerCommit");
   if (c) el.innerHTML = ' · commit <span class="sha">' + c + "</span>";
   else el.remove();

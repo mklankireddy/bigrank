@@ -71,6 +71,13 @@
   .agent .vn { color: var(--muted); font-size: 12px; }
   .agent a { color: var(--text); text-decoration: none; }
   .agent a:hover { color: var(--accent); }
+  .logo {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; margin-right: 7px; vertical-align: -4px;
+    border-radius: 6px; background: var(--panel2); border: 1px solid var(--border);
+    font-size: 11px; font-weight: 800; color: var(--muted); flex: none; overflow: hidden;
+  }
+  .logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 3px; }
   .rank { width: 56px; text-align: center; color: var(--muted); font-weight: 700; }
   .rank .medal { font-size: 15px; line-height: 1; }
   tr.top3 td { background: rgba(251,191,36,.045); }
@@ -227,6 +234,32 @@ const ptag = (p) => PRICE[p]
   ? `<span class="tag p-${p}" title="${PRICE[p][1]}">${PRICE[p][0]}</span>`
   : "";
 
+const LOGO_FIX = {
+  aider: "https://github.com/Aider-AI.png",
+  plandex: "https://github.com/plandex-ai.png",
+  gpt4all: "https://github.com/nomic-ai.png",
+  phind: "https://icon.horse/icon/www.phind.com",
+};
+const logo = (o) => {
+  let src = LOGO_FIX[o.id] || "";
+  if (!src) {
+    try {
+      const u = new URL(o.homepage || "");
+      const fv = (h) => `https://www.google.com/s2/favicons?domain=${h}&sz=64`;
+      if (u.hostname === "github.com") {
+        const owner = u.pathname.split("/")[1] || "";
+        const stop = ["features", "topics", "collections", "marketplace", "sponsors", "about", "login", "site", "explore", "pricing", "search", "docs", "contact", "policies"];
+        src = (owner && !stop.includes(owner.toLowerCase())) ? `https://github.com/${owner}.png` : fv("github.com");
+      } else {
+        src = fv(u.hostname);
+      }
+    } catch (e) { src = ""; }
+  }
+  if (!src) return "";
+  const init = ((o.name || o.id) || "?")[0].toUpperCase();
+  return `<span class="logo" aria-hidden="true">${init}<img src="${src}" alt="" loading="lazy" onerror="this.remove()"></span>`;
+};
+
 const BADGES = {
   archived: "Archived", active: "Active", steady: "Steady", slowing: "Slowing", stale: "Stale",
 };
@@ -248,7 +281,7 @@ const rowArr = [...D.agents]
     const v = a.values;
     return `<tr class="${i < 3 ? "top3" : ""}">
       <td class="rank">${rankCell(i)}</td>
-      <td class="agent"><a href="${a.homepage || "#"}" target="_blank" rel="noopener"><span class="nm">${a.name}</span>${ptag(a.pricing)} <span class="vn">${a.vendor || ""}</span></a></td>
+      <td class="agent"><a href="${a.homepage || "#"}" target="_blank" rel="noopener">${logo(a)}<span class="nm">${a.name}</span>${ptag(a.pricing)} <span class="vn">${a.vendor || ""}</span></a></td>
       <td class="mh"><span class="pill">${a.category || "–"}</span></td>
       <td class="score-cell">${scoreCell(a.scores.activity, "")}</td>
       <td class="score-cell">${scoreCell(a.scores.adoption, "ad")}</td>
