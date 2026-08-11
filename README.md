@@ -1,4 +1,4 @@
-# AI Coding Agent Usage Rankings (Live)
+# AI Coding Agent Usage Rankings (updated daily)
 
 An always-on ranking of AI coding agents — Cursor, Claude Code, GitHub Copilot, Windsurf,
 Codex, Devin, Aider, Cline, Continue, Gemini CLI, Replit, OpenHands, Grok Build, Roo Code, Plandex — scored by **public
