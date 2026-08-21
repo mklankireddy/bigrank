@@ -67,6 +67,7 @@ jobs:
             echo "no changes to commit"
           else
             git commit -m "daily snapshot $(date -u +%F)"
+            git pull --rebase origin main
             git push
           fi
       - name: Upload Pages artifact
