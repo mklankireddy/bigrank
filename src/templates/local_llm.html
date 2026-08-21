@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local LLM Rankings</title>
+<meta name="description" content="Ranking of open-weight LLMs people run locally — Llama, Qwen, Gemma, Phi-4, Mistral, DeepSeek-R1 distills and more — scored by hand-maintained benchmark data (MMLU, HumanEval, context length) with hardware fit filters for RAM and VRAM.">
+<link rel="canonical" href="https://mklankireddy.github.io/bigrank/ai/model/local-llm/">
+<style>
+  :root {
+    --bg: #0b0e14; --panel: #12161f; --panel2: #181d29; --border: #232a3a;
+    --text: #d7dce6; --muted: #8b93a7; --accent: #6ea8fe; --green: #4ade80;
+    --red: #f87171; --amber: #fbbf24; --blue: #6ea8fe; --purple: #b4a5ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { padding: 0 24px 60px; }
+  header { padding: 28px 0 8px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 16px; position: sticky; top: 46px; z-index: 5;
+  }
+  @media (max-width: 768px) {
+    .controls { position: static; }
+  }
+  .controls select {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 10px; font-size: 13px;
+  }
+  .weights { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted); }
+  .weights label { display: flex; align-items: center; gap: 5px; }
+  .weights input { width: 74px; accent-color: var(--accent); }
+  .reset { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
+  .more { display: block; width: 100%; margin-top: 14px; background: transparent; border: 1px dashed var(--border); color: var(--muted); border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .more:hover { color: var(--text); border-color: var(--accent); }
+  .more[hidden] { display: none; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 1250px; }
+  th, td { padding: 9px 12px; text-align: center; white-space: nowrap; }
+  th {
+    color: var(--muted); font-weight: 600; font-size: 12px; letter-spacing: .3px;
+    border-bottom: 1px solid var(--border); background: var(--panel2); cursor: pointer; user-select: none;
+  }
+  th:hover { color: var(--text); }
+  td { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: rgba(110,168,254,.05); }
+  .tool { text-align: left; }
+  .tool .nm { font-weight: 700; }
+  .tool .vn { color: var(--muted); font-size: 12px; }
+  .tool a { color: var(--text); text-decoration: none; }
+  .tool a:hover { color: var(--accent); }
+  .logo {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; margin-right: 7px; vertical-align: -4px;
+    border-radius: 6px; background: var(--panel2); border: 1px solid var(--border);
+    font-size: 11px; font-weight: 800; color: var(--muted); flex: none; overflow: hidden;
+  }
+  .logo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+  .rank { width: 56px; text-align: center; color: var(--muted); font-weight: 700; }
+  .rank .medal { font-size: 15px; line-height: 1; }
+  tr.top3 td { background: rgba(251,191,36,.045); }
+  .rd { font-size: 10.5px; font-weight: 600; margin-left: 4px; font-variant-numeric: tabular-nums; }
+  .score-cell { min-width: 150px; }
+  .scorebar { display: flex; align-items: center; gap: 8px; justify-content: center; }
+  .bar { width: 90px; height: 7px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius: 4px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .dash { color: var(--muted); }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .sparkline { width: 110px; }
+  .spark { width: 110px; height: 30px; }
+  .spark path { fill: none; stroke: var(--blue); stroke-width: 1.6; }
+  @media (max-width: 768px) {
+    .table-wrap { border-radius: 8px; }
+    .table-wrap table { min-width: 0; table-layout: fixed; }
+    .table-wrap th, .table-wrap td { padding: 8px 6px; }
+    .table-wrap th[data-sort], .table-wrap td.num,
+    .table-wrap th.license, .table-wrap td.license,
+    .table-wrap th.quants, .table-wrap td.quants { display: none; }
+    .table-wrap .rank { width: 36px; }
+    .table-wrap #compHead { width: 124px; }
+    .table-wrap #sparkHead { width: 84px; }
+    .table-wrap .score-cell { min-width: 0; }
+    .table-wrap .bar { width: 52px; }
+    .table-wrap .sparkline { width: 84px; }
+    .table-wrap .spark { width: 84px; }
+  }
+  @media (max-width: 520px) {
+    .table-wrap th, .table-wrap td { padding: 7px 4px; }
+    .table-wrap th#sparkHead, .table-wrap td.trend,
+    .table-wrap th.use, .table-wrap td.use { display: none; }
+    .table-wrap .rank { width: 34px; }
+    .table-wrap #compHead { width: 64px; }
+    .table-wrap .scorebar { gap: 5px; }
+    .table-wrap .scorebar .bar { display: none; }
+    .table-wrap .score-cell .num { font-size: 12px; }
+    .table-wrap .tool { white-space: normal; }
+    .table-wrap .tool a { display: block; }
+    .table-wrap .tool .nm { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .table-wrap .tool .vn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  }
+  .foot { color: var(--muted); font-size: 13px; margin-top: 16px; }
+  .site-footer { color: var(--muted); font-size: 12px; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .site-footer .sha { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-top: 22px; }
+  summary { cursor: pointer; font-weight: 700; color: var(--text); }
+  details p, details li { font-size: 13.5px; color: var(--muted); }
+  details.how h4 { margin: 14px 0 6px; font-size: 12.5px; color: var(--text); }
+  details.how ul { margin: 4px 0 0; padding-left: 18px; }
+  details.how ul li { margin-bottom: 4px; }
+  details.how .intro { margin-bottom: 6px; }
+  details code { background: var(--panel2); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  .pill { display: inline-block; background: var(--panel2); border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; font-size: 11.5px; color: var(--muted); margin-right: 6px; }
+  .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; margin-left: 6px; }
+  .cov { color: var(--amber); font-size: 11px; margin-left: 4px; cursor: help; }
+  .fresh { font-size: 11px; font-weight: 600; white-space: nowrap; cursor: help; }
+  .fresh.fresh { color: var(--green); }
+  .fresh.aging { color: var(--amber); }
+  .fresh.stale { color: var(--red); }
+  td.use, th.use { text-align: left; white-space: normal; min-width: 200px; color: var(--muted); font-size: 12.5px; }
+  td.quants, th.quants { white-space: normal; max-width: 190px; }
+  .qwrap { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+  .qwrap .pill { margin-right: 0; }
+  td.license .pill { margin-right: 0; }
+
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 46px; padding: 0 20px;
+    border-bottom: 1px solid var(--border); background: var(--panel);
+  }
+  .brand a { font-weight: 800; font-size: 15px; letter-spacing: .3px; color: var(--text); text-decoration: none; }
+  .brand span { color: var(--accent); }
+  .groups { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .group { position: relative; }
+  .gbtn {
+    appearance: none; background: transparent; border: 1px solid transparent;
+    color: var(--muted); font: 600 13px/1 inherit; padding: 8px 12px; border-radius: 8px; cursor: pointer;
+  }
+  .gbtn .caret { font-size: 10px; margin-left: 3px; }
+  .group:hover .gbtn, .group:focus-within .gbtn { color: var(--text); background: var(--panel2); border-color: var(--border); }
+  .menu {
+    display: none; position: absolute; top: 100%; right: 0; min-width: 210px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.5); z-index: 30;
+  }
+  .group:hover .menu, .group:focus-within .menu { display: block; }
+  .menu a.item {
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 7px; color: var(--muted);
+    text-decoration: none; font-size: 13.5px; font-weight: 600;
+  }
+  .menu a.item .i { font-size: 15px; width: 20px; text-align: center; flex: none; }
+  .menu a.item .arrow { margin-left: auto; font-size: 12px; opacity: 0; transition: opacity .12s; }
+  .menu a.item:hover { color: var(--text); background: var(--panel2); }
+  .menu a.item:hover .arrow { opacity: 1; color: var(--accent); }
+  .menu a.item.on { color: var(--text); background: var(--panel2); border: 1px solid var(--border); }
+  .menu a.item.disabled { opacity: .45; cursor: not-allowed; }
+  .menu .nsoon { font-size: 10px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; margin-left: auto; }
+</style>
+</head>
+<body>
+{{NAV}}
+
+<div class="wrap">
+  <header>
+    <h1>Local LLM Rankings</h1>
+    <div class="meta">
+      <span>Last updated: <b id="lastUpdated">–</b> (UTC)</span>
+      <span>History: <b id="daysTracked">–</b> days</span>
+      <span>Snapshot: <b id="dataStart">–</b></span>
+      <span title="Benchmarks updated within the last 90 days">🟢 Fresh ≤90d</span>
+      <span title="Benchmarks updated 90–180 days ago">🟡 Aging ≤180d</span>
+      <span title="Benchmarks older than 180 days">🔴 Stale &gt;180d</span>
+    </div>
+  </header>
+
+  <div class="controls">
+    <select id="sortSel" title="Sort by a metric">
+      <option value="">Capability score</option>
+    </select>
+    <select id="ramSel" title="Show models that fit in this much system RAM">
+      <option value="">Any RAM</option>
+      <option value="8">≤ 8 GB RAM</option>
+      <option value="16">≤ 16 GB RAM</option>
+      <option value="32">≤ 32 GB RAM</option>
+      <option value="48">≤ 48 GB RAM</option>
+      <option value="64">≤ 64 GB RAM</option>
+    </select>
+    <select id="vramSel" title="Show models that fit in this much VRAM (0 = runs CPU-only)">
+      <option value="">Any VRAM</option>
+      <option value="0">CPU-only OK</option>
+      <option value="4">≤ 4 GB VRAM</option>
+      <option value="8">≤ 8 GB VRAM</option>
+      <option value="12">≤ 12 GB VRAM</option>
+      <option value="16">≤ 16 GB VRAM</option>
+      <option value="24">≤ 24 GB VRAM</option>
+      <option value="48">≤ 48 GB VRAM</option>
+    </select>
+    <button class="reset" id="resetW">Reset weights</button>
+    <div class="weights" id="weights"></div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="rankTable">
+      <thead>
+        <tr>
+          <th class="rank">#</th>
+          <th class="tool">Model</th>
+          <th id="compHead">Capability</th>
+          <th id="sparkHead">Trend</th>
+          <th data-sort="parameters_b">Params</th>
+          <th class="license">License</th>
+          <th class="quants">Quants</th>
+          <th data-sort="min_ram_gb">Min RAM</th>
+          <th data-sort="min_vram_gb">Min VRAM</th>
+          <th data-sort="context_length">Context</th>
+          <th data-sort="mmlu">MMLU</th>
+          <th data-sort="humaneval">HumanEval</th>
+          <th class="use">Best for</th>
+          <th>Freshness</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+  <button class="more" id="moreBtn" hidden></button>
+  <p class="foot" id="footNote"></p>
+
+  <details class="how">
+    <summary>How this ranking works</summary>
+    <p class="intro">
+      This page ranks <b>open-weight LLMs people run locally</b> (Llama, Qwen, Gemma, Phi-4,
+      Mistral Small, DeepSeek-R1 distills and more). Unlike the other BigRank boards there are no
+      public usage APIs for model downloads, so every number here is <b>hand-maintained from the
+      official model cards</b> in <code>config/local-llm.json</code>. The daily collector snapshots
+      which models are tracked into <code>data/local-llm_snapshots/</code>, so the tracked list is
+      auditable over time.
+    </p>
+    <h4>Capability score</h4>
+    <p>Each benchmark is min-max normalized across tracked models to 0–100, then combined with
+    adjustable weights (defaults: MMLU 45%, HumanEval 35%, context length 20%). Drag the sliders to
+    re-weight — the ranking recomputes instantly in your browser.</p>
+    <h4>Hardware filter</h4>
+    <ul>
+      <li><b>Min RAM / Min VRAM</b> are rough minimums for running the model at Q4-class GGUF
+      quantization with acceptable quality. They are approximations, not measured floors.</li>
+      <li><b>Min VRAM 0</b> means the model is practical on CPU alone (small models).</li>
+      <li>Pick your machine's budget in the two dropdowns; the table shows only models that fit.
+      Both filters combine (AND).</li>
+    </ul>
+    <h4>Quant formats</h4>
+    <p>The <b>Quants</b> column lists the compressed builds a model is commonly served in
+    (GGUF format, used by Ollama, llama.cpp and Hugging Face). Models are trained at 16-bit
+    precision; quantization re-stores the weights at lower precision so they fit in consumer
+    RAM/VRAM — roughly 2–8× less memory for a small quality cost:</p>
+    <ul>
+      <li><span class="pill">Q4_K_M</span> ~4-bit — the standard size/quality trade-off and the
+      most downloaded variant.</li>
+      <li><span class="pill">Q5_K_M</span> / <span class="pill">Q6_K</span> ~5/6-bit — slightly
+      better quality, larger files.</li>
+      <li><span class="pill">Q8_0</span> ~8-bit — near-lossless.</li>
+      <li><span class="pill">FP16</span> full 16-bit precision — no compression.</li>
+    </ul>
+    <p>Rule of thumb: download size ≈ parameter count × ~0.55 GB per billion parameters at Q4
+    (a 70B model ≈ 40 GB). The board's <b>Min RAM / Min VRAM</b> figures assume Q4-class quants;
+    higher-precision quants need proportionally more memory.</p>
+    <h4>Benchmark freshness</h4>
+    <p><span class="fresh fresh">🟢 Fresh</span> = benchmarks updated within 90 days of the latest
+    snapshot, <span class="fresh aging">🟡 Aging</span> = 90–180 days,
+    <span class="fresh stale">🔴 Stale</span> = older. Hover a badge for the exact date. Update
+    <code>last_benchmark_update</code> whenever you refresh a model's numbers.</p>
+    <h4>Caveats</h4>
+    <ul>
+      <li>Benchmark values are single published/approximate figures, not independent evaluations —
+      treat ranks as indicative, not authoritative.</li>
+      <li>MMLU/HumanEval are not directly comparable across chat vs reasoning-tuned models; a
+      reasoning model's score often assumes long chain-of-thought.</li>
+      <li>Context length is the native window (YaRN-extended maximums noted in model cards may be
+      higher at some quality cost).</li>
+      <li>Benchmark sources vary by generation: older rows report classic MMLU/HumanEval, while
+      2026-era rows report the closest published equivalents (MMMLU/MMLU-Pro/MMLU-Redux for
+      knowledge, LiveCodeBench v6 for coding). Hover a benchmark cell for the exact source.</li>
+      <li>This board is maintained by hand — to add or correct a model, edit
+      <code>config/local-llm.json</code> and open a pull request.</li>
+    </ul>
+  </details>
+
+  <footer class="site-footer">BigRank v<span id="footerVersion">–</span><span id="footerCommit"></span></footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = window.LOCAL_LLM_DATA;
+const MEDALS = ["🥇", "🥈", "🥉"];
+const rankCell = (i) => i < 3
+  ? `<span class="medal" title="Rank ${i + 1}">${MEDALS[i]}</span>`
+  : i + 1;
+const LOGO_FIX = {};
+const logo = (o) => {
+  let src = LOGO_FIX[o.id] || "";
+  if (!src) {
+    try {
+      const u = new URL(o.homepage || "");
+      const fv = (h) => `https://www.google.com/s2/favicons?domain=${h}&sz=64`;
+      if (u.hostname === "github.com") {
+        const owner = u.pathname.split("/")[1] || "";
+        const stop = ["features", "topics", "collections", "marketplace", "sponsors", "about", "login", "site", "explore", "pricing", "search", "docs", "contact", "policies"];
+        src = (owner && !stop.includes(owner.toLowerCase())) ? `https://github.com/${owner}.png` : fv("github.com");
+      } else {
+        src = fv(u.hostname);
+      }
+    } catch (e) { src = ""; }
+  }
+  if (!src) return "";
+  const init = ((o.name || o.id) || "?")[0].toUpperCase();
+  return `<span class="logo" aria-hidden="true">${init}<img src="${src}" alt="" loading="lazy" onerror="this.remove()"></span>`;
+};
+const META = {
+  mmlu: { label: "MMLU", fmt: "dec" },
+  humaneval: { label: "HumanEval", fmt: "dec" },
+  context_length: { label: "Context length", fmt: "compact" },
+  parameters_b: { label: "Parameters (B)", fmt: "compact" },
+  min_ram_gb: { label: "Min RAM (GB)", fmt: "plain" },
+  min_vram_gb: { label: "Min VRAM (GB)", fmt: "plain" },
+};
+
+let sortKey = null; // null = capability composite
+let ramMax = null;
+let vramMax = null;
+let weights = { ...D.meta.weights_capability };
+const ROW_LIMIT = 10;
+let showMore = false;
+
+const num = (v) => {
+  const a = Math.abs(v);
+  if (a >= 1e9) return (v / 1e9).toFixed(1) + "B";
+  if (a >= 1e6) return (v / 1e6).toFixed(1) + "M";
+  if (a >= 1e3) return (v / 1e3).toFixed(1) + "k";
+  return Math.round(v).toLocaleString();
+};
+const fmt = (v, f) => {
+  if (v == null || !isFinite(v)) return "<span class='dash'>–</span>";
+  if (f === "dec") return v.toFixed(1);
+  return num(v);
+};
+
+function sparkline(values) {
+  const w = 110, h = 30;
+  const vs = values.map(v => (v == null || !isFinite(v)) ? null : v);
+  const present = vs.filter(v => v != null);
+  if (present.length < 2) return "<div class='sparkline dash'>–</div>";
+  const mn = Math.min(...present), mx = Math.max(...present);
+  const range = (mx - mn) || 1;
+  const n = vs.length;
+  let d = "";
+  vs.forEach((v, i) => {
+    if (v == null) return;
+    const x = (n === 1 ? 0 : i / (n - 1)) * (w - 4) + 2;
+    const y = h - 3 - ((v - mn) / range) * (h - 8);
+    d += (d ? " L " : "M ") + x.toFixed(1) + " " + y.toFixed(1);
+  });
+  return `<div class="sparkline"><svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${d}"/></svg></div>`;
+}
+
+function capabilityScore(m) {
+  let n = 0, total = 0;
+  for (const k in weights) {
+    total += weights[k];
+    const s = m.scores[k];
+    if (s != null && isFinite(s)) n += s * weights[k];
+  }
+  return total ? n / total : null;
+}
+
+function coverageInfo(m) {
+  let have = 0, total = 0;
+  for (const k in weights) {
+    total += weights[k];
+    if (m.scores[k] != null && isFinite(m.scores[k])) have += weights[k];
+  }
+  return total ? Math.round((have / total) * 100) : 0;
+}
+
+function freshInfo(m) {
+  if (!m.last_benchmark_update) return null;
+  const ms = new Date(D.meta.updated) - new Date(m.last_benchmark_update);
+  if (!isFinite(ms)) return null;
+  const days = Math.round(ms / 86400000);
+  const tier = days <= 90 ? ["fresh", "🟢", "Fresh"]
+    : days <= 180 ? ["aging", "🟡", "Aging"]
+    : ["stale", "🔴", "Stale"];
+  return { days, cls: tier[0], dot: tier[1], label: tier[2] };
+}
+
+function renderWeights() {
+  const el = document.getElementById("weights");
+  el.innerHTML = Object.entries(weights).map(([k, val]) => {
+    const lbl = META[k] ? META[k].label : k;
+    return `<label>${lbl} <input type="range" data-metric="${k}" min="0" max="100" value="${val}"> <b class="num" data-metric="${k}">${val}</b></label>`;
+  }).join("");
+}
+
+function rankDelta(models) {
+  const today = {}, prev = {};
+  models.forEach(m => {
+    const s = m.series.capability;
+    today[m.id] = s.length ? s[s.length - 1] : null;
+    prev[m.id] = s.length > 1 ? s[s.length - 2] : null;
+  });
+  const ranks = (map) => {
+    const ids = models.map(m => m.id);
+    ids.sort((a, b) => (map[b] == null ? -Infinity : map[b]) - (map[a] == null ? -Infinity : map[a]));
+    const out = {};
+    let lastVal = null, lastRank = 0;
+    ids.forEach((id, i) => {
+      const v = map[id];
+      if (v == null) { out[id] = null; return; }
+      if (v !== lastVal) { lastVal = v; lastRank = i + 1; }
+      out[id] = lastRank;
+    });
+    return out;
+  };
+  const r0 = ranks(prev), r1 = ranks(today);
+  const out = {};
+  models.forEach(m => {
+    out[m.id] = (r0[m.id] == null || r1[m.id] == null) ? null : r0[m.id] - r1[m.id];
+  });
+  return out;
+}
+
+function rankChip(d) {
+  if (d == null || d === 0) return "";
+  return d > 0
+    ? `<span class="rd up" title="up ${d} since previous snapshot">▲${d}</span>`
+    : `<span class="rd down" title="down ${-d} since previous snapshot">▼${-d}</span>`;
+}
+
+function render() {
+  const models = D.models.filter(m =>
+    (ramMax == null || (m.min_ram_gb != null && m.min_ram_gb <= ramMax)) &&
+    (vramMax == null || ((m.min_vram_gb ?? 0) <= vramMax)));
+
+  models.forEach(m => m._cap = capabilityScore(m));
+  models.sort((a, b) => {
+    if (sortKey) {
+      const av = sortKey === "parameters_b" ? a.parameters_b : a.values[sortKey];
+      const bv = sortKey === "parameters_b" ? b.parameters_b : b.values[sortKey];
+      return ((bv == null ? -Infinity : bv) - (av == null ? -Infinity : av));
+    }
+    return ((b._cap == null ? -Infinity : b._cap) - (a._cap == null ? -Infinity : a._cap));
+  });
+
+  const deltas = rankDelta(models);
+  const rowArr = models.map((m, i) => {
+    const cap = m._cap;
+    const cov = coverageInfo(m);
+    const f = freshInfo(m);
+    const bnote = m.benchmarks_note ? ` title="${m.benchmarks_note}"` : "";
+    const QUANT_TIPS = {
+      "Q4_K_M": "~4-bit — the standard size/quality trade-off; the size this board's Min RAM/VRAM figures assume",
+      "Q5_K_M": "~5-bit — slightly better quality than Q4, larger file",
+      "Q6_K": "~6-bit — better quality, larger file",
+      "Q8_0": "~8-bit — near-lossless to FP16",
+      "FP16": "Full 16-bit precision — no compression",
+    };
+    const quantChips = (m) => (m.quant_formats || []).length
+      ? `<div class="qwrap">` + m.quant_formats.map(q =>
+          `<span class="pill"${QUANT_TIPS[q] ? ` title="${QUANT_TIPS[q]}"` : ""}>${q}</span>`).join("") + `</div>`
+      : "<span class='dash'>–</span>";
+    return `<tr class="${i < 3 ? "top3" : ""}">
+      <td class="rank">${rankCell(i)}${rankChip(deltas[m.id])}</td>
+      <td class="tool">
+        <a href="${m.homepage || '#'}" target="_blank" rel="noopener">
+          ${logo(m)}<span class="nm">${m.name}</span>
+        </a>
+        <div class="vn">${m.vendor || ""}${cov < 100 ? ` <span class="cov" title="Score based on ${cov}% of the weight — missing benchmarks count as zero">${cov}% coverage</span>` : ""}</div>
+      </td>
+      <td class="score-cell"><div class="scorebar">
+        <span class="num" style="font-weight:700">${cap == null ? "–" : cap.toFixed(0)}</span>
+        <div class="bar"><i style="width:${cap == null ? 0 : cap}%"></i></div>
+      </div></td>
+      <td class="trend">${sparkline(m.series.capability)}</td>
+      <td class="num">${m.parameters || "<span class='dash'>–</span>"}</td>
+      <td class="license"><span class="pill">${m.license || "<span class='dash'>–</span>"}</span></td>
+      <td class="quants">${quantChips(m)}</td>
+      <td class="num">${fmt(m.min_ram_gb, "plain")}</td>
+      <td class="num">${m.min_vram_gb === 0 ? "CPU" : fmt(m.min_vram_gb, "plain")}</td>
+      <td class="num">${fmt(m.values.context_length, "compact")}</td>
+      <td class="num">${fmt(m.values.mmlu, "dec")}</td>
+      <td class="num">${fmt(m.values.humaneval, "dec")}</td>
+      <td class="use">${m.best_use_case || "<span class='dash'>–</span>"}</td>
+      <td>${f ? `<span class="fresh ${f.cls}" title="Benchmarks last updated ${m.last_benchmark_update} — ${f.days} days before this snapshot">${f.dot} ${f.label}</span>` : "<span class='dash'>–</span>"}</td>
+    </tr>`;
+  });
+
+  const moreBtn = document.getElementById("moreBtn");
+  moreBtn.hidden = rowArr.length <= ROW_LIMIT;
+  moreBtn.textContent = showMore
+    ? `Show top ${ROW_LIMIT} ▴`
+    : `Show all (${rowArr.length}) ▾`;
+
+  document.getElementById("tableBody").innerHTML = showMore ? rowArr.join("") : rowArr.slice(0, ROW_LIMIT).join("");
+  document.getElementById("lastUpdated").textContent = D.meta.updated;
+  document.getElementById("daysTracked").textContent = D.meta.days;
+  document.getElementById("dataStart").textContent = D.meta.start;
+  document.getElementById("footerVersion").textContent = D.meta.version || "–";
+  const fc = document.getElementById("footerCommit");
+  if (D.meta.build_commit) fc.innerHTML = ` · commit <span class="sha">${D.meta.build_commit}</span>`;
+  else fc.remove();
+  let note = `Sorted by ${sortKey ? (META[sortKey] ? META[sortKey].label : sortKey) : "Capability score"}. `;
+  note += "Scores are min-max normalized across tracked models; missing benchmarks count as zero (coverage penalty). ";
+  const parts = [];
+  if (ramMax != null) parts.push(`≤${ramMax} GB RAM`);
+  if (vramMax != null) parts.push(vramMax === 0 ? "CPU-only capable" : `≤${vramMax} GB VRAM`);
+  if (parts.length) note += `Filtered to models fitting ${parts.join(" and ")}.`;
+  else note += "Min RAM/VRAM are rough Q4-quant minimums.";
+  document.getElementById("footNote").textContent = note;
+}
+
+function buildSortOptions() {
+  const el = document.getElementById("sortSel");
+  el.innerHTML = `<option value="">Capability score</option>` +
+    Object.entries(META).map(([k, m]) => `<option value="${k}">${m.label}</option>`).join("");
+}
+
+document.getElementById("moreBtn").addEventListener("click", () => {
+  showMore = !showMore;
+  render();
+});
+
+document.getElementById("sortSel").addEventListener("change", e => {
+  sortKey = e.target.value || null;
+  showMore = false;
+  render();
+});
+
+document.getElementById("ramSel").addEventListener("change", e => {
+  ramMax = e.target.value === "" ? null : +e.target.value;
+  showMore = false;
+  render();
+});
+
+document.getElementById("vramSel").addEventListener("change", e => {
+  vramMax = e.target.value === "" ? null : +e.target.value;
+  showMore = false;
+  render();
+});
+
+document.getElementById("resetW").addEventListener("click", () => {
+  weights = { ...D.meta.weights_capability };
+  showMore = false;
+  renderWeights(); render();
+});
+
+document.getElementById("weights").addEventListener("input", e => {
+  if (e.target.dataset.metric) {
+    weights[e.target.dataset.metric] = +e.target.value;
+    renderWeights(); render();
+  }
+});
+
+document.querySelectorAll("th[data-sort]").forEach(th =>
+  th.addEventListener("click", () => {
+    sortKey = th.dataset.sort;
+    showMore = false;
+    document.getElementById("sortSel").value = sortKey;
+    render();
+  }));
+
+buildSortOptions();
+renderWeights();
+render();
+</script>
+{{GOATCOUNTER}}</body>
+</html>

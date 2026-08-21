@@ -180,7 +180,7 @@
 </style>
 </head>
 <body>
-<nav class="nav"><div class="brand"><a href="./">Big<span>Rank</span></a></div><button class="burger" aria-label="Menu" aria-expanded="false" aria-controls="groups" type="button">&#9776;</button><div class="groups" id="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 Agents <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="ai/agents/coding/"><span class="i">💻</span><span>Coding</span><span class="arrow">→</span></a><a class="item" href="ai/agents/general/"><span class="i">🧩</span><span>General-purpose</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">📱 Apps <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="ai/apps/free/"><span class="i">🎁</span><span>Free Apps</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">🧠 Models <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="ai/model/local-model-runner/"><span class="i">🖥️</span><span>Local Model Runner</span><span class="arrow">→</span></a></div></div></div></nav><style>.burger{display:none;background:transparent;border:1px solid transparent;color:var(--text);font-size:20px;line-height:1;padding:4px 10px;border-radius:8px;cursor:pointer}.burger:hover{background:var(--panel2);border-color:var(--border)}@media (max-width:768px){.burger{display:block}.nav .groups{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:2px;background:var(--panel);border-bottom:1px solid var(--border);padding:6px 12px 10px}.nav.open .groups{display:flex}.nav .groups .group{width:100%}.nav .groups .gbtn{width:100%;text-align:left}.nav .groups .menu{position:static;min-width:0;box-shadow:none;border:1px solid var(--border);margin:2px 0 6px}.nav .groups .menu a.item{padding:9px 12px}}</style><script>(function(){var nav=document.querySelector('.nav'),b=nav&&nav.querySelector('.burger');if(!nav||!b)return;var close=function(){nav.classList.remove('open');b.setAttribute('aria-expanded','false')};b.addEventListener('click',function(e){e.stopPropagation();var open=nav.classList.toggle('open');b.setAttribute('aria-expanded',open?'true':'false')});document.addEventListener('click',function(e){if(!nav.contains(e.target))close()});document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();</script>
+<nav class="nav"><div class="brand"><a href="./">Big<span>Rank</span></a></div><button class="burger" aria-label="Menu" aria-expanded="false" aria-controls="groups" type="button">&#9776;</button><div class="groups" id="groups"><div class="group"><button class="gbtn" aria-haspopup="true">🤖 Agents <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="ai/agents/coding/"><span class="i">💻</span><span>Coding</span><span class="arrow">→</span></a><a class="item" href="ai/agents/general/"><span class="i">🧩</span><span>General-purpose</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">📱 Apps <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="ai/apps/free/"><span class="i">🎁</span><span>Free Apps</span><span class="arrow">→</span></a></div></div><div class="group"><button class="gbtn" aria-haspopup="true">🧠 Models <span class="caret">&#9662;</span></button><div class="menu"><a class="item" href="ai/model/local-model-runner/"><span class="i">🖥️</span><span>Local Model Runner</span><span class="arrow">→</span></a><a class="item" href="ai/model/local-llm/"><span class="i">📦</span><span>Local LLMs</span><span class="arrow">→</span></a></div></div></div></nav><style>.burger{display:none;background:transparent;border:1px solid transparent;color:var(--text);font-size:20px;line-height:1;padding:4px 10px;border-radius:8px;cursor:pointer}.burger:hover{background:var(--panel2);border-color:var(--border)}@media (max-width:768px){.burger{display:block}.nav .groups{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:2px;background:var(--panel);border-bottom:1px solid var(--border);padding:6px 12px 10px}.nav.open .groups{display:flex}.nav .groups .group{width:100%}.nav .groups .gbtn{width:100%;text-align:left}.nav .groups .menu{position:static;min-width:0;box-shadow:none;border:1px solid var(--border);margin:2px 0 6px}.nav .groups .menu a.item{padding:9px 12px}}</style><script>(function(){var nav=document.querySelector('.nav'),b=nav&&nav.querySelector('.burger');if(!nav||!b)return;var close=function(){nav.classList.remove('open');b.setAttribute('aria-expanded','false')};b.addEventListener('click',function(e){e.stopPropagation();var open=nav.classList.toggle('open');b.setAttribute('aria-expanded',open?'true':'false')});document.addEventListener('click',function(e){if(!nav.contains(e.target))close()});document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();</script>
 
 <div class="wrap">
   <div class="hero">
@@ -195,7 +195,8 @@
     <p>
       Every day the collector records each ranking's metrics from public APIs and stores them as auditable
       snapshots — one JSON file per day, one line per entry, under <code>data/coding-agents_snapshots</code> (coding agents),
-      <code>data/general-purpose-agents_snapshots</code> (general-purpose agents), and <code>data/local-model-runner_snapshots</code> (local model runners).
+      <code>data/general-purpose-agents_snapshots</code> (general-purpose agents), <code>data/free-apps_snapshots</code> (free apps),
+      <code>data/local-model-runner_snapshots</code> (local model runners), and <code>data/local-llm_snapshots</code> (local LLMs).
       Anyone can inspect or download the raw numbers behind these rankings.
     </p>
     <p><b>Snapshot archive</b> — <a href="https://github.com/mklankireddy/bigrank/tree/main/data" target="_blank" rel="noopener">view all in the repository</a></p>
@@ -220,13 +221,14 @@
     </form>
   </details>
 
-  <footer class="site-footer">BigRank v1.6.0<span id="footerCommit"></span></footer>
+  <footer class="site-footer">BigRank v1.7.0<span id="footerCommit"></span></footer>
 </div>
 
 <script src="ai/agents/coding/data.js"></script>
 <script src="ai/agents/general/data.js"></script>
 <script src="ai/apps/free/data.js"></script>
 <script src="ai/model/local-model-runner/data.js"></script>
+<script src="ai/model/local-llm/data.js"></script>
 <script>
 (function () {
   const MEDALS = ["🥇", "🥈", "🥉"];
@@ -343,6 +345,14 @@
         },
       },
     ],
+    llm: [
+      { key: "parameters", head: `<th data-sort="parameters_b">Params</th>`, td: (a) => `<td class="num">${a.parameters || "<span class='dash'>–</span>"}</td>` },
+      { key: "min_ram_gb", head: `<th data-sort="min_ram_gb">Min RAM</th>`, td: (a) => `<td class="num">${a.min_ram_gb == null ? "<span class='dash'>–</span>" : num(a.min_ram_gb)}</td>` },
+      { key: "min_vram_gb", head: `<th data-sort="min_vram_gb">Min VRAM</th>`, td: (a) => `<td class="num">${a.min_vram_gb === 0 ? "CPU" : a.min_vram_gb == null ? "<span class='dash'>–</span>" : num(a.min_vram_gb)}</td>` },
+      mcol("context_length", "Context", null, "compact"),
+      mcol("mmlu", "MMLU", null, "dec"),
+      mcol("humaneval", "HumanEval", null, "dec"),
+    ],
   };
   const PLAT = { web: "Web", mobile: "Mobile", desktop: "Desktop", extension: "Ext", cli: "CLI" };
   const pplat = (pl) => (pl || []).map(p => PLAT[p] ? `<span class="pill">${PLAT[p]}</span>` : "").join(" ");
@@ -387,6 +397,12 @@
       hasScore: true, hasTrend: true, cols: COLS.runner,
       tool(a, cov) {
         return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener">${logo(a)}<span class="nm">${a.name || a.id}</span>${ptag(a.pricing)}</a><div class="vn">${a.vendor || ""}${cov}</div>`;
+      } },
+    { label: "Local LLMs", emoji: "📦", toolLabel: "Model", page: "ai/model/local-llm/", data: window.LOCAL_LLM_DATA,
+      items: d => d.models, score: a => a.composite.capability, series: a => a.series.capability,
+      hasScore: true, hasTrend: true, cols: COLS.llm,
+      tool(a) {
+        return `<a href="${a.homepage || '#'}" target="_blank" rel="noopener">${logo(a)}<span class="nm">${a.name || a.id}</span></a><div class="vn">${a.vendor || ""}</div>`;
       } },
   ];
   const rankDelta = (items, seriesOf) => {
@@ -506,7 +522,7 @@
   }
 })();
 (function () {
-  const c = "e1b1c269";
+  const c = "8d9ea6a";
   const el = document.getElementById("footerCommit");
   if (c) el.innerHTML = ' · commit <span class="sha">' + c + "</span>";
   else el.remove();

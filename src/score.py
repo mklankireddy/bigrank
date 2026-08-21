@@ -60,6 +60,16 @@ FREE_DELTA_METRICS = {
     "stars_delta_30d": ("github", "stars"),
 }
 
+# Local LLMs: fully hand-maintained board. Specs and benchmarks live in
+# config/local-llm.json and are injected at build time via manual_scores
+# (same mechanism as the free-apps factors); daily snapshots only carry an
+# empty sources dict so history/retention stays uniform with other boards.
+LLM_METRICS = {
+    "mmlu": ("manual", "mmlu"),
+    "humaneval": ("manual", "humaneval"),
+    "context_length": ("manual", "context_length"),
+}
+
 
 def get_metric(rec, src, key):
     return ((rec or {}).get("sources") or {}).get(src, {}).get(key)

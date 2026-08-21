@@ -23,7 +23,7 @@ FREE_APPS_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "free-apps_archi
 USER_AGENT = "bigrank/0.1 (+https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "bigrank") + ")"
 TIMEOUT = 30
 
-VERSION = "1.6.0"
+VERSION = "1.7.0"
 
 # GoatCounter analytics (https://www.goatcounter.com). Set to your site code
 # (e.g. "bigrank") to enable the tracking snippet on every page; empty = off.
@@ -283,3 +283,31 @@ def consolidate_free_apps(keep_days=30, today=None):
     if today is None:
         today = date.today()
     return _consolidate(FREE_APPS_DATA_DIR, FREE_APPS_ARCHIVE_PATH, keep_days, today, "app")
+
+
+LLM_CONFIG_PATH = os.path.join(ROOT, "config", "local-llm.json")
+LLM_DATA_DIR = os.path.join(ROOT, "data", "local-llm_snapshots")
+LLM_ARCHIVE_PATH = os.path.join(ROOT, "data", "archives", "local-llm_archive.jsonl")
+
+
+def load_llm_config():
+    with open(LLM_CONFIG_PATH, "r") as f:
+        return json.load(f)
+
+
+def llm_snapshot_path(d=None):
+    if d is None:
+        d = date.today().isoformat()
+    return os.path.join(LLM_DATA_DIR, str(d) + ".jsonl")
+
+
+def load_llm_snapshots():
+    """Return {date_str: {model_id: rec}} (archive + daily, daily wins)."""
+    return _load_daily_files(LLM_DATA_DIR, "model", _load_archive(LLM_ARCHIVE_PATH, "model"))
+
+
+def consolidate_llms(keep_days=30, today=None):
+    """Move local-llm snapshot files older than the retention window into the archive."""
+    if today is None:
+        today = date.today()
+    return _consolidate(LLM_DATA_DIR, LLM_ARCHIVE_PATH, keep_days, today, "model")

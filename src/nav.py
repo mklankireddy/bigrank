@@ -53,6 +53,13 @@ NAV = [
                 "page": "ai/model/local-model-runner/",
                 "desc": "Ollama, llama.cpp, vLLM & more",
             },
+            {
+                "key": "local-llm",
+                "label": "Local LLMs",
+                "emoji": "📦",
+                "page": "ai/model/local-llm/",
+                "desc": "Llama, Qwen, Gemma, Phi-4 & more — fit to your RAM/VRAM",
+            },
         ],
     },
 ]

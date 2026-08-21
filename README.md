@@ -1,23 +1,46 @@
-# AI Coding Agent Usage Rankings (updated daily)
+# 🚀 BigRank — Daily AI Tool Rankings
 
-An always-on ranking of AI coding agents — Cursor, Claude Code, GitHub Copilot, Windsurf,
-Codex, Devin, Aider, Cline, Continue, Gemini CLI, Replit, OpenHands, Grok Build, Roo Code, Plandex — scored by **public
-usage signals**, not benchmarks or surveys.
+Independent, daily-updated rankings of **80+ AI tools across five leaderboards**, scored by
+**public usage signals** — not benchmarks or surveys. Every number is snapshotted, committed,
+and auditable.
 
-The collector runs **daily** via GitHub Actions, snapshots every source into
-`data/coding-agents_snapshots/<date>.jsonl`, and deploys a static ranking page to GitHub Pages.
-Daily snapshots are kept for the trailing **30 days**; older history is
-consolidated into `data/archives/coding-agents_archive.jsonl` (one line per tool-day) so the full
-history is committed to this repo and every number is auditable.
+| Board | What it ranks | Live page |
+|---|---|---|
+| 💻 **Coding Agents** | Cursor, Claude Code, Copilot, Windsurf, Cline & more | [ai/agents/coding](https://mklankireddy.github.io/bigrank/ai/agents/coding/) |
+| 🧩 **General-purpose Agents** | OpenClaw, AutoGPT, Open Interpreter & more | [ai/agents/general](https://mklankireddy.github.io/bigrank/ai/agents/general/) |
+| 🎁 **Free AI Apps** | ChatGPT, Claude, Gemini free tiers & more | [ai/apps/free](https://mklankireddy.github.io/bigrank/ai/apps/free/) |
+| 🖥️ **Local Model Runners** | Ollama, llama.cpp, vLLM, LM Studio & more | [ai/model/local-model-runner](https://mklankireddy.github.io/bigrank/ai/model/local-model-runner/) |
+| 📦 **Local LLMs** | Llama, Qwen, Gemma, GPT-OSS — fit to your RAM/VRAM | [ai/model/local-llm](https://mklankireddy.github.io/bigrank/ai/model/local-llm/) |
 
-The same pipeline also powers a **general-purpose agents** ranking
-(`data/general-purpose-agents_snapshots/`, `data/archives/general-purpose-agents_archive.jsonl`), a **local model runner**
-ranking (`data/local-model-runner_snapshots/`, `data/archives/local-model-runner_archive.jsonl`), and a **free AI apps**
-ranking (`data/free-apps_snapshots/`, `data/archives/free-apps_archive.jsonl`).
+## 🔄 How it works
 
-Live page: [bigrank](https://<your-username>.github.io/bigrank/) (enable Pages, see below).
+1. 📥 **Collect (daily)** — a GitHub Actions workflow (`.github/workflows/collect.yml`, cron
+   05:00 UTC) runs each board's collector and writes one JSONL snapshot per board:
+   `data/<board>_snapshots/<date>.jsonl` (one line per entry).
+2. ♻️ **Retain & archive** — snapshots are kept for the trailing **30 days**; older history is
+   consolidated into `data/archives/<board>_archive.jsonl`, so the full history is committed to
+   this repo and every number stays auditable.
+3. 🏗️ **Build** — Python builders render a static page per board plus the landing page into `site/`.
+4. 🚀 **Deploy** — GitHub Pages serves the static site.
 
-## Signals collected (per tool, per day)
+## 🧮 Scoring
+
+- Every metric is **min-max normalized** to 0–100 across tracked entries.
+- Composites are weighted averages with the **full weight sum as the denominator**: missing
+  sources count as zero, so an entry with data from only some sources is capped by the weight
+  those sources carry (a **coverage penalty**). Rows with incomplete data show an
+  `n/m sources` badge.
+- Weights live in each board's config file and can also be tweaked **live on the page**
+  (client-side recompute — no reload).
+- Composite views per board: **Install base** + **Momentum** (coding agents, runners),
+  **Free Tier Value** + **Momentum** (free apps), **Activity** + **Adoption** (general agents),
+  a single **Capability** score (local LLMs).
+
+## 💻 Coding Agents
+
+Ranks AI coding agents — Cursor, Claude Code, GitHub Copilot, Windsurf, Codex, Devin, Aider,
+Cline, Continue, Gemini CLI, Replit, OpenHands, Grok Build, Roo Code, Plandex — by public usage
+signals. Tracked in `config/tools.json`.
 
 | Source | Metric | API |
 |---|---|---|
@@ -30,25 +53,54 @@ Live page: [bigrank](https://<your-username>.github.io/bigrank/) (enable Pages, 
 | Open VSX | downloads | `open-vsx.org/api/{ns}/{name}` |
 | JetBrains Marketplace | plugin downloads (official plugins only) | `plugins.jetbrains.com/api/plugins/{id}` |
 
-Each metric is **min-max normalized** to 0–100 across tracked tools. Two composite views:
+Two composite views:
 
-- **Install base** — cumulative reach: stars + VSCode installs + Open VSX + JetBrains + 30d HN/Reddit mentions.
+- **Install base** — cumulative reach: stars + VS Code installs + Open VSX + JetBrains +
+  30d HN/Reddit mentions.
 - **Momentum** — 30d velocity: stars gained + installs gained + commits + 7d HN/Reddit mentions.
 
-The composite is a weighted average with the **full weight sum as the denominator**: missing
-sources count as zero, so a tool with data from only some sources is capped by the weight those
-sources carry (a coverage penalty). Rows with incomplete data show an `n/m sources` badge.
+## 🧩 General-purpose Agents
 
-Weights are in `config/tools.json` and can also be tweaked live on the page (client-side
-recompute).
+Ranks open-source general-purpose AI agents (OpenClaw, AutoGPT, Open Interpreter & more) on two
+GitHub-centric composites. Tracked in `config/agents.json`.
 
-## Local model runner ranking
+- **Activity** — commits 30d (40) + issues opened 30d (30) + issues closed 30d (30)
+- **Adoption** — stars (25) + forks 30d (20) + watchers (10) + 30d HN mentions (25) +
+  30d Reddit mentions (20)
 
-A separate board ranks **local model runners and inference servers** (Ollama, llama.cpp,
-vLLM, LM Studio, SGLang, TensorRT-LLM, Hugging Face TGI, LocalAI, GPT4All, Tabby, OpenWebUI
-and more) under **AI → Models → Local Model Runner**. Tracked in `config/local-model-runner.json`;
-daily snapshots in `data/local-model-runner_snapshots/`, archived to
-`data/archives/local-model-runner_archive.jsonl` after 30 days.
+Each agent also carries hand-maintained, display-only fields — `category`, `setup`
+instructions, an `effort` tag (`easy`/`medium`/`advanced`) and `pricing` — none of these affect
+the score. A release-based freshness badge (Active / Steady / Slowing / Stale) summarizes
+maintenance status.
+
+## 🎁 Free AI Apps
+
+Ranks everyday consumer AI apps — ChatGPT, Claude, Gemini, Copilot, Perplexity, Grok,
+NotebookLM, Google AI Studio, Hugging Chat, Mistral Le Chat, DeepSeek, Meta AI — by how useful
+they are on their **free tier**: what students and people who can't pay for frontier models can
+actually use. Tracked in `config/free_apps.json`.
+
+| Source | Metric | API |
+|---|---|---|
+| GitHub | stars + 30d star delta (only apps with an open-source repo) | `GET /repos/{owner}/{repo}` |
+| Hacker News | mentions in trailing 7d / 30d | Algolia `hn.algolia.com/api/v1/search` |
+| Reddit | mentions in trailing 7d / 30d (newest-first, capped at 1000) | OAuth `search.json` |
+| Hand-maintained | free-tier / ease-of-access / usefulness ratings (0–100) + note | `config/free_apps.json` |
+
+Two composite views (**Free Tier Value** and **Momentum**), same normalization +
+coverage-penalty scoring as the other boards.
+
+**Automated vs hand-maintained:** the daily snapshot only carries public signals — most of
+these apps are closed-source, so the GitHub column is mostly empty *by design*. Three factors
+(`free_tier`, `ease_of_access`, `usefulness`) are **human ratings** maintained in the config by
+the maintainer: never snapshotted, always present (so they never trigger the coverage penalty),
+marked <span class="tag hand">hand</span> in the table, and subjective by nature.
+
+## 🖥️ Local Model Runners
+
+Ranks local model runners and inference servers — Ollama, llama.cpp, vLLM, LM Studio, SGLang,
+TensorRT-LLM, Hugging Face TGI, LocalAI, GPT4All, Tabby, OpenWebUI and more — under
+**AI → Models → Local Model Runner**. Tracked in `config/local-model-runner.json`.
 
 | Source | Metric | API |
 |---|---|---|
@@ -59,179 +111,183 @@ daily snapshots in `data/local-model-runner_snapshots/`, archived to
 | Hacker News | mentions in trailing 7d / 30d | Algolia `hn.algolia.com/api/v1/search` |
 | Reddit | mentions in trailing 7d / 30d (newest-first, capped at 1000) | OAuth `search.json` |
 
-Same scoring as the tools board: two composite views (**Install base** and **Momentum**),
-min-max normalization, full-weight-sum denominator (missing sources count as zero, so runners
-without an official Docker Hub image or package take a visible coverage penalty). Weights live
-in `config/local-model-runner.json` and are adjustable client-side.
+Same **Install base** / **Momentum** scoring as the coding-agents board — runners without an
+official Docker Hub image or package take a visible coverage penalty. Each runner also carries
+hand-maintained, display-only tags (`ease`, `focus`, `type`) plus a `pricing` tag — none of
+these affect the score.
 
-Each runner carries hand-maintained, display-only tags (`ease`, `focus`, `type`) plus a
-`pricing` tag — none of these affect the score.
+## 📦 Local LLMs
 
-## Free AI apps ranking
+Ranks open-weight LLMs people run locally — Llama 3.1/3.3, Qwen3/Qwen3.8, Gemma 3/4, Phi-4,
+Mistral Small, DeepSeek-R1 distills, GLM-4, SmolLM3, GPT-OSS, Devstral, Mellum2, ZAYA1 and
+more — under **AI → Models → Local LLMs**. Tracked in `config/local-llm.json`.
 
-A separate board ranks **everyday consumer AI apps** (ChatGPT, Claude, Gemini, Copilot,
-Perplexity, Grok, NotebookLM, Google AI Studio, Hugging Chat, Mistral Le Chat, DeepSeek,
-Meta AI) by how useful they are on their **free tier** — what students and people who can't
-pay for frontier models can actually use. Tracked in `config/free_apps.json`; daily snapshots
-in `data/free-apps_snapshots/`, archived to `data/archives/free-apps_archive.jsonl` after 30 days.
+Unlike the other boards there are no public usage APIs for model downloads — every value is
+**hand-maintained from official model cards**:
 
-| Source | Metric | API |
-|---|---|---|
-| GitHub | stars + 30d star delta (only apps with an open-source repo) | `GET /repos/{owner}/{repo}` |
-| Hacker News | mentions in trailing 7d / 30d | Algolia `hn.algolia.com/api/v1/search` |
-| Reddit | mentions in trailing 7d / 30d (newest-first, capped at 1000) | OAuth `search.json` |
-| Hand-maintained | free-tier / ease-of-access / usefulness ratings (0–100) + note | `config/free_apps.json` |
+- parameters, license, GGUF quant formats, minimum RAM/VRAM (Q4-class approximations)
+- MMLU/HumanEval benchmarks — or the closest published equivalents for newer models
+  (hover a benchmark cell on the page for its exact source)
+- context length, best use case
+- a `last_benchmark_update` date shown as a freshness badge: 🟢 ≤90d · 🟡 ≤180d · 🔴 older
 
-Two composite views (**Free Tier Value** and **Momentum**), same min-max + coverage-penalty
-scoring as the other boards; weights live in `config/free_apps.json` and are adjustable
-client-side.
+Models are ranked by a **Capability** composite (min-max normalized MMLU + HumanEval + context
+length with client-adjustable weights), and two dropdowns filter models to what fits your
+machine's RAM/VRAM budget.
 
-**Automated vs hand-maintained:** the daily snapshot only carries public signals — most of
-these apps are closed-source, so the GitHub column is mostly empty by design. Three factors
-(`free_tier`, `ease_of_access`, `usefulness`) are **human ratings** maintained in the config
-by the maintainer, never snapshotted, and always present (so they never trigger the coverage
-penalty). They are marked <span class="tag hand">hand</span> in the table and are subjective
-by nature.
+> To add or correct a model, edit `config/local-llm.json` via a pull request — the daily
+> collector only records which models are tracked.
 
-## Pricing tags
+## 🏷️ Pricing tags
 
-Each tool/agent also carries a hand-maintained `pricing` tag in `config/tools.json` /
-`config/agents.json`: `free`, `freemium`, or `paid`. It is an **approximation, not a metric** —
-it never affects scoring. Classification rule (based on the official pricing page):
+Each tool/agent also carries a hand-maintained `pricing` tag in its config: `free`,
+`freemium`, or `paid`. It is an **approximation, not a metric** — it never affects scoring.
+Classification rule (based on the official pricing page):
 
 - **free** — no payment required for the core product (may still need your own LLM/API key).
 - **freemium** — a usable free tier exists, but the full value is tied to a paid plan.
 - **paid** — a subscription/paid plan is required to use it at all.
 
-Rough rule of thumb: open-source core with no official paid offering → `free`; open-source core
-plus a paid cloud/hosted version → `freemium`; closed product with a paywall → `paid`. Update the
-tag by editing the config; it appears next to the tool name on both ranking pages, with a legend
+Rule of thumb: open-source core with no official paid offering → `free`; open-source core plus
+a paid cloud/hosted version → `freemium`; closed product with a paywall → `paid`. Update the
+tag by editing the config; it appears next to the name on the ranking pages, with a legend
 above each table.
 
-## Project layout
+## 📁 Project layout
 
 ```
 config/tools.json          # tracked tools + repo/ext/plugin ids + search phrases + weights
 config/agents.json         # tracked open-source agents + activity/adoption weights + setup notes
 config/local-model-runner.json  # tracked local model runners + weights + display-only tags
 config/free_apps.json      # tracked free AI apps + hand-maintained factors + weights
+config/local-llm.json      # tracked local LLMs + hand-maintained specs/benchmarks + weights
 src/
   collect.py               # runs all collectors -> data/coding-agents_snapshots/<date>.jsonl, then prunes old days
   collect_agents.py        # agent collectors -> data/general-purpose-agents_snapshots/<date>.jsonl
   collect_local_model_runner.py  # runner collectors -> data/local-model-runner_snapshots/<date>.jsonl
   collect_free_apps.py     # free-app collectors -> data/free-apps_snapshots/<date>.jsonl
+  collect_local_llm.py     # config audit trail -> data/local-llm_snapshots/<date>.jsonl (no network)
   nav.py                   # single source of truth for the top nav (group -> sections -> items) + landing cards
   build_landing.py         # renders site/index.html (landing page)
   build_site.py            # renders site/ai/agents/coding/ (coding agents ranking)
   build_agents.py          # renders site/ai/agents/general/ (general-purpose agents ranking)
   build_local_model_runner.py  # renders site/ai/model/local-model-runner/ (local model runner ranking)
   build_free_apps.py       # renders site/ai/apps/free/ (free AI apps ranking)
+  build_local_llm.py       # renders site/ai/model/local-llm/ (local LLM ranking)
   score.py                 # normalization + composites + time series
   common.py                # config load, HTTP, snapshot I/O, retention/archive
   sources/                 # github.py, github_agent.py, github_runner.py, hn.py, reddit.py, vscode.py, openvsx.py, jetbrains.py, docker.py, pypi.py, npm.py
   templates/index.html     # the coding agents ranking page
   templates/agents.html    # the general-purpose agents ranking page
   templates/local_model_runner.html  # the local model runner ranking page
-  templates/free_apps.html # the free AI apps ranking page
+  templates/free_apps.html # the free apps ranking page
+  templates/local_llm.html # the local LLM ranking page
   templates/landing.html   # the landing page
-data/coding-agents_snapshots/<date>.jsonl  # daily coding-agent snapshots, trailing 30 days
-data/general-purpose-agents_snapshots/<date>.jsonl  # daily agent snapshots, trailing 30 days
-data/local-model-runner_snapshots/<date>.jsonl  # daily runner snapshots, trailing 30 days
-data/free-apps_snapshots/<date>.jsonl  # daily free-app snapshots, trailing 30 days
-data/archives/coding-agents_archive.jsonl  # consolidated coding-agent history older than 30 days
-data/archives/general-purpose-agents_archive.jsonl  # consolidated agent history older than 30 days
-data/archives/local-model-runner_archive.jsonl  # consolidated runner history older than 30 days
-data/archives/free-apps_archive.jsonl  # consolidated free-app history older than 30 days
+data/<board>_snapshots/<date>.jsonl   # daily snapshots per board, trailing 30 days
+data/archives/<board>_archive.jsonl   # consolidated history older than 30 days, per board
 site/                      # generated static site (index.html, ai/agents/, ai/model/, ai/apps/)
 .github/workflows/collect.yml
 ```
 
-## Visitors: snapshots & tool requests
+Boards: `coding-agents`, `general-purpose-agents`, `local-model-runner`, `free-apps`,
+`local-llm`.
+
+## 👀 Visitor features
 
 The landing page's **Raw data & tool requests** section lets visitors:
 
-- **Browse the snapshot archive** — a link to the `data/coding-agents_snapshots/`,
-  `data/general-purpose-agents_snapshots/`, `data/local-model-runner_snapshots/`, and
-  `data/free-apps_snapshots/` folders in the repo
-  (read-only; history is auditable).
-- **Request a tool** — a small form (title, what needs to be ranked and how, official link)
-  that opens a pre-filled GitHub issue. Visitors fill in the three fields; the only extra step
-  is clicking *Submit* on GitHub's page (login required), since a static site cannot create
-  issues via the API. The matching GitHub issue form lives at
-  `.github/ISSUE_TEMPLATE/tool_request.yml`. Only maintainers can change `config/tools.json`,
-  `config/agents.json`, `config/local-model-runner.json`, and `config/free_apps.json`, so the
-  tracked lists and scoring are never editable from the page.
+- 🗂️ **Browse the snapshot archive** — links to each board's `data/*_snapshots/` folder in the
+  repo (read-only; history is auditable).
+- 📮 **Request a tool** — a small form (title, what needs to be ranked and how, official link)
+  that opens a pre-filled GitHub issue. Visitors fill in three fields; the only extra step is
+  clicking *Submit* on GitHub's page (login required), since a static site cannot create issues
+  via the API. The matching issue form lives at
+  `.github/ISSUE_TEMPLATE/tool_request.yml`. Only maintainers can change the `config/*.json`
+  files, so tracked lists and scoring are never editable from the page.
 
-The repo URL for those links is set automatically from `GITHUB_REPOSITORY` in CI, or via
-`meta.repo` in `config/tools.json` for local previews.
+The repo URL for those links comes from `GITHUB_REPOSITORY` in CI, or `meta.repo` in
+`config/tools.json` for local previews.
 
-## Run it locally
+## 🏃 Run locally
 
 ```bash
 pip install -r requirements.txt
 GITHUB_TOKEN=ghp_xxx python src/collect.py --dry-run   # collect for today, no files written
-python src/collect.py --date 2026-08-07                # write today's snapshot
-python src/build_landing.py                            # build landing page
+python src/collect.py --date 2026-08-07                # write a snapshot for a specific date
+python src/build_landing.py                            # build site/index.html
 python src/build_site.py                               # build site/ai/agents/coding/
 python src/build_agents.py                             # build site/ai/agents/general/
 python src/build_local_model_runner.py                 # build site/ai/model/local-model-runner/
 python src/build_free_apps.py                          # build site/ai/apps/free/
-python -m http.server -d site 8000                     # preview
+python src/build_local_llm.py                          # build site/ai/model/local-llm/
+python -m http.server -d site 8000                     # preview at http://localhost:8000
 ```
 
-Notes on local runs:
+Notes:
 
-- GitHub is **rate-limited without a token** (search 10 req/min). The collectors pace
-  themselves (~7s between search calls) so a full dry-run takes a few minutes. In CI the
+- ⚠️ GitHub is **rate-limited without a token** (search: 10 req/min). The collectors pace
+  themselves (~7s between search calls), so a full dry-run takes a few minutes. In CI the
   built-in `GITHUB_TOKEN` avoids this.
-- Reddit is skipped unless `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` are set.
+- 🔒 Reddit is skipped unless `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` are set.
 
-## One-time setup
+## ⚙️ One-time setup
 
-1. **Enable GitHub Pages.** Repo → Settings → Pages → Source: **GitHub Actions**.
-
-2. **Reddit credentials (optional but recommended).** Create a free "script" app at
+1. **Enable GitHub Pages** — Repo → Settings → Pages → Source: **GitHub Actions**.
+2. **Reddit credentials** (optional but recommended) — create a free "script" app at
    <https://www.reddit.com/prefs/apps> (type *script*, any redirect URI such as
-   `http://localhost`). Copy the client id and secret, then add repo secrets:
+   `http://localhost`). Copy the client id and secret into repo secrets:
    - `REDDIT_CLIENT_ID`
    - `REDDIT_CLIENT_SECRET`
+3. **First run** — either wait for the daily cron (05:00 UTC) or go to Actions →
+   *collect-and-deploy* → **Run workflow**. Momentum/velocity values become meaningful after
+   ~7–30 days of snapshots accumulate.
 
-3. **First run.** Either wait for the daily cron (05:00 UTC), or go to Actions →
-   *collect-and-deploy* → **Run workflow**. Momentum/velocity values become meaningful
-   after ~7–30 days of snapshots accumulate.
+## ➕ Adding entries
 
-## Adding a tool
+### 💻 A coding agent
 
 Edit `config/tools.json` and add an entry with the tool's GitHub repo, VS Code
-`publisher.extension`, Open VSX `namespace/name`, JetBrains `plugin_id` (official only),
-and the HN/Reddit search phrases. Ambiguous names (cursor, windsurf, cline, devin, aider,
-continue) should use a disambiguating phrase such as `"cursor" ai`.
+`publisher.extension`, Open VSX `namespace/name`, JetBrains `plugin_id` (official only), and
+HN/Reddit search phrases. Ambiguous names (cursor, windsurf, cline, devin, aider, continue)
+should use a disambiguating phrase such as `"cursor" ai`.
 
-## Adding a local model runner
+### 🧩 A general-purpose agent
 
-Edit `config/local-model-runner.json` and add an entry with the runner's GitHub repo
-(if any), Docker Hub `namespace/name` (official image only), `pypi`/`npm` package (if any),
-HN/Reddit search phrases, and display-only `tags` (`ease` = easy/medium/advanced,
-`focus` = consumer/server/multi/apple-silicon, `type` = runner/server/frontend/hybrid).
-The page, snapshots, and scoring all pick the entry up automatically.
+Edit `config/agents.json` and add an entry with the agent's GitHub repo, HN/Reddit search
+phrases, and the display-only fields: `category`, `setup` instructions, `effort` tag and
+`pricing`. Snapshots, scoring, and the page pick the entry up automatically.
 
-## Adding a free app
+### 🖥️ A local model runner
 
-Edit `config/free_apps.json` and add an entry with the app's name, vendor, category,
-`pricing` tag, optional `platform` array (where it runs: `web`, `mobile`, `desktop`,
-`extension`, `cli`), homepage, `github.repo` (only if the product is open-source), HN/Reddit
-search phrases, and the hand-maintained `manual` block: `free_tier`, `ease_of_access`,
-`usefulness` (0–100) plus a `free_tier_note` shown under the app name. The daily collector,
-page, and scoring pick the entry up automatically; the manual factors are updated by
-editing the config (a pull request), not by the daily run.
+Edit `config/local-model-runner.json` and add an entry with the runner's GitHub repo (if any),
+Docker Hub `namespace/name` (official image only), `pypi`/`npm` package (if any), HN/Reddit
+search phrases, and display-only `tags` (`ease` = easy/medium/advanced, `focus` =
+consumer/server/multi/apple-silicon, `type` = runner/server/frontend/hybrid). The page,
+snapshots, and scoring all pick the entry up automatically.
 
-## Caveats
+### 🎁 A free app
+
+Edit `config/free_apps.json` and add an entry with the app's name, vendor, category, `pricing`
+tag, optional `platform` array (`web`, `mobile`, `desktop`, `extension`, `cli`), homepage,
+`github.repo` (only if the product is open-source), HN/Reddit search phrases, and the
+hand-maintained `manual` block: `free_tier`, `ease_of_access`, `usefulness` (0–100) plus a
+`free_tier_note` shown under the app name. The daily collector, page, and scoring pick the
+entry up automatically; the manual factors are updated by editing the config (a pull request),
+not by the daily run.
+
+### 📦 A local LLM
+
+Edit `config/local-llm.json` and add an entry with the model's parameters, license, GGUF
+quant formats, minimum RAM/VRAM, benchmarks, context length, best use case, homepage, and
+`last_benchmark_update` date. See the existing entries for the exact shape; the page,
+snapshot audit trail, and scoring pick the entry up automatically.
+
+## ⚠️ Caveats
 
 - These are **relative signals**, not absolute usage or active-user counts. Marketplace
   "installs/downloads" are cumulative server-reported totals.
-- Missing sources count as zero in the composite (coverage penalty); sparse-data tools rank lower.
-- Commit-message search is noisy (AI-generated commits) and intentionally excluded from
-  the composite score.
-- Reddit counts cap at 1,000 newest results per tool per day (`capped` flag is stored).
-- A ranking is only as good as its data sources; each snapshot is committed so the
-  methodology can always be audited and fixed.
+- Missing sources count as zero in the composite (coverage penalty); sparse-data entries rank lower.
+- Commit-message search is noisy (AI-generated commits) and intentionally excluded from scores.
+- Reddit counts cap at 1,000 newest results per entry per day (a `capped` flag is stored).
+- A ranking is only as good as its data sources; each snapshot is committed so the methodology
+  can always be audited and fixed.
