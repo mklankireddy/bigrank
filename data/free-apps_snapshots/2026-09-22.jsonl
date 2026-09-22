@@ -1,0 +1,26 @@
+{"app": "chatgpt", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 1628, "mentions_7d": 340}}}
+{"app": "claude", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 5514, "mentions_7d": 1243}}}
+{"app": "gemini", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 1233, "mentions_7d": 277}}}
+{"app": "perplexity", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 98, "mentions_7d": 9}}}
+{"app": "copilot", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 1, "mentions_7d": 1}}}
+{"app": "grok", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 123, "mentions_7d": 37}}}
+{"app": "notebooklm", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 1, "mentions_7d": 1}}}
+{"app": "ai-studio", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 9, "mentions_7d": 1}}}
+{"app": "hugging-chat", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
+{"app": "le-chat", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
+{"app": "deepseek", "date": "2026-09-22", "sources": {"github": {"archived": false, "commits_30d": 0, "forks": 16734, "open_issues": 250, "pushed_at": "2025-08-28T03:24:37Z", "stars": 104479}, "hn": {"mentions_30d": 783, "mentions_7d": 182}}}
+{"app": "meta-ai", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 16, "mentions_7d": 1}}}
+{"app": "poe", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
+{"app": "kimi", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 17, "mentions_7d": 3}}}
+{"app": "qwen-chat", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
+{"app": "character-ai", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 4, "mentions_7d": 2}}}
+{"app": "phind", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
+{"app": "you-com", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
+{"app": "ideogram", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 5, "mentions_7d": 5}}}
+{"app": "bing-image-creator", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 0, "mentions_7d": 0}}}
+{"app": "suno", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 34, "mentions_7d": 4}}}
+{"app": "grammarly", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 10, "mentions_7d": 5}}}
+{"app": "quillbot", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 1, "mentions_7d": 0}}}
+{"app": "elicit", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 37, "mentions_7d": 7}}}
+{"app": "elevenlabs", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 28, "mentions_7d": 1}}}
+{"app": "deepl", "date": "2026-09-22", "sources": {"hn": {"mentions_30d": 8, "mentions_7d": 3}}}
